@@ -20,6 +20,7 @@ npm start
 ```
 - Modify the .env file in the backend folder to connect to your own MongoDB database.
 Example:
+``` bash
 mongodb_url= YOUR_MONGODB_URL
 ```
-- Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+- Open http://localhost:3000 to view it in the browser.
