@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { Container, TextField, Button, Typography, IconButton, InputAdornment, Box } from '@mui/material';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 import '../styles/LoginPage.css';
 
 const LoginPage = () => {
@@ -16,10 +18,11 @@ const LoginPage = () => {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({ username, password }),
+                credentials: 'include' // Include credentials (cookies) with the request
             });
             const data = await response.json();
             if (response.ok) {
-                window.location.href = `/welcome?username=${username}`;
+                window.location.href = `/welcome`;
             } else {
                 setError(data.message);
             }
@@ -29,33 +32,61 @@ const LoginPage = () => {
     };
 
     return (
-        <div className="login-container">
-            <h1>Login</h1>
-            {error && <p className="error">{error}</p>}
-            <form onSubmit={handleLogin}>
-                <input
-                    type="text"
-                    placeholder="Username"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                />
-                <div className="password-container">
-                    <input
+        <Container maxWidth="xs">
+            <Box
+                display="flex"
+                flexDirection="column"
+                alignItems="center"
+                justifyContent="center"
+                minHeight="100vh"
+            >
+                <Typography variant="h4" component="h1" gutterBottom>
+                    Login
+                </Typography>
+                {error && <Typography color="error">{error}</Typography>}
+                <form onSubmit={handleLogin} style={{ width: '100%' }}>
+                    <TextField
+                        label="Username"
+                        variant="outlined"
+                        fullWidth
+                        margin="normal"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                    />
+                    <TextField
+                        label="Password"
+                        variant="outlined"
+                        fullWidth
+                        margin="normal"
                         type={showPassword ? 'text' : 'password'}
-                        placeholder="Password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
+                        InputProps={{
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                    <IconButton
+                                        aria-label="toggle password visibility"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        edge="end"
+                                    >
+                                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                                    </IconButton>
+                                </InputAdornment>
+                            ),
+                        }}
                     />
-                    <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
+                    <Button
+                        type="submit"
+                        variant="contained"
+                        color="primary"
+                        fullWidth
+                        style={{ marginTop: '16px' }}
                     >
-                        {showPassword ? 'Hide' : 'Show'}
-                    </button>
-                </div>
-                <button type="submit">Login</button>
-            </form>
-        </div>
+                        Login
+                    </Button>
+                </form>
+            </Box>
+        </Container>
     );
 };
 

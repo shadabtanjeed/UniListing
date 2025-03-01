@@ -5,6 +5,7 @@ const login_demo = async (req, res) => {
     try {
         const user = await User_Demo.findOne({ username, password });
         if (user) {
+            req.session.username = username;
             res.status(200).json({ message: `Welcome ${username}` });
         } else {
             res.status(401).json({ message: 'Invalid username or password' });
