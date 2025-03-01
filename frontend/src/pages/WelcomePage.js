@@ -1,4 +1,7 @@
 import React, { useEffect, useState } from 'react';
+import AppSidebar from '../components/Sidebar';
+import { Box, Typography } from '@mui/material';
+import '../styles/WelcomePage.css';
 
 const WelcomePage = () => {
     const [username, setUsername] = useState('');
@@ -24,9 +27,14 @@ const WelcomePage = () => {
     }, []);
 
     return (
-        <div className="welcome-container">
-            <h1>Welcome {username}</h1>
-        </div>
+        <>
+            <AppSidebar />
+            <Box className="content welcome-content"> {/* Added 'content' class for opacity effect */}
+                <Typography variant="h4" component="h1">
+                    Welcome {username}
+                </Typography>
+            </Box>
+        </>
     );
 };
 

@@ -1,0 +1,175 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap");
+@import url("https://unpkg.com/boxicons@2.1.2/css/boxicons.min.css");
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Poppins", sans-serif;
+}
+
+body {
+    min-height: 100%;
+    background: #ffffff;
+}
+
+/* Navigation Bar */
+nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 70px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    background-color: #ffffff;
+    box-shadow: 0 0 1px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+
+/* Logo Section */
+nav .logo {
+    display: flex;
+    align-items: center;
+    margin: 0 24px;
+    transition: visibility 0.4s ease;
+}
+
+.logo .menu-icon {
+    color: #2d4f8f;
+    font-size: 30px;
+    margin-right: 14px;
+    cursor: pointer;
+}
+
+/* Hide the logo text when sidebar is open, but keep its space */
+nav.open .logo .logo-name {
+    visibility: hidden;
+}
+
+/* Sidebar */
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: -100%;
+    height: 100%;
+    width: 260px;
+    background-color: #ffffff;
+    transition: left 0.4s ease;
+    z-index: 1001;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Show sidebar when "open" class is added to nav */
+nav.open .sidebar {
+    left: 0;
+}
+
+/* Sidebar Header */
+.sidebar-header {
+    display: flex;
+    align-items: center;
+    padding: 20px 16px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.sidebar-header .logo-name {
+    font-size: 22px;
+    font-weight: 600;
+    color: #000000;
+    flex-grow: 1;
+}
+
+/* Close button inside the sidebar */
+.close-icon {
+    font-size: 28px;
+    cursor: pointer;
+    color: #2d4f8f;
+}
+
+/* Sidebar Content */
+.sidebar .sidebar-content {
+    display: flex;
+    height: calc(100% - 70px);
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 20px 16px;
+}
+
+.sidebar-content .lists {
+    list-style: none;
+}
+
+.lists .list {
+    list-style: none;
+}
+
+.list .nav-link {
+    display: flex;
+    align-items: center;
+    margin: 8px 0;
+    padding: 14px 12px;
+    border-radius: 8px;
+    text-decoration: none;
+    color: #000000;
+}
+
+.list .nav-link:hover,
+.bottom-content .list .nav-link:hover {
+    background-color: #2d4f8f;
+    color: #ffffff;
+}
+
+.nav-link .icon {
+    margin-right: 14px;
+    font-size: 20px;
+    color: #000000;
+}
+
+.nav-link .link {
+    font-size: 16px;
+    color: #000000;
+    font-weight: 400;
+}
+
+.list .nav-link:hover .icon,
+.list .nav-link:hover .link,
+.bottom-content .list .nav-link:hover .icon,
+.bottom-content .list .nav-link:hover .link {
+    color: #ffffff;
+}
+
+/* Bottom content (profile & logout links) */
+.bottom-content {
+    list-style: none;
+}
+
+/* Overlay (When Sidebar is Open) */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: -100%;
+    height: 100vh;
+    width: 100vw;
+    background: rgba(0, 0, 0, 0.3);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+    z-index: 999;
+}
+
+/* Show overlay when sidebar is open */
+nav.open~.overlay {
+    opacity: 1;
+    left: 0;
+    pointer-events: auto;
+}
+
+/* Make content slightly opaque when sidebar opens */
+.content {
+    transition: opacity 0.3s ease;
+}
+
+nav.open~.content {
+    opacity: 0.5;
+}
