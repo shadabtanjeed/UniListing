@@ -1,1 +1,31 @@
+# Ignore node_modules in both backend and frontend folders
+backend/node_modules
+frontend/node_modules
+
+# Ignore environment variables (if you use .env files)
 .env
+
+# Ignore log files
+*.log
+
+# Ignore build/output directories (if applicable)
+backend/dist
+frontend/dist
+frontend/build
+
+# Ignore OS-specific files
+.DS_Store
+Thumbs.db
+
+# Ignore IDE-specific files
+.vscode/
+.idea/
+
+# Ignore npm/yarn cache directories
+.npm
+.yarn
+.yarn-cache
+
+# Ignore package-lock.json or yarn.lock (optional, but not recommended)
+# package-lock.json
+# yarn.lock
