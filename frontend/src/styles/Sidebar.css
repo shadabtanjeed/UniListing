@@ -33,6 +33,7 @@ nav .logo {
     align-items: center;
     margin: 0 24px;
     transition: visibility 0.4s ease;
+
 }
 
 .logo .menu-icon {
@@ -172,4 +173,36 @@ nav.open~.overlay {
 
 nav.open~.content {
     opacity: 0.5;
+}
+
+/* Add these styles to your existing CSS file */
+
+/* Logo image in navbar */
+.logo-img {
+    height: 40px;
+    /* Adjust height as needed */
+    width: auto;
+    max-width: 150px;
+    /* Prevent overly wide logos */
+    object-fit: contain;
+}
+
+/* Logo image in sidebar header */
+.sidebar-logo-img {
+    height: 35px;
+    /* Slightly smaller in sidebar */
+    width: auto;
+    max-width: 120px;
+    object-fit: contain;
+}
+
+/* Adjust logo container for proper alignment */
+.logo .logo-name {
+    display: flex;
+    align-items: center;
+}
+
+.sidebar-header .logo-name {
+    display: flex;
+    align-items: center;
 }

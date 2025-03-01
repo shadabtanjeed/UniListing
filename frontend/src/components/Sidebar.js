@@ -1,55 +1,85 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import '../styles/Sidebar.css';
+import logo from '../unilisting_rectangle.png'; // Import the logo
 
 const AppSidebar = () => {
+    const navRef = useRef(null);
+    const menuBtnRef = useRef(null);
+    const closeBtnRef = useRef(null);
+    const overlayRef = useRef(null);
+
     useEffect(() => {
-        const navBar = document.querySelector("nav");
-        const menuBtn = document.querySelector(".menu-icon");
-        const closeBtn = document.querySelector(".close-icon");
-        const overlay = document.querySelector(".overlay");
-        const content = document.querySelector(".content"); // Targets main content
+        // Using refs instead of querying the DOM directly
+        const navBar = navRef.current;
+        const menuBtn = menuBtnRef.current;
+        const closeBtn = closeBtnRef.current;
+        const overlay = overlayRef.current;
+
+        // Get the content element that should be dimmed
+        const content = document.querySelector(".content");
+        const topbar = document.querySelector(".logo");
 
         const toggleSidebar = () => {
             if (navBar) {
                 navBar.classList.toggle("open");
-                if (content) {
-                    content.classList.toggle("blurred"); // Apply opacity effect
-                }
             }
+
+            // set top bar visibility to hidden when sidebar is open
+            topbar.style.visibility = "none";
         };
 
         const closeSidebar = () => {
             if (navBar) {
                 navBar.classList.remove("open");
-                if (content) {
-                    content.classList.remove("blurred");
-                }
             }
+
+            // set top bar visibility to visible when sidebar is closed
+            topbar.style.visibility = "visible";
         };
 
-        if (menuBtn) menuBtn.addEventListener("click", toggleSidebar);
-        if (closeBtn) closeBtn.addEventListener("click", closeSidebar);
-        if (overlay) overlay.addEventListener("click", closeSidebar);
+        // Add event listeners
+        if (menuBtn) {
+            menuBtn.addEventListener("click", toggleSidebar);
+        }
 
+        if (closeBtn) {
+            closeBtn.addEventListener("click", closeSidebar);
+        }
+
+        if (overlay) {
+            overlay.addEventListener("click", closeSidebar);
+        }
+
+        // Clean up event listeners
         return () => {
-            if (menuBtn) menuBtn.removeEventListener("click", toggleSidebar);
-            if (closeBtn) closeBtn.removeEventListener("click", closeSidebar);
-            if (overlay) overlay.removeEventListener("click", closeSidebar);
+            if (menuBtn) {
+                menuBtn.removeEventListener("click", toggleSidebar);
+            }
+            if (closeBtn) {
+                closeBtn.removeEventListener("click", closeSidebar);
+            }
+            if (overlay) {
+                overlay.removeEventListener("click", closeSidebar);
+            }
         };
     }, []);
 
     return (
         <>
-            <nav>
+            <nav ref={navRef}>
                 <div className="logo">
-                    <i className="bx bx-menu menu-icon"></i>
-                    <span className="logo-name">UniListing</span>
+                    <i className="bx bx-menu menu-icon" ref={menuBtnRef}></i>
+                    <span className="logo-name">
+                        <img src={logo} alt="UniListing" className="logo-img" />
+                    </span>
                 </div>
                 <div className="sidebar">
                     <div className="sidebar-header">
-                        <span className="logo-name">UniListing</span>
-                        <i className="bx bx-x close-icon"></i>
+                        <span className="logo-name">
+                            <img src={logo} alt="UniListing" className="sidebar-logo-img" />
+                        </span>
+                        <i className="bx bx-x close-icon" ref={closeBtnRef}></i>
                     </div>
                     <div className="sidebar-content">
                         <ul className="lists">
@@ -107,7 +137,7 @@ const AppSidebar = () => {
                     </div>
                 </div>
             </nav>
-            <section className="overlay"></section>
+            <section className="overlay" ref={overlayRef}></section>
         </>
     );
 };
