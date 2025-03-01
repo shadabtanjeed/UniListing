@@ -18,24 +18,17 @@ const AppSidebar = () => {
 
         // Get the content element that should be dimmed
         const content = document.querySelector(".content");
-        const topbar = document.querySelector(".logo");
 
         const toggleSidebar = () => {
             if (navBar) {
                 navBar.classList.toggle("open");
             }
-
-            // set top bar visibility to hidden when sidebar is open
-            topbar.style.visibility = "none";
         };
 
         const closeSidebar = () => {
             if (navBar) {
                 navBar.classList.remove("open");
             }
-
-            // set top bar visibility to visible when sidebar is closed
-            topbar.style.visibility = "visible";
         };
 
         // Add event listeners

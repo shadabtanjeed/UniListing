@@ -25,6 +25,7 @@ nav {
     background-color: #ffffff;
     box-shadow: 0 0 1px rgba(0, 0, 0, 0.1);
     z-index: 1000;
+    transition: opacity 0.3s ease;
 }
 
 /* Logo Section */
@@ -44,8 +45,9 @@ nav .logo {
 }
 
 /* Hide the logo text when sidebar is open, but keep its space */
-nav.open .logo .logo-name {
-    visibility: hidden;
+nav.open {
+    background-color: transparent;
+    box-shadow: none;
 }
 
 /* Sidebar */
@@ -166,6 +168,11 @@ nav.open~.overlay {
     pointer-events: auto;
 }
 
+/* Hide the entire logo container when sidebar is open */
+nav.open .logo {
+    opacity: 0;
+}
+
 /* Make content slightly opaque when sidebar opens */
 .content {
     transition: opacity 0.3s ease;
@@ -205,4 +212,11 @@ nav.open~.content {
 .sidebar-header .logo-name {
     display: flex;
     align-items: center;
+}
+
+nav .logo {
+    display: flex;
+    align-items: center;
+    margin: 0 24px;
+    transition: opacity 0.4s ease;
 }
