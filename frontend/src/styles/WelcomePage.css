@@ -8,5 +8,5 @@
     justify-content: center;
     height: calc(100vh - 80px);
     /* Adjust this value based on your navbar height */
-    font-family: 'Inter', sans-serif;
+    font-family: "Poppins", sans-serif;
 }
