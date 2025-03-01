@@ -34,3 +34,5 @@ Thumbs.db
 # Ignore package-lock.json or yarn.lock (optional, but not recommended)
 # package-lock.json
 # yarn.lock
+/backend/node_modules
+/frontend/node_modules
