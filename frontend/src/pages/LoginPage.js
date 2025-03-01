@@ -78,15 +78,17 @@ const LoginPage = () => {
                     <Button
                         type="submit"
                         variant="contained"
-                        color="primary"
                         fullWidth
-                        style={{ marginTop: '16px' }}
+                        style={{
+                            marginTop: '16px',
+                            backgroundColor: "#2d4f8f",
+                        }}
                     >
                         Login
                     </Button>
                 </form>
             </Box>
-        </Container>
+        </Container >
     );
 };
 
