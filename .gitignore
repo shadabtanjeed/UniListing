@@ -2,6 +2,9 @@
 backend/node_modules
 frontend/node_modules
 
+backend\node_modules
+frontend\node_modules
+
 # Ignore environment variables (if you use .env files)
 .env
 
