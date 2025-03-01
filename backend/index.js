@@ -24,9 +24,9 @@ app.use(session({
     saveUninitialized: true,
     store: MongoStore.create({
         mongoUrl: process.env.mongodb_url,
-        ttl: 3600 // 1 hour
+        ttl: 18000 // 1 hour
     }),
-    cookie: { maxAge: 3600000 } // 1 hour
+    cookie: { maxAge: 18000000 } // 1 hour
 }));
 
 const Test = require('./models/test_model');
