@@ -1,15 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const { login_demo } = require('../controllers/authController');
+const { login_demo, get_username_from_session, logout } = require('../controllers/authController');
 
 router.post('/login', login_demo);
 
-router.get('/session', (req, res) => {
-    if (req.session.username) {
-        res.status(200).json({ username: req.session.username });
-    } else {
-        res.status(401).json({ message: 'Not authenticated' });
-    }
-});
+router.get('/session', get_username_from_session);
+
+router.post('/logout', logout);
 
 module.exports = router;

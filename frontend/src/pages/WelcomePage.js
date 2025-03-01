@@ -15,11 +15,12 @@ const WelcomePage = () => {
                 const data = await response.json();
                 if (response.ok) {
                     setUsername(data.username);
-                } else {
-                    window.location.href = '/';
                 }
+                // Removed the else block with window.location.href redirect
+                // as the ProtectedRoute component now handles this
             } catch (err) {
-                window.location.href = '/';
+                console.error('Error fetching username:', err);
+                // Removed redirect as it's handled by ProtectedRoute
             }
         };
 
@@ -29,7 +30,7 @@ const WelcomePage = () => {
     return (
         <>
             <AppSidebar />
-            <Box className="content welcome-content"> {/* Added 'content' class for opacity effect */}
+            <Box className="content welcome-content">
                 <Typography variant="h4" component="h1">
                     Welcome {username}
                 </Typography>

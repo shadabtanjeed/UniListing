@@ -15,4 +15,22 @@ const login_demo = async (req, res) => {
     }
 };
 
-module.exports = { login_demo };
+const get_username_from_session = async (req, res) => {
+    if (req.session.username) {
+        res.status(200).json({ username: req.session.username });
+    } else {
+        res.status(401).json({ message: 'Not authenticated' });
+    }
+};
+
+const logout = async (req, res) => {
+    req.session.destroy((err) => {
+        if (err) {
+            return res.status(500).json({ message: 'Failed to logout' });
+        }
+        res.clearCookie('connect.sid'); // Clear the session cookie
+        res.status(200).json({ message: 'Logged out successfully' });
+    });
+};
+
+module.exports = { login_demo, get_username_from_session, logout };

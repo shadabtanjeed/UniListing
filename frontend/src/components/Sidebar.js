@@ -1,22 +1,21 @@
 import React, { useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import '../styles/Sidebar.css';
-import logo from '../unilisting_rectangle.png'; // Import the logo
+import logo from '../unilisting_rectangle.png';
 
 const AppSidebar = () => {
     const navRef = useRef(null);
     const menuBtnRef = useRef(null);
     const closeBtnRef = useRef(null);
     const overlayRef = useRef(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
-        // Using refs instead of querying the DOM directly
         const navBar = navRef.current;
         const menuBtn = menuBtnRef.current;
         const closeBtn = closeBtnRef.current;
         const overlay = overlayRef.current;
 
-        // Get the content element that should be dimmed
         const content = document.querySelector(".content");
 
         const toggleSidebar = () => {
@@ -31,7 +30,6 @@ const AppSidebar = () => {
             }
         };
 
-        // Add event listeners
         if (menuBtn) {
             menuBtn.addEventListener("click", toggleSidebar);
         }
@@ -44,7 +42,6 @@ const AppSidebar = () => {
             overlay.addEventListener("click", closeSidebar);
         }
 
-        // Clean up event listeners
         return () => {
             if (menuBtn) {
                 menuBtn.removeEventListener("click", toggleSidebar);
@@ -57,6 +54,22 @@ const AppSidebar = () => {
             }
         };
     }, []);
+
+    const handleLogout = async (e) => {
+        e.preventDefault();
+        try {
+            // Call the backend logout endpoint
+            await fetch('http://localhost:5000/auth/logout', {
+                method: 'POST',
+                credentials: 'include'
+            });
+
+            // Redirect to login page
+            navigate('/');
+        } catch (err) {
+            console.error('Logout failed:', err);
+        }
+    };
 
     return (
         <>
@@ -77,7 +90,7 @@ const AppSidebar = () => {
                     <div className="sidebar-content">
                         <ul className="lists">
                             <li className="list">
-                                <Link to="/" className="nav-link">
+                                <Link to="/welcome" className="nav-link">
                                     <i className="bx bx-home-alt icon"></i>
                                     <span className="link">Dashboard</span>
                                 </Link>
@@ -121,10 +134,10 @@ const AppSidebar = () => {
                                 </Link>
                             </li>
                             <li className="list">
-                                <Link to="/logout" className="nav-link">
+                                <a href="#" className="nav-link" onClick={handleLogout}>
                                     <i className="bx bx-log-out icon"></i>
                                     <span className="link">Logout</span>
-                                </Link>
+                                </a>
                             </li>
                         </div>
                     </div>
