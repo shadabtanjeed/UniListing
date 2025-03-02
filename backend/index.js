@@ -33,8 +33,10 @@ const Test = require('./models/test_model');
 const User_Demo = require('./models/users_demo');
 
 const authRoutes = require('./routes/auth');
+const apartmentRoutes = require('./routes/apartment_routes');
 
 app.use('/auth', authRoutes);
+app.use('/api/apartments', apartmentRoutes);
 
 app.listen(port, () => {
     console.log(`Server running on http://localhost:${port}`);

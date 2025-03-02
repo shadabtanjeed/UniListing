@@ -1,4 +1,4 @@
-const Apartment_List = require('../models/apartmentModel');
+const Apartment_List = require('../models/apartment_model');
 const multer = require('multer');
 
 const get_all_apartments = async (req, res) => {
@@ -33,4 +33,4 @@ const add_apartment_test = async (req, res) => {
     }
 };
 
-module.exports = { get_all_apartments };
+module.exports = { get_all_apartments, add_apartment_test };

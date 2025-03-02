@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import LoginPage from './pages/LoginPage';
 import WelcomePage from './pages/WelcomePage';
 import ProtectedRoute from './components/ProtectedRoute';
+import ApartmentPage from './pages/ApartmentsPage';
 
 function App() {
   return (
@@ -12,6 +13,11 @@ function App() {
         <Route path="/welcome" element={
           <ProtectedRoute>
             <WelcomePage />
+          </ProtectedRoute>
+        } />
+        <Route path="/view-apartments" element={
+          <ProtectedRoute>
+            <ApartmentPage />
           </ProtectedRoute>
         } />
         <Route path="*" element={
