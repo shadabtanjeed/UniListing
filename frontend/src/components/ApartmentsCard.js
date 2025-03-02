@@ -124,7 +124,7 @@ const ApartmentCard = ({ apartment }) => {
                                 {/* Main details */}
                                 <Box className="price-section" sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
                                     <Typography variant="caption" color="text.secondary" sx={{ mr: 1 }}>Rent: </Typography>
-                                    <BdtIcon sx={{ color: '#2d4f8f' }} />
+                                    {/* <BdtIcon sx={{ color: '#2d4f8f' }} /> */}
                                     <Typography variant="h6" component="span" sx={{ ml: 0.5, display: 'flex', alignItems: 'center' }}>
                                         {apartment.rent.amount.toLocaleString()} BDT
                                         {apartment.rent.negotiable &&
