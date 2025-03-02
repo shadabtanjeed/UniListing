@@ -10,18 +10,23 @@ import {
     Chip,
     Divider,
     Grid,
-    Paper
+    SvgIcon,
 } from '@mui/material';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import BedIcon from '@mui/icons-material/Bed';
 import BathroomIcon from '@mui/icons-material/Bathroom';
 import SquareFootIcon from '@mui/icons-material/SquareFoot';
-import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import HomeIcon from '@mui/icons-material/Home';
 import MeetingRoomIcon from '@mui/icons-material/MeetingRoom';
-import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import { useNavigate } from 'react-router-dom';
+
+// Custom BDT (Bangladeshi Taka) icon
+const BdtIcon = (props) => (
+    <SvgIcon {...props} viewBox="0 0 24 24">
+        <path d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M11,17.5L9,15.5L11,13.5V15H15V14.5A1.5,1.5 0 0,0 13.5,13A1.5,1.5 0 0,0 12,14.5V15.5A1.5,1.5 0 0,0 13.5,17A1.5,1.5 0 0,0 15,15.5V13.3C15.2,13.1 15.5,13 16,13A2,2 0 0,1 18,15V17H11V17.5M9,6H14V7A2,2 0 0,1 12,9A2,2 0 0,1 10,7H9V9H11V11H9V12H14V11H13V9H14V8H11V7.5H13V7H11V6.5A1.5,1.5 0 0,1 12.5,5A1.5,1.5 0 0,1 14,6.5V7.25L15,6.75V6A2,2 0 0,0 13,4A2,2 0 0,0 11,6" />
+    </SvgIcon>
+);
 
 const ApartmentCard = ({ apartment }) => {
     const navigate = useNavigate();
@@ -62,13 +67,22 @@ const ApartmentCard = ({ apartment }) => {
     return (
         <Card className="apartment-card-horizontal">
             <Grid container>
-                <Grid item xs={12} md={4}>
+                <Grid item xs={12} md={4} sx={{
+                    display: 'flex',
+                    position: 'relative',
+                    overflow: 'hidden',
+                    minHeight: { xs: 'auto', md: 'inherit' }
+                }}>
                     <CardMedia
                         component="img"
                         sx={{
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            width: '100%',
                             height: '100%',
-                            minHeight: { xs: '200px', md: '300px' },
-                            objectFit: 'cover'
+                            objectFit: 'cover',
+                            objectPosition: 'center'
                         }}
                         image={getFirstImageUrl()}
                         alt={apartment.title}
@@ -76,45 +90,45 @@ const ApartmentCard = ({ apartment }) => {
                 </Grid>
 
                 <Grid item xs={12} md={8}>
-                    <CardContent sx={{ height: '100%', p: 3 }}>
-                        <Box sx={{ mb: 2 }}>
+                    <CardContent sx={{ p: 2 }}> {/* Reduced padding */}
+                        <Box>
                             <Typography variant="h5" component="h3" className="apartment-title" gutterBottom>
                                 {apartment.title}
                             </Typography>
 
-                            <Box className="apartment-location" sx={{ display: 'flex', alignItems: 'flex-start', mb: 2 }}>
+                            <Box className="apartment-location" sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
                                 <LocationOnIcon sx={{ mt: 0.3, mr: 1, color: '#2d4f8f' }} />
                                 <Typography variant="body1">
-                                    {apartment.location.address}, {apartment.location.area}
+                                    {apartment.location.address}
                                 </Typography>
                             </Box>
 
-                            <Divider sx={{ my: 2 }} />
+                            <Divider sx={{ my: 1 }} /> {/* Reduced margin */}
 
                             <Typography variant="body2" color="text.secondary" className="apartment-description"
                                 sx={{
-                                    mb: 2,
-                                    minHeight: '60px',
-                                    maxHeight: '80px',
+                                    mb: 1, // Reduced margin
+                                    minHeight: '40px', // Reduced height
+                                    maxHeight: '60px', // Reduced height
                                     overflow: 'hidden',
                                     textOverflow: 'ellipsis',
                                     display: '-webkit-box',
-                                    WebkitLineClamp: 3,
+                                    WebkitLineClamp: 2, // Reduced to 2 lines from 3
                                     WebkitBoxOrient: 'vertical'
                                 }}>
                                 {description}
                             </Typography>
 
-                            <Divider sx={{ my: 2 }} />
+                            <Divider sx={{ my: 1 }} /> {/* Reduced margin */}
                         </Box>
 
-                        <Grid container spacing={2}>
+                        <Grid container spacing={1}> {/* Reduced spacing */}
                             <Grid item xs={12} sm={8}>
                                 {/* Main details */}
-                                <Box className="price-section" sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                                <Box className="price-section" sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
                                     <Typography variant="caption" color="text.secondary" sx={{ mr: 1 }}>Rent: </Typography>
-                                    <AttachMoneyIcon sx={{ color: '#2d4f8f' }} /> {/* BDT icon replacement */}
-                                    <Typography variant="h6" component="span" sx={{ ml: 0.5 }}>
+
+                                    <Typography variant="h6" component="span" sx={{ ml: 0.5, display: 'flex', alignItems: 'center' }}>
                                         {apartment.rent.amount.toLocaleString()} BDT
                                         {apartment.rent.negotiable &&
                                             <Typography component="span" variant="caption" sx={{ ml: 1, color: 'text.secondary' }}>
@@ -124,18 +138,48 @@ const ApartmentCard = ({ apartment }) => {
                                     </Typography>
                                 </Box>
 
-                                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
-                                    {/* Rental type */}
+                                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 1 }}>
+                                    {/* Full apartment chip with clearly visible icon */}
                                     {apartment.rent_type.full_apartment ? (
                                         <Chip
-                                            icon={<HomeIcon />}
+                                            avatar={
+                                                <Box
+                                                    sx={{
+                                                        bgcolor: 'white',
+                                                        borderRadius: '50%',
+                                                        width: 24,
+                                                        height: 24,
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        ml: 0.5
+                                                    }}
+                                                >
+                                                    <HomeIcon sx={{ color: '#2d4f8f', fontSize: 16 }} />
+                                                </Box>
+                                            }
                                             label="Full Apartment"
                                             size="small"
                                             sx={{ bgcolor: '#2d4f8f', color: 'white' }}
                                         />
                                     ) : (
                                         <Chip
-                                            icon={<MeetingRoomIcon />}
+                                            avatar={
+                                                <Box
+                                                    sx={{
+                                                        bgcolor: 'white',
+                                                        borderRadius: '50%',
+                                                        width: 24,
+                                                        height: 24,
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        ml: 0.5
+                                                    }}
+                                                >
+                                                    <MeetingRoomIcon sx={{ color: '#ff9800', fontSize: 16 }} />
+                                                </Box>
+                                            }
                                             label={`Partial (${apartment.rent_type.partial_rent.rooms_available} rooms)`}
                                             size="small"
                                             sx={{ bgcolor: '#ff9800', color: 'white' }}
@@ -144,7 +188,7 @@ const ApartmentCard = ({ apartment }) => {
 
                                     {/* Listing date */}
                                     <Chip
-                                        icon={<CalendarTodayIcon />}
+                                        icon={<CalendarTodayIcon sx={{ fontSize: 8 }} />}
                                         label={`Listed: ${formattedDate}`}
                                         size="small"
                                         variant="outlined"
@@ -173,41 +217,12 @@ const ApartmentCard = ({ apartment }) => {
                                 </Box>
                             </Grid>
 
-                            <Grid item xs={12} sm={4} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'space-between' }}>
-                                {/* Upvotes visualization */}
-                                <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mb: 2 }}>
-                                    <Paper
-                                        elevation={0}
-                                        sx={{
-                                            display: 'flex',
-                                            flexDirection: 'column',
-                                            alignItems: 'center',
-                                            p: 1,
-                                            width: 80,
-                                            border: '1px solid #e0e0e0',
-                                            borderRadius: '8px'
-                                        }}
-                                    >
-                                        <ThumbUpIcon
-                                            sx={{
-                                                color: apartment.upvotes.count > 0 ? '#2d4f8f' : '#9e9e9e',
-                                                fontSize: 24,
-                                                mb: 0.5
-                                            }}
-                                        />
-                                        <Typography
-                                            variant="h6"
-                                            component="span"
-                                            sx={{
-                                                fontWeight: 'bold',
-                                                color: apartment.upvotes.count > 0 ? '#2d4f8f' : '#9e9e9e'
-                                            }}
-                                        >
-                                            {apartment.upvotes.count}
-                                        </Typography>
-                                    </Paper>
-                                </Box>
-
+                            <Grid item xs={12} sm={4} sx={{
+                                display: 'flex',
+                                justifyContent: 'flex-end',
+                                alignItems: { xs: 'flex-start', sm: 'center' },
+                                mt: { xs: 2, sm: 0 }
+                            }}>
                                 {/* View details button */}
                                 <Button
                                     variant="contained"
