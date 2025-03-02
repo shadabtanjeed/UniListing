@@ -166,3 +166,69 @@
         font-size: 12px;
     }
 }
+
+/* Add these styles to your ApartmentPage.css file */
+
+.apartment-card-horizontal {
+    width: 100%;
+    margin-bottom: 20px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.apartment-card-horizontal:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.apartment-title {
+    font-weight: 600;
+    color: #2d4f8f;
+}
+
+.apartment-location {
+    color: #555;
+}
+
+.apartment-description {
+    color: #666;
+    line-height: 1.5;
+}
+
+/* Make sure all cards have consistent heights */
+.feature {
+    display: flex;
+    align-items: center;
+}
+
+/* Update main container for vertical cards */
+.main-container {
+    display: flex;
+    gap: 24px;
+}
+
+.filter-section {
+    flex: 0 0 250px;
+    padding: 16px;
+    height: fit-content;
+    position: sticky;
+    top: 100px;
+    align-self: flex-start;
+}
+
+.listings-section {
+    flex: 1;
+}
+
+/* Responsive adjustments */
+@media (max-width: 960px) {
+    .main-container {
+        flex-direction: column;
+    }
+
+    .filter-section {
+        width: 100%;
+        position: static;
+    }
+}
