@@ -3,6 +3,7 @@ const path = require('path');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const Apartment_List = require('./models/apartment_model');
+const { title } = require('process');
 
 dotenv.config();
 
@@ -16,21 +17,21 @@ const createTestApartment = async () => {
     try {
         // Read the image files
         const imageFiles = [
-            {
-                path: './assets/6fb95bdd3adbb4.jpg',
-                contentType: 'image/jpeg',
-                name: '6fb95bdd3adbb4.jpg'
-            },
+            // {
+            //     path: './assets/6fb95bdd3adbb4.jpg',
+            //     contentType: 'image/jpeg',
+            //     name: '6fb95bdd3adbb4.jpg'
+            // },
             {
                 path: './assets/39c5554e73ec00.jpg',
                 contentType: 'image/jpeg',
                 name: '39c5554e73ec00.jpg'
             },
-            {
-                path: './assets/Apartment-for-sale-in-Mirpur.jpg',
-                contentType: 'image/jpeg',
-                name: 'Apartment-for-sale-in-Mirpur.jpg'
-            }
+            // {
+            //     path: './assets/Apartment-for-sale-in-Mirpur.jpg',
+            //     contentType: 'image/jpeg',
+            //     name: 'Apartment-for-sale-in-Mirpur.jpg'
+            // }
         ];
 
         // Read all images and convert to binary data
@@ -46,34 +47,35 @@ const createTestApartment = async () => {
 
         // Create a dummy apartment object
         const apartment = new Apartment_List({
+            title: "Luxurious Apartment in Banani",
             apartment_id: `APT${Date.now().toString().slice(-6)}`, // Generate unique ID
             posted_by: "test_user",
             location: {
-                address: "House 123, Road 7, Gulshan-2",
+                address: "House 123, Road 456, Banani",
                 geolocation: {
                     latitude: 23.8001,
                     longitude: 90.4132
                 },
-                area: "Gulshan"
+                area: "Banani"
             },
             bedrooms: {
-                total: 3,
+                total: 2,
                 available: 2,
-                rooms_for_rent: [1, 3]
+                rooms_for_rent: [1, 2]
             },
             bathrooms: {
-                total: 2,
+                total: 1,
                 common: 1
             },
             rent_type: {
                 full_apartment: false,
                 partial_rent: {
                     enabled: true,
-                    rooms_available: 2
+                    rooms_available: 1
                 }
             },
             rent: {
-                amount: 32000,
+                amount: 63000,
                 negotiable: true
             },
             utility_bill_included: true,
@@ -96,7 +98,7 @@ const createTestApartment = async () => {
                 furnished: true,
                 size: 1500,
                 balcony: true,
-                more_details: "Luxurious apartment in prime location with great view. Walking distance to shops, restaurants, and parks."
+                more_details: "One of the best houses in Banani. Iftikhr Zakir onces stayed as a guest in this flat. Do not miss this"
             },
             tenancy_preferences: {
                 preferred_tenants: 2,

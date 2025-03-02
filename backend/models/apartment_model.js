@@ -16,6 +16,10 @@ const ImageSchema = new Schema({
 });
 
 const ApartmentSchema = new Schema({
+    title: {
+        type: String,
+        required: true
+    },
     apartment_id: {
         type: String,
         required: true,

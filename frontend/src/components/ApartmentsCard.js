@@ -46,13 +46,13 @@ const ApartmentCard = ({ apartment }) => {
             />
             <CardContent>
                 <Typography variant="h6" component="h3" className="apartment-title">
-                    {apartment.location.address}
+                    {apartment.title}
                 </Typography>
 
                 <Box className="apartment-location">
                     <LocationOnIcon fontSize="small" />
                     <Typography variant="body2">
-                        {apartment.location.area}
+                        {apartment.location.address}
                     </Typography>
                 </Box>
 

@@ -84,12 +84,12 @@ const ApartmentPage = () => {
     return (
         <>
             <AppSidebar />
-            <Box className="content apartment-content">
-                <Typography variant="h4" component="h1" className="page-title">
+            <Box className="content apartment-content" display="flex" justifyContent="center" alignItems="center" flexDirection="column" mb={6}>
+                <Typography variant="h4" component="h1" className="page-title" mb={6}>
                     Apartments for Rent
                 </Typography>
 
-                <Box className="main-container">
+                <Box className="main-container" width="100%" maxWidth="1200px" mb={4}>
                     {/* Filter Section */}
                     <ApartmentFilters
                         filters={filters}
@@ -98,11 +98,11 @@ const ApartmentPage = () => {
 
                     {/* Apartment Listings */}
                     {loading ? (
-                        <Box className="loading-container">
+                        <Box className="loading-container" mb={4}>
                             <CircularProgress style={{ color: '#2d4f8f' }} />
                         </Box>
                     ) : error ? (
-                        <Alert severity="error" className="error-alert">
+                        <Alert severity="error" className="error-alert" mb={4}>
                             {error}
                         </Alert>
                     ) : (
