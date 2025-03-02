@@ -15,7 +15,7 @@ const ApartmentsList = ({ apartments }) => {
 
     return (
         <Box className="listings-section">
-            <Grid container spacing={3} direction="column">
+            <Grid container spacing={1}>  {/* Reduced spacing to 1 */}
                 {apartments.map((apartment) => (
                     <Grid item xs={12} key={apartment._id || apartment.apartment_id}>
                         <ApartmentCard apartment={apartment} />

@@ -3,7 +3,6 @@ import {
     Card,
     CardMedia,
     CardContent,
-    CardActions,
     Typography,
     Box,
     Button,
@@ -65,69 +64,67 @@ const ApartmentCard = ({ apartment }) => {
         }) : 'Not specified';
 
     return (
-        <Card className="apartment-card-horizontal">
-            <Grid container>
-                <Grid item xs={12} md={4} sx={{
-                    display: 'flex',
-                    position: 'relative',
-                    overflow: 'hidden',
-                    minHeight: { xs: 'auto', md: 'inherit' }
-                }}>
-                    <CardMedia
-                        component="img"
-                        sx={{
-                            position: 'absolute',
-                            top: 0,
-                            left: 0,
-                            width: '100%',
-                            height: '100%',
-                            objectFit: 'cover',
-                            objectPosition: 'center'
-                        }}
-                        image={getFirstImageUrl()}
-                        alt={apartment.title}
-                    />
+        <Card className="apartment-card-horizontal" sx={{ height: 'auto', mb: 2 }}>
+            <Grid container sx={{ height: '100%' }}>
+                <Grid item xs={12} md={4}>
+                    <Box sx={{
+                        height: { xs: '200px', md: '230px' },
+                        width: '100%',
+                        overflow: 'hidden'
+                    }}>
+                        <CardMedia
+                            component="img"
+                            sx={{
+                                width: '100%',
+                                height: '100%',
+                                objectFit: 'cover',
+                                objectPosition: 'center'
+                            }}
+                            image={getFirstImageUrl()}
+                            alt={apartment.title}
+                        />
+                    </Box>
                 </Grid>
 
                 <Grid item xs={12} md={8}>
-                    <CardContent sx={{ p: 2 }}> {/* Reduced padding */}
+                    <CardContent sx={{ p: 2 }}>
                         <Box>
                             <Typography variant="h5" component="h3" className="apartment-title" gutterBottom>
                                 {apartment.title}
                             </Typography>
 
                             <Box className="apartment-location" sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                                <LocationOnIcon sx={{ mt: 0.3, mr: 1, color: '#2d4f8f' }} />
+                                <LocationOnIcon sx={{ mr: 1, color: '#2d4f8f' }} />
                                 <Typography variant="body1">
                                     {apartment.location.address}
                                 </Typography>
                             </Box>
 
-                            <Divider sx={{ my: 1 }} /> {/* Reduced margin */}
+                            <Divider sx={{ my: 1 }} />
 
                             <Typography variant="body2" color="text.secondary" className="apartment-description"
                                 sx={{
-                                    mb: 1, // Reduced margin
-                                    minHeight: '40px', // Reduced height
-                                    maxHeight: '60px', // Reduced height
+                                    mb: 1,
+                                    minHeight: '40px',
+                                    maxHeight: '60px',
                                     overflow: 'hidden',
                                     textOverflow: 'ellipsis',
                                     display: '-webkit-box',
-                                    WebkitLineClamp: 2, // Reduced to 2 lines from 3
+                                    WebkitLineClamp: 2,
                                     WebkitBoxOrient: 'vertical'
                                 }}>
                                 {description}
                             </Typography>
 
-                            <Divider sx={{ my: 1 }} /> {/* Reduced margin */}
+                            <Divider sx={{ my: 1 }} />
                         </Box>
 
-                        <Grid container spacing={1}> {/* Reduced spacing */}
+                        <Grid container spacing={1}>
                             <Grid item xs={12} sm={8}>
                                 {/* Main details */}
                                 <Box className="price-section" sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
                                     <Typography variant="caption" color="text.secondary" sx={{ mr: 1 }}>Rent: </Typography>
-
+                                    <BdtIcon sx={{ color: '#2d4f8f' }} />
                                     <Typography variant="h6" component="span" sx={{ ml: 0.5, display: 'flex', alignItems: 'center' }}>
                                         {apartment.rent.amount.toLocaleString()} BDT
                                         {apartment.rent.negotiable &&
@@ -139,7 +136,6 @@ const ApartmentCard = ({ apartment }) => {
                                 </Box>
 
                                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 1 }}>
-                                    {/* Full apartment chip with clearly visible icon */}
                                     {apartment.rent_type.full_apartment ? (
                                         <Chip
                                             avatar={
@@ -186,9 +182,8 @@ const ApartmentCard = ({ apartment }) => {
                                         />
                                     )}
 
-                                    {/* Listing date */}
                                     <Chip
-                                        icon={<CalendarTodayIcon sx={{ fontSize: 8 }} />}
+                                        icon={<CalendarTodayIcon />}
                                         label={`Listed: ${formattedDate}`}
                                         size="small"
                                         variant="outlined"
@@ -223,7 +218,6 @@ const ApartmentCard = ({ apartment }) => {
                                 alignItems: { xs: 'flex-start', sm: 'center' },
                                 mt: { xs: 2, sm: 0 }
                             }}>
-                                {/* View details button */}
                                 <Button
                                     variant="contained"
                                     size="medium"
