@@ -33,4 +33,20 @@ const add_apartment_test = async (req, res) => {
     }
 };
 
-module.exports = { get_all_apartments, add_apartment_test };
+
+const get_apartment_by_id = async (req, res) => {
+    try {
+        const apartment = await Apartment_List.findOne({ apartment_id: req.params.apartmentId });
+
+        if (!apartment) {
+            return res.status(404).json({ message: 'Apartment not found' });
+        }
+
+        res.json(apartment);
+    } catch (err) {
+        console.error('Error fetching apartment details:', err);
+        res.status(500).json({ message: err.message });
+    }
+};
+
+module.exports = { get_all_apartments, add_apartment_test, get_apartment_by_id };

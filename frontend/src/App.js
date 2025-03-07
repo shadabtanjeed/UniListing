@@ -4,6 +4,7 @@ import LoginPage from './pages/LoginPage';
 import WelcomePage from './pages/WelcomePage';
 import ProtectedRoute from './components/ProtectedRoute';
 import ApartmentPage from './pages/ApartmentsPage';
+import ApartmentDetailsPage from './pages/ApartmentDetailsPage';
 
 function App() {
   return (
@@ -18,6 +19,11 @@ function App() {
         <Route path="/view-apartments" element={
           <ProtectedRoute>
             <ApartmentPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/apartment/:apartmentId" element={
+          <ProtectedRoute>
+            <ApartmentDetailsPage />
           </ProtectedRoute>
         } />
         <Route path="*" element={

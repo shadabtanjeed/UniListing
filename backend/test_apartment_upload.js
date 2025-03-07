@@ -17,21 +17,21 @@ const createTestApartment = async () => {
     try {
         // Read the image files
         const imageFiles = [
-            // {
-            //     path: './assets/6fb95bdd3adbb4.jpg',
-            //     contentType: 'image/jpeg',
-            //     name: '6fb95bdd3adbb4.jpg'
-            // },
+            {
+                path: './assets/6fb95bdd3adbb4.jpg',
+                contentType: 'image/jpeg',
+                name: '6fb95bdd3adbb4.jpg'
+            },
             {
                 path: './assets/39c5554e73ec00.jpg',
                 contentType: 'image/jpeg',
                 name: '39c5554e73ec00.jpg'
             },
-            // {
-            //     path: './assets/Apartment-for-sale-in-Mirpur.jpg',
-            //     contentType: 'image/jpeg',
-            //     name: 'Apartment-for-sale-in-Mirpur.jpg'
-            // }
+            {
+                path: './assets/Apartment-for-sale-in-Mirpur.jpg',
+                contentType: 'image/jpeg',
+                name: 'Apartment-for-sale-in-Mirpur.jpg'
+            }
         ];
 
         // Read all images and convert to binary data
@@ -47,35 +47,35 @@ const createTestApartment = async () => {
 
         // Create a dummy apartment object
         const apartment = new Apartment_List({
-            title: "Luxurious Apartment in Banani",
+            title: "3 bed apartment for rent in Lalmatia",
             apartment_id: `APT${Date.now().toString().slice(-6)}`, // Generate unique ID
-            posted_by: "test_user",
+            posted_by: "halum",
             location: {
-                address: "House 123, Road 456, Banani",
+                address: "Doyel Tower, Block: B, Lalmatiar, Dhaka",
                 geolocation: {
                     latitude: 23.8001,
                     longitude: 90.4132
                 },
-                area: "Banani"
+                area: "Mohammadpur",
             },
             bedrooms: {
-                total: 2,
-                available: 2,
-                rooms_for_rent: [1, 2]
+                total: 3,
+                available: 3,
+                rooms_for_rent: [1, 2, 3]
             },
             bathrooms: {
-                total: 1,
+                total: 4,
                 common: 1
             },
             rent_type: {
-                full_apartment: false,
+                full_apartment: true,
                 partial_rent: {
-                    enabled: true,
-                    rooms_available: 1
+                    enabled: false,
+                    rooms_available: 3
                 }
             },
             rent: {
-                amount: 63000,
+                amount: 33000,
                 negotiable: true
             },
             utility_bill_included: true,
@@ -88,7 +88,7 @@ const createTestApartment = async () => {
             },
             images: images, // Add the images we read
             contact_info: {
-                name: "Test User",
+                name: "Shadab Tanjeed",
                 phone: "01712345678",
                 email: "testuser@example.com"
             },
@@ -98,7 +98,7 @@ const createTestApartment = async () => {
                 furnished: true,
                 size: 1500,
                 balcony: true,
-                more_details: "One of the best houses in Banani. Iftikhr Zakir onces stayed as a guest in this flat. Do not miss this"
+                more_details: "Lalmatia, home to Shadab Tanjeed. If you want to live in identity crisis thinking whether you are in Mohammadpur or Dhanmondi, this is the place for you. You get both of these worlds in one place. Everything is like super close from here"
             },
             tenancy_preferences: {
                 preferred_tenants: 2,
