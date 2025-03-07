@@ -18,20 +18,25 @@ const createTestApartment = async () => {
         // Read the image files
         const imageFiles = [
             {
-                path: './assets/6fb95bdd3adbb4.jpg',
+                path: './assets/la_1.jpeg',
                 contentType: 'image/jpeg',
                 name: '6fb95bdd3adbb4.jpg'
             },
             {
-                path: './assets/39c5554e73ec00.jpg',
+                path: './assets/la_2.jpg',
                 contentType: 'image/jpeg',
                 name: '39c5554e73ec00.jpg'
             },
             {
-                path: './assets/Apartment-for-sale-in-Mirpur.jpg',
+                path: './assets/la_3.jpg',
                 contentType: 'image/jpeg',
                 name: 'Apartment-for-sale-in-Mirpur.jpg'
-            }
+            },
+            {
+                path: './assets/la_4.jpeg',
+                contentType: 'image/jpeg',
+                name: 'Apartment-for-sale-in-Mirpur.jpg'
+            },
         ];
 
         // Read all images and convert to binary data
@@ -47,70 +52,74 @@ const createTestApartment = async () => {
 
         // Create a dummy apartment object
         const apartment = new Apartment_List({
-            title: "3 bed apartment for rent in Lalmatia",
+            title: "Duplex House for rent in Tejgaon",
             apartment_id: `APT${Date.now().toString().slice(-6)}`, // Generate unique ID
-            posted_by: "halum",
+            posted_by: "Shadab Tanjeed",
             location: {
-                address: "Doyel Tower, Block: B, Lalmatiar, Dhaka",
+                address: "3/4, Maisun Mansion, Tejgaon, Dhaka",
                 geolocation: {
                     latitude: 23.8001,
                     longitude: 90.4132
                 },
-                area: "Mohammadpur",
+                area: "Tejgaon",
             },
             bedrooms: {
-                total: 3,
-                available: 3,
-                rooms_for_rent: [1, 2, 3]
+                total: 8,
+                available: 8,
+                rooms_for_rent: [1, 2, 3, 4, 5, 6, 7, 8]
             },
             bathrooms: {
-                total: 4,
-                common: 1
+                total: 12,
+                common: 10
             },
             rent_type: {
                 full_apartment: true,
                 partial_rent: {
                     enabled: false,
-                    rooms_available: 3
+                    rooms_available: 8
                 }
             },
             rent: {
-                amount: 33000,
+                amount: 530000,
                 negotiable: true
             },
-            utility_bill_included: true,
+            utility_bill_included: false,
             amenities: {
                 gas: true,
-                lift: true,
+                lift: false,
                 generator: true,
                 parking: true,
-                security: true
+                security: false
             },
             images: images, // Add the images we read
             contact_info: {
                 name: "Shadab Tanjeed",
                 phone: "01712345678",
-                email: "testuser@example.com"
+                email: "shadabtanjeed@example.com"
             },
             listing_date: new Date().toISOString().split('T')[0],
             status: "available",
             optional_details: {
-                furnished: true,
-                size: 1500,
+                furnished: false,
+                size: 12589,
                 balcony: true,
-                more_details: "Lalmatia, home to Shadab Tanjeed. If you want to live in identity crisis thinking whether you are in Mohammadpur or Dhanmondi, this is the place for you. You get both of these worlds in one place. Everything is like super close from here"
+                more_details: "Super luxurious duplex house with 8 bedrooms, 12 bathrooms, 3 kitchens, 2 living rooms, 2 dining rooms, 2 servant rooms, 2 parking spaces, and a rooftop garden. From your bedroom, you can see the beautiful Hatirjheel lake. The house is located in a quiet residential area, close to the main road and shopping centers."
             },
             tenancy_preferences: {
-                preferred_tenants: 2,
+                preferred_tenants: 3,
                 preferred_dept: ["CSE", "EEE"],
                 preferred_semester: ["6th", "7th", "8th"]
             },
             current_tenants: {
-                total: 1,
+                total: 2,
                 details: [
                     {
                         department: "BBA",
                         semester: "7th"
+                    },
+                    {
+                        department: "CSE",
+                        semester: "8th"
                     }
                 ]
             },
