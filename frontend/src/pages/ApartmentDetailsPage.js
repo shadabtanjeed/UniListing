@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, Suspense } from 'react';
 import { useParams } from 'react-router-dom';
 import {
     Box,
@@ -17,9 +17,8 @@ import {
     Tab,
 } from '@mui/material';
 import AppSidebar from '../components/Sidebar';
-import '../styles/ApartmentDetails.css';
 
-// Icons import
+// Icons
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import BedIcon from '@mui/icons-material/Bed';
 import MeetingRoomIcon from '@mui/icons-material/MeetingRoom';
@@ -43,6 +42,13 @@ import WeekendIcon from '@mui/icons-material/Weekend';
 import LocationCityIcon from '@mui/icons-material/LocationCity';
 import SchoolIcon from '@mui/icons-material/School';
 import GroupIcon from '@mui/icons-material/Group';
+
+// Styles
+import '../styles/ApartmentDetails.css';
+
+// Lazy loaded components
+const ApartmentLocationMap = React.lazy(() => import('../components/ApartmentLocationMap'));
+
 
 // Image Carousel Component
 const ImageCarousel = ({ images }) => {
@@ -425,6 +431,11 @@ const AdditionalDetails = ({ apartment }) => {
 
 // Location Section
 const Location = ({ apartment }) => {
+    // Extract coordinates from the apartment data
+    const position = apartment.location.geolocation ?
+        [apartment.location.geolocation.latitude, apartment.location.geolocation.longitude] :
+        [23.7937, 90.4066]; // Default to some Dhaka coordinates if not available
+
     return (
         <Box id="location-section" className="detail-section">
             <Box className="section-header">
@@ -433,17 +444,32 @@ const Location = ({ apartment }) => {
             </Box>
 
             <Box sx={{ mt: 2 }}>
-                <Paper className="map-placeholder" elevation={1}>
-                    <Typography variant="body1" align="center" color="textSecondary">
-                        Google Maps will be implemented here
-                    </Typography>
-                    <Typography variant="body2" align="center">
-                        Area: {apartment.location.area}
-                    </Typography>
-                    <Typography variant="body2" align="center">
-                        Address: {apartment.location.address}
-                    </Typography>
-                </Paper>
+                {/* Address information */}
+                <Typography variant="body1" sx={{ mb: 2 }}>
+                    <strong>Area:</strong> {apartment.location.area}
+                </Typography>
+                <Typography variant="body1" sx={{ mb: 2 }}>
+                    <strong>Address:</strong> {apartment.location.address}
+                </Typography>
+
+                {/* Map container */}
+                <Box
+                    sx={{
+                        height: '400px',
+                        width: '100%',
+                        border: '1px solid #eee',
+                        borderRadius: '8px',
+                        overflow: 'hidden'
+                    }}
+                >
+                    <React.Suspense fallback={
+                        <Box display="flex" justifyContent="center" alignItems="center" height="100%">
+                            <CircularProgress />
+                        </Box>
+                    }>
+                        <ApartmentLocationMap position={position} address={apartment.location.address} />
+                    </React.Suspense>
+                </Box>
             </Box>
         </Box>
     );
