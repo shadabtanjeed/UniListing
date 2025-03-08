@@ -1,9 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
-const ApartmentListing = require('../models/apartment_model');
-
-const { get_all_apartments, add_apartment_test } = require('../controllers/apartmentController');
+const { get_all_apartments, add_apartment_test, add_apartment } = require('../controllers/apartmentController');
 
 // Configure multer for memory storage
 const upload = multer({
@@ -16,6 +14,6 @@ const upload = multer({
 // Get all apartments
 router.get('/all_apartments', get_all_apartments);
 router.post('/add_apartment_test', add_apartment_test);
-
+router.post('/add_apartment', upload.array('images'), add_apartment);
 
 module.exports = router;
