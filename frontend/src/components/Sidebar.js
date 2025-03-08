@@ -108,7 +108,7 @@ const AppSidebar = () => {
                                 </Link>
                             </li>
                             <li className="list">
-                                <Link to="/add-apartment" className="nav-link">
+                                <Link to="/add-apartments" className="nav-link">
                                     <i className="bx bx-plus-circle icon"></i>
                                     <span className="link">Add New Apartment</span>
                                 </Link>
