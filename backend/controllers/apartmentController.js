@@ -33,4 +33,17 @@ const add_apartment_test = async (req, res) => {
     }
 };
 
-module.exports = { get_all_apartments, add_apartment_test };
+const add_apartment = async (req, res) => {
+    const apartmentData = req.body;
+
+    const apartment = new Apartment_List(apartmentData);
+
+    try {
+        const newApartment = await apartment.save();
+        res.status(201).json(newApartment);
+    } catch (err) {
+        res.status(400).json({ message: err.message });
+    }
+};
+
+module.exports = { get_all_apartments, add_apartment_test, add_apartment };
