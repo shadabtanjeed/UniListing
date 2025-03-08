@@ -6,6 +6,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import ApartmentPage from './pages/ApartmentsPage';
 import AddApartmentPage from './pages/AddApartmentPage';
 
+
 function App() {
   return (
     <Router>
@@ -26,6 +27,7 @@ function App() {
             <AddApartmentPage />
           </ProtectedRoute>
         } />
+
         <Route path="*" element={
           <ProtectedRoute>
             <WelcomePage />

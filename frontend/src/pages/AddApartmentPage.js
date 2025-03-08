@@ -42,7 +42,7 @@ function AddApartmentPage() {
 
     const handleCheckboxChange = (e) => {
         const { name, checked } = e.target;
-    
+
         // Ensure that only one rent type checkbox is selected at a time
         if (name === "rent_type.full_apartment") {
             setApartmentData(prev => ({
@@ -58,12 +58,12 @@ function AddApartmentPage() {
             setApartmentData({ ...apartmentData, [name]: checked });
         }
     };
-    
+
 
 
     const handleImageUpload = (e) => {
         const files = Array.from(e.target.files).filter(file => file.type.startsWith('image/'));
-    
+
         const readFiles = files.map(file => {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
@@ -71,22 +71,26 @@ function AddApartmentPage() {
                 reader.onloadend = () => {
                     resolve({
                         contentType: file.type,
+                        name: file.name,
                         data: reader.result.split(',')[1] // Extract Base64 part
                     });
                 };
                 reader.onerror = reject;
             });
         });
-    
-        Promise.all(readFiles).then(images => {
-            setApartmentData(prev => ({ ...prev, images }));
-        }).catch(error => console.error("Error processing images:", error));
+
+        Promise.all(readFiles)
+            .then(images => {
+                setApartmentData(prev => ({ ...prev, images }));
+                console.log("Images processed successfully:", images.length);
+            })
+            .catch(error => console.error("Error processing images:", error));
     };
-    
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-    
+
         // Convert numeric values to numbers
         const dataToSend = {
             ...apartmentData,
@@ -122,7 +126,7 @@ function AddApartmentPage() {
             },
             status: apartmentData.status || 'available',  // Ensure valid status
         };
-    
+
         // Send the request
         fetch('http://localhost:5000/api/apartments/add_apartment', {
             method: 'POST',
@@ -131,22 +135,22 @@ function AddApartmentPage() {
             },
             body: JSON.stringify(dataToSend),
         })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Failed to add apartment');
-            }
-            return response.json();
-        })
-        .then(data => {
-            console.log('Apartment added:', data);
-            navigate('/view-apartments');
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Failed to add apartment');
-        });
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to add apartment');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Apartment added:', data);
+                navigate('/view-apartments');
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to add apartment');
+            });
     };
-    
+
 
     return (
         <>

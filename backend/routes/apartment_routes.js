@@ -13,7 +13,11 @@ const upload = multer({
 
 // Get all apartments
 router.get('/all_apartments', get_all_apartments);
+
+
+
+// Add apartment routes
 router.post('/add_apartment_test', add_apartment_test);
-router.post('/add_apartment', upload.array('images'), add_apartment);
+router.post('/add_apartment', add_apartment);
 
 module.exports = router;
