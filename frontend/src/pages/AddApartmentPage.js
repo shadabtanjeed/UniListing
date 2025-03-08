@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { TextField, Button, MenuItem, FormControlLabel, Checkbox, Input } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 import AppSidebar from '../components/Sidebar';
 import '../styles/AddApartmentPage.css';
 import { v4 as uuidv4 } from 'uuid';
@@ -8,6 +9,7 @@ const departments = ['CSE', 'EEE', 'MPE', 'BTM', 'CEE'];
 const semesters = ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th'];
 
 function AddApartmentPage() {
+    const navigate = useNavigate();
     const generateApartmentId = () => `APT${uuidv4().slice(0, 6)}`;
 
     const [apartmentData, setApartmentData] = useState({
@@ -137,7 +139,7 @@ function AddApartmentPage() {
         })
         .then(data => {
             console.log('Apartment added:', data);
-            // handle success here
+            navigate('/view-apartments');
         })
         .catch(error => {
             console.error('Error:', error);
