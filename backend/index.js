@@ -15,7 +15,10 @@ app.use(cors({
     origin: 'http://localhost:3000', // Replace with your frontend URL
     credentials: true // Allow credentials (cookies) to be sent
 }));
-app.use(bodyParser.json());
+
+// Increase the payload size limit
+app.use(bodyParser.json({ limit: '10mb' })); // Adjust '10mb' as needed
+app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
 
 // Configure session management
 app.use(session({
