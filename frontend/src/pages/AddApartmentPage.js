@@ -163,11 +163,53 @@ function AddApartmentPage() {
                         <TextField fullWidth label="Area" name="location.area" onChange={handleChange} required />
                         <TextField fullWidth label="Latitude" name="location.geolocation.latitude" onChange={handleChange} />
                         <TextField fullWidth label="Longitude" name="location.geolocation.longitude" onChange={handleChange} />
-                        <TextField fullWidth label="Total Bedrooms" name="bedrooms.total" type="number" onChange={handleChange} required />
-                        <TextField fullWidth label="Available Bedrooms" name="bedrooms.available" type="number" onChange={handleChange} required inputProps={{ max: apartmentData.bedrooms.total }} />
-                        <TextField fullWidth label="Rooms for Rent" name="bedrooms.rooms_for_rent" type="number" onChange={handleChange} inputProps={{ max: apartmentData.bedrooms.available }} />
-                        <TextField fullWidth label="Total Bathrooms" name="bathrooms.total" type="number" onChange={handleChange} required />
-                        <TextField fullWidth label="Common Bathrooms" name="bathrooms.common" type="number" onChange={handleChange} required inputProps={{ max: apartmentData.bathrooms.total }} />
+                        <TextField
+                            fullWidth
+                            label="Total Bedrooms"
+                            name="bedrooms.total"
+                            type="number"
+                            onChange={handleChange}
+                            onWheel={(e) => e.target.blur()} // Prevent mouse wheel scrolling
+                            required
+                        />
+                        <TextField
+                            fullWidth
+                            label="Available Bedrooms"
+                            name="bedrooms.available"
+                            type="number"
+                            onChange={handleChange}
+                            onWheel={(e) => e.target.blur()} // Prevent mouse wheel scrolling
+                            required
+                            inputProps={{ max: apartmentData.bedrooms.total }}
+                        />
+                        <TextField
+                            fullWidth
+                            label="Rooms for Rent"
+                            name="bedrooms.rooms_for_rent"
+                            type="number"
+                            onChange={handleChange}
+                            onWheel={(e) => e.target.blur()} // Prevent mouse wheel scrolling
+                            inputProps={{ max: apartmentData.bedrooms.available }}
+                        />
+                        <TextField
+                            fullWidth
+                            label="Total Bathrooms"
+                            name="bathrooms.total"
+                            type="number"
+                            onChange={handleChange}
+                            onWheel={(e) => e.target.blur()} // Prevent mouse wheel scrolling
+                            required
+                        />
+                        <TextField
+                            fullWidth
+                            label="Common Bathrooms"
+                            name="bathrooms.common"
+                            type="number"
+                            onChange={handleChange}
+                            onWheel={(e) => e.target.blur()} // Prevent mouse wheel scrolling
+                            required
+                            inputProps={{ max: apartmentData.bathrooms.total }}
+                        />
 
                         <FormControlLabel
                             control={<Checkbox
@@ -187,7 +229,15 @@ function AddApartmentPage() {
                         />
 
 
-                        <TextField fullWidth label="Rent Amount" name="rent.amount" type="number" onChange={handleChange} required />
+                        <TextField
+                            fullWidth
+                            label="Rent Amount"
+                            name="rent.amount"
+                            type="number"
+                            onChange={handleChange}
+                            onWheel={(e) => e.target.blur()} // Prevent mouse wheel scrolling
+                            required
+                        />
                         <FormControlLabel control={<Checkbox name="rent.negotiable" onChange={handleCheckboxChange} />} label="Negotiable" />
                         <FormControlLabel control={<Checkbox name="utility_bill_included" onChange={handleCheckboxChange} />} label="Utility Bill Included" />
 
