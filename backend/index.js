@@ -14,6 +14,10 @@ const mongoose = require('mongoose');
 
 mongoose.connect(process.env.mongodb_url);
 
+// Add or update the express middleware setup:
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
 // Configure CORS with updated settings for Socket.IO
 app.use(cors({
     origin: 'http://localhost:3000',

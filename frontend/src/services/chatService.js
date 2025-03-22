@@ -1,6 +1,6 @@
 const API_URL = 'http://localhost:5000/api/messages';
 
-// Get all conversations
+// Get all conversations for current user
 export const getConversations = async () => {
     try {
         const response = await fetch(`${API_URL}/conversations`, {
@@ -18,7 +18,7 @@ export const getConversations = async () => {
     }
 };
 
-// Get messages for a conversation
+// Get messages for a specific conversation
 export const getMessages = async (conversationId) => {
     try {
         const response = await fetch(`${API_URL}/conversations/${conversationId}`, {
@@ -36,20 +36,20 @@ export const getMessages = async (conversationId) => {
     }
 };
 
-// Send a message via REST API
-export const sendMessage = async (receiverUsername, text, conversationId = null) => {
+// Send a message
+export const sendMessage = async (receiver, text, conversationId = null) => {
     try {
         const response = await fetch(`${API_URL}/send`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
+                'Content-Type': 'application/json'
             },
             credentials: 'include',
             body: JSON.stringify({
-                receiver: receiverUsername,
+                receiver,
                 text,
                 conversationId
-            }),
+            })
         });
 
         if (!response.ok) {
@@ -83,17 +83,17 @@ export const markMessagesAsRead = async (conversationId) => {
 };
 
 // Create a new conversation
-export const createConversation = async (receiverUsername) => {
+export const createConversation = async (receiver) => {
     try {
         const response = await fetch(`${API_URL}/conversations`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
+                'Content-Type': 'application/json'
             },
             credentials: 'include',
             body: JSON.stringify({
-                receiver: receiverUsername
-            }),
+                receiver
+            })
         });
 
         if (!response.ok) {
@@ -106,8 +106,6 @@ export const createConversation = async (receiverUsername) => {
         throw error;
     }
 };
-
-// Add this function to the existing service
 
 // Search for users
 export const searchUsers = async (query) => {
@@ -125,4 +123,9 @@ export const searchUsers = async (query) => {
         console.error('Error searching users:', error);
         throw error;
     }
+};
+
+// Get image URL for a message - use absolute URL for images
+export const getImageUrl = (messageId) => {
+    return `http://localhost:5000/api/messages/image/${messageId}`;
 };

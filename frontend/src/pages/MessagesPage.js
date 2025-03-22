@@ -28,6 +28,8 @@ import SearchIcon from '@mui/icons-material/Search';
 import MessageIcon from '@mui/icons-material/Message';
 import GroupIcon from '@mui/icons-material/Group';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import ImageIcon from '@mui/icons-material/Image';
+import CancelIcon from '@mui/icons-material/Cancel';
 import '../styles/MessagesPageStyle.css';
 
 // Import socket and chat services
@@ -38,7 +40,8 @@ import {
   sendMessage as sendMessageApi,
   markMessagesAsRead,
   createConversation,
-  searchUsers
+  searchUsers,
+  getImageUrl
 } from '../services/chatService';
 
 // Avatar component that uses initials
@@ -121,9 +124,13 @@ const MessagesPage = () => {
   const [searchMode, setSearchMode] = useState('conversations'); // 'conversations' or 'users'
   const [searchResults, setSearchResults] = useState([]);
   const [searchLoading, setSearchLoading] = useState(false);
+  // New state variables for image handling
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
   const messagesEndRef = useRef(null);
   const typingTimeoutRef = useRef(null);
   const searchTimeoutRef = useRef(null);
+  const fileInputRef = useRef(null);
 
   // Filter conversations based on search query (only in conversations mode)
   const filteredConversations = searchMode === 'conversations'
@@ -224,6 +231,47 @@ const MessagesPage = () => {
     }
   };
 
+  // Handle image file selection
+  const handleImageSelect = (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // Check file type
+    if (!file.type.match('image.*')) {
+      setError('Please select an image file (PNG, JPG, GIF)');
+      return;
+    }
+
+    // Check file size (5MB max)
+    if (file.size > 5 * 1024 * 1024) {
+      setError('Image size should be less than 5MB');
+      return;
+    }
+
+    setSelectedImage(file);
+
+    // Create image preview
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setImagePreview(e.target.result);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  // Handle removing the selected image
+  const handleRemoveImage = () => {
+    setSelectedImage(null);
+    setImagePreview(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  // Trigger the hidden file input
+  const handleAttachClick = () => {
+    fileInputRef.current.click();
+  };
+
   // Initialize and get current user
   useEffect(() => {
     const fetchCurrentUser = async () => {
@@ -263,12 +311,25 @@ const MessagesPage = () => {
     socket.on('new_message', (message) => {
       // If this message is for the current conversation, add it
       if (selectedChat && message.conversationId === selectedChat.id) {
-        setMessages(prev => [...prev, {
+        const formattedMessage = {
           id: message._id,
           sender: message.sender === currentUsername ? 'me' : 'other',
           text: message.text,
-          timestamp: message.timestamp
-        }]);
+          timestamp: message.timestamp,
+          hasImage: message.hasImage
+        };
+
+        if (message.hasImage && message.image) {
+          formattedMessage.image = {
+            ...message.image,
+            url: message.image.url.startsWith('http')
+              ? message.image.url
+              : getImageUrl(message._id)
+          };
+          console.log("New message with image:", formattedMessage.image.url);
+        }
+
+        setMessages(prev => [...prev, formattedMessage]);
       }
 
       // Update conversation list
@@ -289,7 +350,7 @@ const MessagesPage = () => {
           }
 
           // Update last message and timestamp
-          conv.lastMessage = message.text;
+          conv.lastMessage = message.hasImage ? '📷 Image' : message.text;
           conv.timestamp = message.timestamp;
 
           // Put this conversation at the top
@@ -302,7 +363,7 @@ const MessagesPage = () => {
           return [{
             id: message.conversationId,
             otherParticipant: message.sender,
-            lastMessage: message.text,
+            lastMessage: message.hasImage ? '📷 Image' : message.text,
             timestamp: message.timestamp,
             unread: 1,
             online: true // We'll update this with actual status
@@ -319,7 +380,7 @@ const MessagesPage = () => {
         setNotification({
           type: 'message',
           username: message.sender,
-          text: message.text
+          text: message.hasImage ? '📷 Image' : message.text
         });
       }
     });
@@ -396,13 +457,27 @@ const MessagesPage = () => {
       const data = await getMessages(conversationId);
 
       // Format messages
-      const formattedMessages = data.map(msg => ({
-        id: msg.id,
-        sender: msg.sender === currentUsername ? 'me' : 'other',
-        text: msg.text,
-        timestamp: msg.timestamp,
-        read: msg.read
-      }));
+      const formattedMessages = data.map(msg => {
+        const formatted = {
+          id: msg.id,
+          sender: msg.sender === currentUsername ? 'me' : 'other',
+          text: msg.text,
+          timestamp: msg.timestamp,
+          read: msg.read,
+          hasImage: msg.hasImage
+        };
+
+        // Make sure to properly set the image URL if there is an image
+        if (msg.hasImage && msg.image) {
+          formatted.image = {
+            ...msg.image,
+            url: msg.image.url.startsWith('http') ? msg.image.url : getImageUrl(msg.id)
+          };
+          console.log("Image URL for message:", msg.id, formatted.image.url);
+        }
+
+        return formatted;
+      });
 
       setMessages(formattedMessages);
 
@@ -461,20 +536,53 @@ const MessagesPage = () => {
   // Send a message
   const handleSendMessage = async (e) => {
     e.preventDefault();
-    if (newMessage.trim() === '' || !selectedChat || !currentUsername) return;
+    if ((!newMessage.trim() && !selectedImage) || !selectedChat || !currentUsername) return;
 
     try {
       // Use the socket to send the message
       const socket = getSocket();
+
+      let imageData = null;
+
+      // If we have an image, prepare it for sending
+      if (selectedImage) {
+        const reader = new FileReader();
+
+        // Convert image to base64
+        const imagePromise = new Promise((resolve, reject) => {
+          reader.onload = () => {
+            const base64data = reader.result;
+            const imageContentType = selectedImage.type;
+            const imageFileName = selectedImage.name;
+
+            // Extract the base64 data (remove the prefix)
+            const base64Content = base64data.split(',')[1];
+
+            resolve({
+              data: base64Content,
+              contentType: imageContentType,
+              fileName: imageFileName
+            });
+          };
+          reader.onerror = reject;
+          reader.readAsDataURL(selectedImage);
+        });
+
+        imageData = await imagePromise;
+      }
+
+      // Send the message with image if present
       socket.emit('send_message', {
         sender: currentUsername,
         receiver: selectedChat.otherParticipant,
         text: newMessage,
-        conversationId: selectedChat.id
+        conversationId: selectedChat.id,
+        image: imageData
       });
 
-      // Clear the message input
+      // Clear the message input and selected image
       setNewMessage('');
+      handleRemoveImage();
 
       // Clear typing indicator
       if (typingTimeoutRef.current) {
@@ -793,13 +901,41 @@ const MessagesPage = () => {
                                 sx={{
                                   display: 'flex',
                                   justifyContent: 'flex-end',
-                                  pr: 1
+                                  pr: 1,
+                                  flexDirection: 'column',
+                                  alignItems: 'flex-end'
                                 }}
                               >
                                 <Box sx={{ maxWidth: '70%' }}>
-                                  <MessageBubble sender="me">
-                                    {message.text}
-                                  </MessageBubble>
+                                  {message.text && (
+                                    <MessageBubble sender="me">
+                                      {message.text}
+                                    </MessageBubble>
+                                  )}
+
+                                  {message.hasImage && (
+                                    <Box sx={{
+                                      mt: message.text ? 1 : 0,
+                                      maxWidth: '300px',
+                                      borderRadius: '8px',
+                                      overflow: 'hidden'
+                                    }}>
+                                      <img
+                                        src={message.image.url}
+                                        alt="Message attachment"
+                                        style={{
+                                          width: '100%',
+                                          display: 'block'
+                                        }}
+                                        loading="lazy"
+                                        onError={(e) => {
+                                          console.error("Image failed to load:", message.image.url);
+                                          e.target.onerror = null; // Prevent infinite loops
+                                          e.target.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='200' viewBox='0 0 300 200'%3E%3Crect width='300' height='200' fill='%23f0f0f0'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dominant-baseline='middle' font-family='sans-serif' font-size='16' fill='%23999'%3EImage failed to load%3C/text%3E%3C/svg%3E";
+                                        }}
+                                      />
+                                    </Box>
+                                  )}
                                 </Box>
                               </Box>
                             </Box>
@@ -834,9 +970,30 @@ const MessagesPage = () => {
                                   />
                                 </Box>
                                 <Box sx={{ maxWidth: '70%' }}>
-                                  <MessageBubble sender="other">
-                                    {message.text}
-                                  </MessageBubble>
+                                  {message.text && (
+                                    <MessageBubble sender="other">
+                                      {message.text}
+                                    </MessageBubble>
+                                  )}
+
+                                  {message.hasImage && (
+                                    <Box sx={{
+                                      mt: message.text ? 1 : 0,
+                                      maxWidth: '300px',
+                                      borderRadius: '8px',
+                                      overflow: 'hidden'
+                                    }}>
+                                      <img
+                                        src={message.image.url}
+                                        alt="Message attachment"
+                                        style={{
+                                          width: '100%',
+                                          display: 'block'
+                                        }}
+                                        loading="lazy"
+                                      />
+                                    </Box>
+                                  )}
                                 </Box>
                               </Box>
                             </Box>
@@ -872,9 +1029,72 @@ const MessagesPage = () => {
                     )}
                   </Box>
 
+                  {/* Image preview area */}
+                  {imagePreview && (
+                    <Box
+                      sx={{
+                        p: 2,
+                        borderTop: '1px solid #eee',
+                        display: 'flex',
+                        alignItems: 'center',
+                        backgroundColor: '#f9f9f9'
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          position: 'relative',
+                          width: 100,
+                          height: 100,
+                          borderRadius: 1,
+                          overflow: 'hidden',
+                          mr: 2
+                        }}
+                      >
+                        <img
+                          src={imagePreview}
+                          alt="Preview"
+                          style={{
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'cover'
+                          }}
+                        />
+                        <IconButton
+                          size="small"
+                          sx={{
+                            position: 'absolute',
+                            top: 0,
+                            right: 0,
+                            backgroundColor: 'rgba(0,0,0,0.5)',
+                            color: 'white',
+                            '&:hover': {
+                              backgroundColor: 'rgba(0,0,0,0.7)',
+                            },
+                            p: 0.5
+                          }}
+                          onClick={handleRemoveImage}
+                        >
+                          <CancelIcon fontSize="small" />
+                        </IconButton>
+                      </Box>
+                      <Typography variant="body2" color="text.secondary">
+                        {selectedImage?.name}
+                      </Typography>
+                    </Box>
+                  )}
+
                   {/* Message input */}
                   <Box className="message-input-area">
                     <form onSubmit={handleSendMessage} className="message-form">
+                      {/* Hidden file input */}
+                      <input
+                        type="file"
+                        ref={fileInputRef}
+                        style={{ display: 'none' }}
+                        accept="image/*"
+                        onChange={handleImageSelect}
+                      />
+
                       <TextField
                         placeholder="Type a message..."
                         variant="outlined"
@@ -886,12 +1106,24 @@ const MessagesPage = () => {
                         }}
                         disabled={!currentUsername}
                         InputProps={{
+                          startAdornment: (
+                            <InputAdornment position="start">
+                              <IconButton
+                                color="primary"
+                                onClick={handleAttachClick}
+                                disabled={!currentUsername}
+                                size="small"
+                              >
+                                <ImageIcon />
+                              </IconButton>
+                            </InputAdornment>
+                          ),
                           endAdornment: (
                             <InputAdornment position="end">
                               <IconButton
                                 type="submit"
                                 color="primary"
-                                disabled={newMessage.trim() === '' || !currentUsername}
+                                disabled={(newMessage.trim() === '' && !selectedImage) || !currentUsername}
                               >
                                 <SendIcon />
                               </IconButton>

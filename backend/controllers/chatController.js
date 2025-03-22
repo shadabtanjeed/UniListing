@@ -1,6 +1,8 @@
 const Conversation = require('../models/conversation_model');
 const Message = require('../models/message_model');
 const User_Demo = require('../models/users_demo');
+const multer = require('multer');
+const path = require('path');
 
 // Store connected users
 const connectedUsers = new Map();
@@ -27,17 +29,18 @@ const setupSocket = (socket, io) => {
         console.log(`User ${username} authenticated with socket ${socket.id}`);
     });
 
-    // Handle new message
+    // Handle new message with image support
+    // Update the socket handler for send_message to properly handle images
     socket.on('send_message', async (messageData) => {
         try {
-            const { sender, receiver, text, conversationId } = messageData;
+            const { sender, receiver, text, conversationId, image } = messageData;
 
             // If no conversation ID, create a new conversation
             let convId = conversationId;
             if (!convId) {
                 const newConv = new Conversation({
                     participants: [sender, receiver],
-                    lastMessage: text,
+                    lastMessage: image ? '📷 Image' : text,
                     lastMessageTimestamp: new Date(),
                     unreadCount: new Map([[receiver, 1]])
                 });
@@ -56,7 +59,7 @@ const setupSocket = (socket, io) => {
             } else {
                 // Update existing conversation
                 await Conversation.findByIdAndUpdate(convId, {
-                    lastMessage: text,
+                    lastMessage: image ? '📷 Image' : text,
                     lastMessageTimestamp: new Date(),
                     $inc: { [`unreadCount.${receiver}`]: 1 }
                 });
@@ -67,25 +70,61 @@ const setupSocket = (socket, io) => {
                 conversationId: convId,
                 sender,
                 receiver,
-                text,
+                text: text || '',
+                hasImage: !!image,
                 timestamp: new Date(),
                 read: false
             });
 
+            // If there's an image, add it to the message
+            if (image) {
+                message.image = {
+                    data: Buffer.from(image.data, 'base64'),
+                    contentType: image.contentType,
+                    originalName: image.fileName
+                };
+            }
+
             const savedMessage = await message.save();
 
-            // Broadcast to the conversation room
-            io.to(convId.toString()).emit('new_message', {
+            // Create a modified version of the message to send to clients
+            // We don't want to send the full image data through socket.io
+            const messageForClient = {
                 ...savedMessage.toObject(),
+                _id: savedMessage._id, // Make sure we have the _id field
                 conversationId: convId
+            };
+
+            // If there's an image, replace the data with a URL
+            if (savedMessage.hasImage) {
+                // Use absolute URL for better compatibility
+                const host = socket.request.headers.host || 'localhost:5000';
+                const protocol = socket.request.headers['x-forwarded-proto'] || 'http';
+
+                messageForClient.image = {
+                    url: `${protocol}://${host}/api/messages/image/${savedMessage._id}`,
+                    contentType: savedMessage.image.contentType,
+                    originalName: savedMessage.image.originalName
+                };
+                delete messageForClient.image.data; // Don't send the binary data
+            }
+
+            // Debug the message
+            console.log('Sending message to clients:', {
+                id: messageForClient._id,
+                hasImage: messageForClient.hasImage,
+                imageUrl: messageForClient.hasImage ? messageForClient.image.url : null
             });
+
+            // Broadcast to the conversation room
+            io.to(convId.toString()).emit('new_message', messageForClient);
 
             // Send notification to receiver if online
             const receiverSocketId = connectedUsers.get(receiver);
             if (receiverSocketId) {
                 io.to(receiverSocketId).emit('message_notification', {
                     conversationId: convId,
-                    message: savedMessage,
+                    message: messageForClient,
                     sender
                 });
             }
@@ -95,6 +134,56 @@ const setupSocket = (socket, io) => {
             socket.emit('error', { message: 'Failed to send message' });
         }
     });
+
+    // Add the getMessageImage function to properly serve image data
+    const getMessageImage = async (req, res) => {
+        try {
+            const { messageId } = req.params;
+            const username = req.session.username;
+
+            if (!username) {
+                return res.status(401).json({ message: 'Not authenticated' });
+            }
+
+            console.log(`Fetching image for message ${messageId} by user ${username}`);
+
+            // Find the message
+            const message = await Message.findById(messageId);
+            if (!message) {
+                console.error('Message not found:', messageId);
+                return res.status(404).json({ message: 'Message not found' });
+            }
+
+            // Check if user is part of this conversation
+            const conversation = await Conversation.findById(message.conversationId);
+            if (!conversation) {
+                console.error('Conversation not found for message:', messageId);
+                return res.status(404).json({ message: 'Conversation not found' });
+            }
+
+            if (!conversation.participants.includes(username)) {
+                console.error('Access denied to image for user', username);
+                return res.status(403).json({ message: 'Access denied to this image' });
+            }
+
+            // Check if message has an image
+            if (!message.hasImage || !message.image || !message.image.data) {
+                console.error('No image data found for message:', messageId);
+                return res.status(404).json({ message: 'No image found' });
+            }
+
+            // Set content type and send image data
+            console.log('Serving image of type:', message.image.contentType);
+
+            res.set('Content-Type', message.image.contentType);
+            res.set('Cache-Control', 'public, max-age=31557600'); // Cache for a year
+            return res.send(message.image.data);
+
+        } catch (error) {
+            console.error('Error fetching image:', error);
+            res.status(500).json({ message: 'Server error' });
+        }
+    };
 
     // Handle typing indicator
     socket.on('typing', ({ conversationId, username, isTyping }) => {
@@ -154,7 +243,7 @@ const getUserConversations = async (req, res) => {
     }
 };
 
-// Get messages for a specific conversation
+// Update the getConversationMessages function to include proper image URLs
 const getConversationMessages = async (req, res) => {
     try {
         const { conversationId } = req.params;
@@ -175,13 +264,29 @@ const getConversationMessages = async (req, res) => {
             .sort({ timestamp: 1 });
 
         // Format messages for client
-        const formattedMessages = messages.map(msg => ({
-            id: msg._id,
-            sender: msg.sender,
-            text: msg.text,
-            timestamp: msg.timestamp,
-            read: msg.read
-        }));
+        const host = req.get('host') || 'localhost:5000';
+        const protocol = req.protocol || 'http';
+
+        const formattedMessages = messages.map(msg => {
+            const formattedMsg = {
+                id: msg._id,
+                sender: msg.sender,
+                text: msg.text,
+                timestamp: msg.timestamp,
+                read: msg.read,
+                hasImage: msg.hasImage
+            };
+
+            if (msg.hasImage) {
+                formattedMsg.image = {
+                    url: `${protocol}://${host}/api/messages/image/${msg._id}`,
+                    contentType: msg.image.contentType,
+                    originalName: msg.image.originalName
+                };
+            }
+
+            return formattedMsg;
+        });
 
         res.json(formattedMessages);
 
@@ -354,7 +459,44 @@ const searchUsers = async (req, res) => {
     }
 };
 
-// Add searchUsers to module.exports
+// Get image content
+const getMessageImage = async (req, res) => {
+    try {
+        const { messageId } = req.params;
+        const username = req.session.username;
+
+        if (!username) {
+            return res.status(401).json({ message: 'Not authenticated' });
+        }
+
+        // Find the message
+        const message = await Message.findById(messageId);
+        if (!message) {
+            return res.status(404).json({ message: 'Message not found' });
+        }
+
+        // Check if user is part of this conversation
+        const conversation = await Conversation.findById(message.conversationId);
+        if (!conversation || !conversation.participants.includes(username)) {
+            return res.status(403).json({ message: 'Access denied to this image' });
+        }
+
+        // Check if message has an image
+        if (!message.hasImage || !message.image || !message.image.data) {
+            return res.status(404).json({ message: 'No image found' });
+        }
+
+        // Set content type and send image data
+        res.contentType(message.image.contentType);
+        res.send(message.image.data);
+
+    } catch (error) {
+        console.error('Error fetching image:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
+// Don't forget to include getMessageImage in the module.exports
 module.exports = {
     setupSocket,
     getUserConversations,
@@ -362,5 +504,6 @@ module.exports = {
     sendMessage,
     markAsRead,
     createConversation,
-    searchUsers
+    searchUsers,
+    getMessageImage
 };

@@ -17,7 +17,16 @@ const MessageSchema = new Schema({
   },
   text: {
     type: String,
-    required: true
+    default: ''
+  },
+  hasImage: {
+    type: Boolean,
+    default: false
+  },
+  image: {
+    data: Buffer,
+    contentType: String,
+    originalName: String
   },
   timestamp: {
     type: Date,

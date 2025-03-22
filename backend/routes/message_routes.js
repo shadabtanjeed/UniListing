@@ -8,8 +8,9 @@ router.get('/conversations/:conversationId', chatController.getConversationMessa
 router.post('/send', chatController.sendMessage);
 router.post('/read/:conversationId', chatController.markAsRead);
 router.post('/conversations', chatController.createConversation);
-
-// Add this new route
 router.get('/search-users', chatController.searchUsers);
+
+// Add a new route for fetching message images
+router.get('/image/:messageId', chatController.getMessageImage);
 
 module.exports = router;
