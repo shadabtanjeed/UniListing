@@ -8,6 +8,7 @@ import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import { MapContainer, TileLayer, Marker, useMapEvents, Popup, useMap } from 'react-leaflet';
 import MyLocationIcon from '@mui/icons-material/MyLocation';
+import axios from 'axios'; // Import axios for API calls
 
 // Fix for default marker icon in Leaflet
 delete L.Icon.Default.prototype._getIconUrl;
@@ -26,7 +27,7 @@ function AddApartmentPage() {
 
     const [apartmentData, setApartmentData] = useState({
         title: '',
-        posted_by: 'halum', // Replace 'halum' with the actual session user
+        posted_by: '', // Initially empty, will be set dynamically
         location: { address: '', geolocation: { latitude: 23.9475, longitude: 90.3792 }, area: '' }, // Default to IUT
         bedrooms: { total: '', available: '', rooms_for_rent: [] },
         bathrooms: { total: '', common: '' },
@@ -44,8 +45,29 @@ function AddApartmentPage() {
     });
 
     useEffect(() => {
+        // Fetch the username from the session
+        const fetchUsername = async () => {
+            try {
+                const response = await axios.get('http://localhost:5000/auth/session', {
+                    withCredentials: true // Include credentials (cookies)
+                });
+                setApartmentData(prev => ({
+                    ...prev,
+                    posted_by: response.data.username
+                }));
+                // console.log(response.data.username);
+            } catch (error) {
+                console.error('Error fetching username:', error);
+                if (error.response && error.response.status === 401) {
+                    // Redirect to login if not authenticated
+                    navigate('/login');
+                }
+            }
+        };
+
+        fetchUsername();
         setApartmentData(prev => ({ ...prev, apartment_id: generateApartmentId() }));
-    }, []);
+    }, [navigate]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
