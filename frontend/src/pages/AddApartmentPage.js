@@ -121,10 +121,9 @@ function AddApartmentPage() {
     const handleImageUpload = (e) => {
         const input = e.target; // Reference to the input element
         const files = Array.from(input.files).filter(file => file.type.startsWith('image/')); // Filter only image files
-
+    
         if (files.length === 0) {
             alert('Please upload only image files.');
-            input.value = ""; // Reset the input field
             return;
         }
     
@@ -134,9 +133,9 @@ function AddApartmentPage() {
                 reader.readAsDataURL(file);
                 reader.onloadend = () => {
                     resolve({
-                        contentType: file.type,
-                        name: file.name,
-                        data: reader.result.split(',')[1] // Extract Base64 part
+                        contentType: file.type, // MIME type (e.g., image/jpeg)
+                        name: file.name, // File name
+                        data: reader.result.split(',')[1] // Base64 data (without the prefix)
                     });
                 };
                 reader.onerror = reject;
@@ -144,9 +143,12 @@ function AddApartmentPage() {
         });
     
         Promise.all(readFiles)
-            .then(images => {
-                setApartmentData(prev => ({ ...prev, images })); // Update the state with image data
-                console.log("Images processed successfully:", images.length);
+            .then(newImages => {
+                setApartmentData(prev => ({
+                    ...prev,
+                    images: [...prev.images, ...newImages] // Append new images to the existing ones
+                }));
+                console.log("Images processed successfully:", newImages.length);
             })
             .catch(error => console.error("Error processing images:", error));
     };
@@ -155,8 +157,16 @@ function AddApartmentPage() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        // Transform the images array for the backend
+        const transformedImages = apartmentData.images.map(image => ({
+            data: image.data, // Base64 data (already without the prefix)
+            contentType: image.contentType, // MIME type (e.g., image/jpeg)
+            name: image.name // File name
+        }));
+
         const dataToSend = {
             ...apartmentData,
+            images: transformedImages, // Use the transformed images array
             location: {
                 ...apartmentData.location,
                 geolocation: {
@@ -496,8 +506,29 @@ function AddApartmentPage() {
                         <FormControlLabel control={<Checkbox name="amenities.parking" onChange={handleCheckboxChange} />} label="Parking" />
                         <FormControlLabel control={<Checkbox name="amenities.security" onChange={handleCheckboxChange} />} label="Security" />
 
-                        <Input type="file" inputProps={{ multiple: true, accept: 'image/*' }} onChange={handleImageUpload} />
-                        <div style={{ height: '400px', width: '100%', marginTop: '20px', position: 'relative' }}>
+                        <Input type="file" inputProps={{ multiple: true, accept: 'image/*' }} // Restrict to image files
+                                onChange={handleImageUpload}
+                            />
+
+                            {/* Thumbnails Section */}
+                            <div className="imageThumbnails">
+                                {apartmentData.images.map((image, index) => (
+                                    <img
+                                        key={index}
+                                        src={image} // Use the Base64 URL as the image source
+                                        alt={`Uploaded ${index + 1}`}
+                                        style={{
+                                            width: '100px',
+                                            height: '100px',
+                                            objectFit: 'cover',
+                                            margin: '5px',
+                                            borderRadius: '5px',
+                                            border: '1px solid #ccc'
+                                        }}
+                                    />
+                                ))}
+                            </div>
+                            <div style={{ height: '400px', width: '100%', marginTop: '20px', position: 'relative' }}>
                             <MapContainer
                                 center={[apartmentData.location.geolocation.latitude, apartmentData.location.geolocation.longitude]} // Default center
                                 zoom={17}
@@ -516,6 +547,34 @@ function AddApartmentPage() {
                                 <MoveToCurrentLocation setApartmentData={setApartmentData} />
                             </MapContainer>
                         </div>
+
+                        {/* Optional Size Field */}
+                        <TextField
+                            fullWidth
+                            label="Size (Square Feet)"
+                            name="optional_details.size"
+                            type="number"
+                            onChange={handleChange}
+                            onWheel={(e) => e.target.blur()} // Prevent mouse wheel scrolling
+                            onKeyDown={(e) => {
+                                if (['e', 'E', '+', '-'].includes(e.key)) {
+                                    e.preventDefault(); // Block invalid characters
+                                }
+                            }}
+                            inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }} // Restrict input to numbers
+                        />
+
+                        {/* Mandatory Details Field */}
+                        <TextField
+                            fullWidth
+                            label="Details (Description)"
+                            name="optional_details.more_details"
+                            multiline
+                            rows={4} // Allow multiple lines for the description
+                            onChange={handleChange}
+                            required // Make this field mandatory
+                        />
+
                         <Button className="sendButton" variant="contained" color="primary" type="submit">Add</Button>
                     </form>
                 </div>
