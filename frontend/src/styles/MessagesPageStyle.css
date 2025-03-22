@@ -85,12 +85,12 @@
 .message-content {
     display: flex;
     flex-direction: column;
-    max-width: 60%;
 }
 
 .message-time {
     margin-top: 4px;
-    align-self: flex-end;
+    font-size: 0.75rem;
+    color: rgba(0, 0, 0, 0.6);
 }
 
 .message-input-area {
@@ -110,6 +110,24 @@
     background-color: #f9f9f9;
     padding: 20px;
     height: 100%;
+}
+
+/* Message row styles */
+.message-row {
+    margin-bottom: 16px;
+    width: 100%;
+}
+
+/* Ensure proper alignment of messages */
+.messages-area {
+    padding: 20px 10px;
+}
+
+/* Ensure the avatar in messages is sized properly */
+.message-row .MuiAvatar-root {
+    width: 36px;
+    height: 36px;
+    font-size: 1rem;
 }
 
 /* Responsive adjustments */
@@ -141,6 +159,6 @@
     }
 
     .message-content {
-        max-width: 75%;
+        max-width: 85%;
     }
 }

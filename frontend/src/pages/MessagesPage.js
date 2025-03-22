@@ -26,7 +26,7 @@ import '../styles/MessagesPageStyle.css';
 const UserAvatar = ({ username, online }) => {
   // Get first letter of username
   const initial = username.charAt(0).toUpperCase();
-  
+
   // Generate a consistent color based on the username
   const stringToColor = (string) => {
     let hash = 0;
@@ -71,20 +71,23 @@ const UserAvatar = ({ username, online }) => {
   );
 };
 
-// Message bubble component
+// Message bubble component with improved wrapping
 const MessageBubble = styled(Paper)(({ theme, sender }) => ({
   padding: '10px 15px',
   borderRadius: sender === 'me' ? '18px 18px 0 18px' : '18px 18px 18px 0',
   backgroundColor: sender === 'me' ? '#2d4f8f' : '#f5f5f5',
   color: sender === 'me' ? 'white' : 'black',
-  maxWidth: '70%',
+  maxWidth: '100%',
   marginBottom: theme.spacing(1),
   boxShadow: 'none',
-  alignSelf: sender === 'me' ? 'flex-end' : 'flex-start',
+  wordWrap: 'break-word',
+  overflowWrap: 'break-word',
+  hyphens: 'auto',
+  whiteSpace: 'pre-wrap',
   position: 'relative',
 }));
 
-// Dummy chat data
+// Dummy chat data - includes both conversations and all users
 const dummyChats = [
   {
     id: 1,
@@ -126,6 +129,52 @@ const dummyChats = [
     unread: 1,
     online: true
   },
+  // Add users that don't have conversations yet
+  {
+    id: 6,
+    username: 'Tahsin Islam',
+    lastMessage: '',
+    timestamp: '',
+    unread: 0,
+    online: true,
+    noConversation: true
+  },
+  {
+    id: 7,
+    username: 'Safwan Sakib',
+    lastMessage: '',
+    timestamp: '',
+    unread: 0,
+    online: false,
+    noConversation: true
+  },
+  {
+    id: 8,
+    username: 'Ashrafi Mahmud',
+    lastMessage: '',
+    timestamp: '',
+    unread: 0,
+    online: true,
+    noConversation: true
+  },
+  {
+    id: 9,
+    username: 'Pranto Roy',
+    lastMessage: '',
+    timestamp: '',
+    unread: 0,
+    online: false,
+    noConversation: true
+  },
+  {
+    id: 10,
+    username: 'Farhan Abir',
+    lastMessage: '',
+    timestamp: '',
+    unread: 0,
+    online: true,
+    noConversation: true
+  },
 ];
 
 const dummyMessages = {
@@ -146,7 +195,16 @@ const dummyMessages = {
     { id: 2, sender: 'me', text: 'Yes, small pets are allowed.', timestamp: '2023-07-26T18:42:00' },
     { id: 3, sender: 'other', text: 'Great! When can I visit to see the place?', timestamp: '2023-07-26T18:45:00' },
   ],
-  // Add more conversations for other users
+  4: [
+    { id: 1, sender: 'other', text: 'How much is the rent?', timestamp: '2023-07-25T11:10:00' },
+    { id: 2, sender: 'me', text: 'The rent is 25,000 BDT per month including utilities.', timestamp: '2023-07-25T11:15:00' },
+    { id: 3, sender: 'other', text: 'Thanks for the information!', timestamp: '2023-07-25T11:20:00' },
+  ],
+  5: [
+    { id: 1, sender: 'other', text: 'Hi, I\'m interested in your apartment listing.', timestamp: '2023-07-24T16:00:00' },
+    { id: 2, sender: 'me', text: 'Hello! What would you like to know?', timestamp: '2023-07-24T16:02:00' },
+    { id: 3, sender: 'other', text: 'Is utilities included in the rent?', timestamp: '2023-07-24T16:05:00' },
+  ],
 };
 
 const MessagesPage = () => {
@@ -158,7 +216,7 @@ const MessagesPage = () => {
   const messagesEndRef = useRef(null);
 
   // Filter chats based on search query
-  const filteredChats = dummyChats.filter(chat => 
+  const filteredChats = dummyChats.filter(chat =>
     chat.username.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -182,34 +240,48 @@ const MessagesPage = () => {
   const handleSendMessage = (e) => {
     e.preventDefault();
     if (newMessage.trim() === '' || !selectedChat) return;
-    
+
     const newMsg = {
       id: messages.length + 1,
       sender: 'me',
       text: newMessage,
       timestamp: new Date().toISOString()
     };
-    
+
     setMessages([...messages, newMsg]);
     setNewMessage('');
   };
 
+  const handleStartNewChat = (chat) => {
+    setSelectedChat(chat);
+
+    if (chat.noConversation) {
+      // For demo purposes, we'll pretend this user is now the selected chat
+      setMessages([]);
+    }
+  };
+
   const formatDate = (dateString) => {
+    if (!dateString) return '';
+
     const date = new Date(dateString);
     const now = new Date();
-    
+
+    // Format time to show hours and minutes
+    const timeString = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
     // If today, return time only
     if (date.toDateString() === now.toDateString()) {
-      return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      return timeString;
     }
-    
-    // If this year, return month and day
+
+    // If this year, return month and day with time
     if (date.getFullYear() === now.getFullYear()) {
-      return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
+      return `${date.toLocaleDateString([], { month: 'short', day: 'numeric' })}, ${timeString}`;
     }
-    
-    // Otherwise, return full date
-    return date.toLocaleDateString([], { year: 'numeric', month: 'short', day: 'numeric' });
+
+    // Otherwise, return full date with time
+    return `${date.toLocaleDateString([], { year: 'numeric', month: 'short', day: 'numeric' })}, ${timeString}`;
   };
 
   return (
@@ -223,7 +295,7 @@ const MessagesPage = () => {
               <Box className="conversations-header">
                 <Typography variant="h6">Messages</Typography>
                 <TextField
-                  placeholder="Search conversations"
+                  placeholder="Search users and conversations"
                   variant="outlined"
                   size="small"
                   fullWidth
@@ -239,48 +311,56 @@ const MessagesPage = () => {
                   sx={{ mt: 2, mb: 2 }}
                 />
               </Box>
-              
+
               <List className="conversations-list">
                 {filteredChats.map((chat) => (
                   <React.Fragment key={chat.id}>
-                    <ListItem 
-                      button 
+                    <ListItem
+                      button
                       className={`conversation-item ${selectedChat?.id === chat.id ? 'selected' : ''}`}
-                      onClick={() => setSelectedChat(chat)}
+                      onClick={() => handleStartNewChat(chat)}
                     >
                       <ListItemAvatar>
                         <UserAvatar username={chat.username} online={chat.online} />
                       </ListItemAvatar>
-                      <ListItemText 
+                      <ListItemText
                         primary={
                           <Box display="flex" justifyContent="space-between">
                             <Typography variant="subtitle1" fontWeight={chat.unread > 0 ? 'bold' : 'normal'}>
                               {chat.username}
                             </Typography>
-                            <Typography variant="caption" color="text.secondary">
-                              {formatDate(chat.timestamp)}
-                            </Typography>
+                            {chat.timestamp && (
+                              <Typography variant="caption" color="text.secondary">
+                                {formatDate(chat.timestamp).split(',')[0]}
+                              </Typography>
+                            )}
                           </Box>
                         }
                         secondary={
-                          <Box display="flex" justifyContent="space-between" alignItems="center">
-                            <Typography
-                              variant="body2" 
-                              color="text.primary"
-                              sx={{
-                                textOverflow: 'ellipsis',
-                                overflow: 'hidden',
-                                whiteSpace: 'nowrap',
-                                maxWidth: '180px',
-                                fontWeight: chat.unread > 0 ? 'bold' : 'normal'
-                              }}
-                            >
-                              {chat.lastMessage}
+                          chat.noConversation ? (
+                            <Typography variant="body2" color="text.secondary">
+                              Start a new conversation
                             </Typography>
-                            {chat.unread > 0 && (
-                              <Badge badgeContent={chat.unread} color="primary" />
-                            )}
-                          </Box>
+                          ) : (
+                            <Box display="flex" justifyContent="space-between" alignItems="center">
+                              <Typography
+                                variant="body2"
+                                color="text.primary"
+                                sx={{
+                                  textOverflow: 'ellipsis',
+                                  overflow: 'hidden',
+                                  whiteSpace: 'nowrap',
+                                  maxWidth: '180px',
+                                  fontWeight: chat.unread > 0 ? 'bold' : 'normal'
+                                }}
+                              >
+                                {chat.lastMessage}
+                              </Typography>
+                              {chat.unread > 0 && (
+                                <Badge badgeContent={chat.unread} color="primary" />
+                              )}
+                            </Box>
+                          )
                         }
                       />
                     </ListItem>
@@ -289,7 +369,7 @@ const MessagesPage = () => {
                 ))}
               </List>
             </Box>
-            
+
             {/* Right section - Chat view */}
             <Box className="chat-view">
               {selectedChat ? (
@@ -306,7 +386,7 @@ const MessagesPage = () => {
                       </Box>
                     </Box>
                   </Box>
-                  
+
                   {/* Messages area */}
                   <Box className="messages-area">
                     {loading ? (
@@ -315,26 +395,84 @@ const MessagesPage = () => {
                       </Box>
                     ) : (
                       <>
-                        {messages.map((message) => (
-                          <Box key={message.id} className="message-wrapper">
-                            {message.sender === 'other' && (
-                              <UserAvatar username={selectedChat.username} online={selectedChat.online} />
-                            )}
-                            <Box className="message-content">
-                              <MessageBubble sender={message.sender}>
-                                {message.text}
-                              </MessageBubble>
-                              <Typography variant="caption" className="message-time" color="text.secondary">
+                        {messages.map((message, index) => {
+                          // Render different layouts for sent vs received messages
+                          return message.sender === 'me' ? (
+                            // Sent message - right aligned
+                            <Box key={message.id} sx={{ width: '100%', mb: 3 }}>
+                              {/* Timestamp */}
+                              <Typography
+                                variant="caption"
+                                color="text.secondary"
+                                sx={{
+                                  display: 'block',
+                                  textAlign: 'right',
+                                  mb: 0.5,
+                                  mr: 1
+                                }}
+                              >
                                 {formatDate(message.timestamp)}
                               </Typography>
+
+                              {/* Message bubble - right aligned */}
+                              <Box
+                                sx={{
+                                  display: 'flex',
+                                  justifyContent: 'flex-end',
+                                  pr: 1
+                                }}
+                              >
+                                <Box sx={{ maxWidth: '70%' }}>
+                                  <MessageBubble sender="me">
+                                    {message.text}
+                                  </MessageBubble>
+                                </Box>
+                              </Box>
                             </Box>
-                          </Box>
-                        ))}
+                          ) : (
+                            // Received message - left aligned
+                            <Box key={message.id} sx={{ width: '100%', mb: 3 }}>
+                              {/* Timestamp */}
+                              <Typography
+                                variant="caption"
+                                color="text.secondary"
+                                sx={{
+                                  display: 'block',
+                                  textAlign: 'left',
+                                  mb: 0.5,
+                                  ml: 1
+                                }}
+                              >
+                                {formatDate(message.timestamp)}
+                              </Typography>
+
+                              {/* Message bubble with avatar - left aligned */}
+                              <Box
+                                sx={{
+                                  display: 'flex',
+                                  pl: 1
+                                }}
+                              >
+                                <Box sx={{ mr: 1 }}>
+                                  <UserAvatar
+                                    username={selectedChat.username}
+                                    online={selectedChat.online}
+                                  />
+                                </Box>
+                                <Box sx={{ maxWidth: '70%' }}>
+                                  <MessageBubble sender="other">
+                                    {message.text}
+                                  </MessageBubble>
+                                </Box>
+                              </Box>
+                            </Box>
+                          );
+                        })}
                         <div ref={messagesEndRef} />
                       </>
                     )}
                   </Box>
-                  
+
                   {/* Message input */}
                   <Box className="message-input-area">
                     <form onSubmit={handleSendMessage} className="message-form">
@@ -347,9 +485,9 @@ const MessagesPage = () => {
                         InputProps={{
                           endAdornment: (
                             <InputAdornment position="end">
-                              <IconButton 
-                                type="submit" 
-                                color="primary" 
+                              <IconButton
+                                type="submit"
+                                color="primary"
                                 disabled={newMessage.trim() === ''}
                               >
                                 <SendIcon />
