@@ -2,6 +2,11 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const MessageSchema = new Schema({
+  conversationId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Conversation',
+    required: true
+  },
   sender: {
     type: String,
     required: true
@@ -26,7 +31,8 @@ const MessageSchema = new Schema({
   timestamps: true
 });
 
-// Create a compound index for efficient querying of conversations
+// Create compound index for efficient querying of conversations
+MessageSchema.index({ conversationId: 1, timestamp: 1 });
 MessageSchema.index({ sender: 1, receiver: 1 });
 
 module.exports = mongoose.model('Message', MessageSchema);

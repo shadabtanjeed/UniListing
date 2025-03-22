@@ -162,3 +162,18 @@
         max-width: 85%;
     }
 }
+
+/* Add these styles to your existing CSS file */
+
+.user-search-item {
+    transition: background-color 0.2s ease;
+}
+
+.user-search-item:hover {
+    background-color: rgba(45, 79, 143, 0.05);
+}
+
+.conversations-header {
+    display: flex;
+    flex-direction: column;
+}

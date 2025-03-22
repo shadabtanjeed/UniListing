@@ -4,6 +4,9 @@ const bodyParser = require('body-parser');
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
 const app = express();
+const http = require('http');
+const server = http.createServer(app);
+const { Server } = require("socket.io");
 const port = 5000;
 require('dotenv').config();
 
@@ -11,10 +14,12 @@ const mongoose = require('mongoose');
 
 mongoose.connect(process.env.mongodb_url);
 
+// Configure CORS with updated settings for Socket.IO
 app.use(cors({
-    origin: 'http://localhost:3000', // Replace with your frontend URL
-    credentials: true // Allow credentials (cookies) to be sent
+    origin: 'http://localhost:3000',
+    credentials: true
 }));
+
 app.use(bodyParser.json());
 
 // Configure session management
@@ -29,15 +34,40 @@ app.use(session({
     cookie: { maxAge: 18000000 } // 1 hour
 }));
 
-const Test = require('./models/test_model');
-const User_Demo = require('./models/users_demo');
+// Initialize Socket.IO with CORS settings
+const io = new Server(server, {
+    cors: {
+        origin: "http://localhost:3000",
+        methods: ["GET", "POST"],
+        credentials: true
+    }
+});
 
+// Import routes and models
 const authRoutes = require('./routes/auth');
 const apartmentRoutes = require('./routes/apartment_routes');
+const messageRoutes = require('./routes/message_routes'); // We'll create this
+
+// Import chat controller for socket handlers
+const chatController = require('./controllers/chatController'); // We'll create this
 
 app.use('/auth', authRoutes);
 app.use('/api/apartments', apartmentRoutes);
+app.use('/api/messages', messageRoutes); // We'll add this route
 
-app.listen(port, () => {
+// Socket.IO connection handler
+io.on('connection', (socket) => {
+    console.log('New client connected:', socket.id);
+
+    // Setup socket handlers from controller
+    chatController.setupSocket(socket, io);
+
+    socket.on('disconnect', () => {
+        console.log('Client disconnected:', socket.id);
+    });
+});
+
+// Use server.listen instead of app.listen for Socket.IO to work
+server.listen(port, () => {
     console.log(`Server running on http://localhost:${port}`);
 });
