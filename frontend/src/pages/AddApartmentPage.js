@@ -85,7 +85,21 @@ function AddApartmentPage() {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setApartmentData(prev => ({ ...prev, [name]: value }));
+
+        if (name.includes('.')) {
+            const [parent, child] = name.split('.');
+            console.log(`Updating nested field: ${parent}.${child} = ${value}`); // Debugging
+            setApartmentData((prev) => ({
+                ...prev,
+                [parent]: {
+                    ...prev[parent],
+                    [child]: value,
+                },
+            }));
+        } else {
+            console.log(`Updating top-level field: ${name} = ${value}`); // Debugging
+            setApartmentData((prev) => ({ ...prev, [name]: value }));
+        }
     };
 
     const handleCheckboxChange = (e) => {
