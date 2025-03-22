@@ -125,6 +125,13 @@ const AppSidebar = () => {
                                     <span className="link">Saved Items</span>
                                 </Link>
                             </li>
+
+                            <li className="list">
+                                <Link to="/messages" className="nav-link">
+                                    <i className="bx bx-message icon"></i>
+                                    <span className="link">My Messages</span>
+                                </Link>
+                            </li>
                         </ul>
                         <div className="bottom-content">
                             <li className="list">
