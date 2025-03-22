@@ -44,6 +44,8 @@ function AddApartmentPage() {
         status: 'available'
     });
 
+    const [areas, setAreas] = useState([]); // State to store the list of areas
+
     useEffect(() => {
         // Fetch the username from the session
         const fetchUsername = async () => {
@@ -65,7 +67,19 @@ function AddApartmentPage() {
             }
         };
 
+        // Fetch the areas from the text file
+        const fetchAreas = async () => {
+            try {
+                const response = await axios.get('/assets/dhaka_areas.txt'); // Adjust the path if necessary
+                const areaList = response.data.split('\n').map(area => area.trim()); // Parse the file content
+                setAreas(areaList);
+            } catch (error) {
+                console.error('Error fetching areas:', error);
+            }
+        };
+
         fetchUsername();
+        fetchAreas();
         setApartmentData(prev => ({ ...prev, apartment_id: generateApartmentId() }));
     }, [navigate]);
 
@@ -265,7 +279,21 @@ function AddApartmentPage() {
                     <form onSubmit={handleSubmit}>
                         <TextField fullWidth label="Title" name="title" onChange={handleChange} required />
                         <TextField fullWidth label="Address" name="location.address" onChange={handleChange} required />
-                        <TextField fullWidth label="Area" name="location.area" onChange={handleChange} required />
+                        <TextField
+                            select
+                            fullWidth
+                            label="Area"
+                            name="location.area"
+                            value={apartmentData.location.area || ''} // Fallback to empty string
+                            onChange={handleChange}
+                            required
+                        >
+                            {areas.map((area, index) => (
+                                <MenuItem key={index} value={area}>
+                                    {area}
+                                </MenuItem>
+                            ))}
+                        </TextField>
                         <TextField
                             fullWidth
                             label="Total Bedrooms"
