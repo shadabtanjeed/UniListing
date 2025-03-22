@@ -1,0 +1,159 @@
+/* 
+ * GLOBAL STYLES
+ * Contains all global CSS styles, animations, and responsive adjustments
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+/* Fix scrollbar issue - force scrollbar to always show */
+html {
+    overflow-y: scroll;
+    margin-right: 0 !important;
+    /* Prevent margin shifts */
+    width: 100vw;
+    overflow-x: hidden;
+}
+
+/* Prevent body padding adjustments from MUI */
+body {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0 !important;
+    overflow-x: hidden;
+    width: 100%;
+    position: relative;
+}
+
+/* Ensure content starts below the fixed AppBar */
+.content-container {
+    padding-top: 70px;
+}
+
+/* Custom animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInFromLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideInFromRight {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.6s ease-out forwards;
+}
+
+.animate-slide-left {
+    animation: slideInFromLeft 0.5s ease-out forwards;
+}
+
+.animate-slide-right {
+    animation: slideInFromRight 0.5s ease-out forwards;
+}
+
+/* Staggered animations for children */
+.stagger-children>*:nth-child(1) {
+    animation-delay: 0.1s;
+}
+
+.stagger-children>*:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.stagger-children>*:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+.stagger-children>*:nth-child(4) {
+    animation-delay: 0.4s;
+}
+
+/* Hover transitions */
+.card-hover {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card-hover:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+    .hero-section {
+        height: 400px !important;
+    }
+
+    .hero-section h1 {
+        font-size: 2rem !important;
+    }
+
+    .hero-section h6 {
+        font-size: 1rem !important;
+    }
+}
+
+/* Fix Material UI modal scrollbar issues */
+.MuiModal-root .MuiPaper-root {
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+/* Ensure the modal backdrop doesn't cause layout shifts */
+.MuiModal-backdrop {
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+}
+
+/* Fix scrollbar width for consistent layout */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+}
+
+/* Override Material UI's handling of scroll locking */
+.MuiDrawer-root,
+.MuiPopover-root,
+.MuiMenu-root {
+    position: fixed !important;
+}
+
+/* Prevent the page from jumping when modals open */
+.MuiModal-hideBackdrop+.MuiPopover-root .MuiPaper-root {
+    position: absolute !important;
+}
