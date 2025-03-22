@@ -49,4 +49,26 @@ const get_apartment_by_id = async (req, res) => {
     }
 };
 
-module.exports = { get_all_apartments, add_apartment_test, get_apartment_by_id };
+const add_apartment = async (req, res) => {
+    try {
+        const apartmentData = req.body;
+
+        // Process images: Convert Base64 strings to Buffers
+        if (apartmentData.images && apartmentData.images.length > 0) {
+            apartmentData.images = apartmentData.images.map(img => ({
+                data: Buffer.from(img.data, 'base64'),
+                contentType: img.contentType,
+                name: img.name || 'image'
+            }));
+        }
+
+        const apartment = new Apartment_List(apartmentData);
+        const newApartment = await apartment.save();
+        res.status(201).json(newApartment);
+    } catch (err) {
+        console.error('Error adding apartment:', err);
+        res.status(400).json({ message: err.message });
+    }
+};
+
+module.exports = { get_all_apartments, add_apartment_test, add_apartment, get_apartment_by_id };

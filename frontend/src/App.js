@@ -10,6 +10,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import ApartmentPage from './pages/ApartmentsPage';
 import ApartmentDetailsPage from './pages/ApartmentDetailsPage';
 import MessagesPage from './pages/MessagesPage';
+import AddApartmentPage from './pages/AddApartmentPage';
 
 // New page imports
 import HomePage from './pages/HomePage';
@@ -62,6 +63,11 @@ function App() {
           <Route path="/view-apartments" element={
             <ProtectedRoute>
               <ApartmentPage />
+            </ProtectedRoute>
+          } />
+          <Route path="/add-apartments" element={
+            <ProtectedRoute>
+              <AddApartmentPage />
             </ProtectedRoute>
           } />
           <Route path="/apartment/:apartmentId" element={

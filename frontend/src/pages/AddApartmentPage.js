@@ -1,0 +1,504 @@
+import React, { useState, useEffect } from 'react';
+import { TextField, Button, MenuItem, FormControlLabel, Checkbox, Input, IconButton } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import AppSidebar from '../components/Sidebar';
+import '../styles/AddApartmentPage.css';
+import { v4 as uuidv4 } from 'uuid';
+import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
+import { MapContainer, TileLayer, Marker, useMapEvents, Popup, useMap } from 'react-leaflet';
+import MyLocationIcon from '@mui/icons-material/MyLocation';
+import axios from 'axios'; // Import axios for API calls
+
+// Fix for default marker icon in Leaflet
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+    iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
+    iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+});
+
+const departments = ['CSE', 'EEE', 'MPE', 'BTM', 'CEE'];
+const semesters = ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th'];
+
+function AddApartmentPage() {
+    const navigate = useNavigate();
+    const generateApartmentId = () => `APT${uuidv4().slice(0, 6)}`;
+
+    const [apartmentData, setApartmentData] = useState({
+        title: '',
+        posted_by: '', // Initially empty, will be set dynamically
+        location: { address: '', geolocation: { latitude: 23.9475, longitude: 90.3792 }, area: '' }, // Default to IUT
+        bedrooms: { total: '', available: '', rooms_for_rent: [] },
+        bathrooms: { total: '', common: '' },
+        rent_type: { full_apartment: false, partial_rent: { enabled: false, rooms_available: 0 } },
+        rent: { amount: '', negotiable: false },
+        utility_bill_included: false,
+        amenities: { gas: false, lift: false, generator: false, parking: false, security: false },
+        images: [],
+        contact_info: { name: '', phone: '', email: '' },
+        optional_details: { furnished: false, size: '', balcony: false, more_details: '' },
+        tenancy_preferences: { preferred_tenants: '', preferred_dept: '', preferred_semester: '' },
+        current_tenants: { total: '', details: [] },
+        upvotes: { count: 0, users: [] },
+        status: 'available'
+    });
+
+    const [areas, setAreas] = useState([]); // State to store the list of areas
+
+    useEffect(() => {
+        // Fetch the username from the session
+        const fetchUsername = async () => {
+            try {
+                const response = await axios.get('http://localhost:5000/auth/session', {
+                    withCredentials: true // Include credentials (cookies)
+                });
+                setApartmentData(prev => ({
+                    ...prev,
+                    posted_by: response.data.username
+                }));
+                // console.log(response.data.username);
+            } catch (error) {
+                console.error('Error fetching username:', error);
+                if (error.response && error.response.status === 401) {
+                    // Redirect to login if not authenticated
+                    navigate('/login');
+                }
+            }
+        };
+
+        // Fetch the areas from the text file
+        const fetchAreas = async () => {
+            try {
+                const response = await axios.get('/assets/dhaka_areas.txt'); // Adjust the path if necessary
+                const areaList = response.data.split('\n').map(area => area.trim()); // Parse the file content
+                setAreas(areaList);
+            } catch (error) {
+                console.error('Error fetching areas:', error);
+            }
+        };
+
+        fetchUsername();
+        fetchAreas();
+        setApartmentData(prev => ({ ...prev, apartment_id: generateApartmentId() }));
+    }, [navigate]);
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+
+        if (name.includes('.')) {
+            const [parent, child] = name.split('.');
+            console.log(`Updating nested field: ${parent}.${child} = ${value}`); // Debugging
+            setApartmentData((prev) => ({
+                ...prev,
+                [parent]: {
+                    ...prev[parent],
+                    [child]: value,
+                },
+            }));
+        } else {
+            console.log(`Updating top-level field: ${name} = ${value}`); // Debugging
+            setApartmentData((prev) => ({ ...prev, [name]: value }));
+        }
+    };
+
+    const handleCheckboxChange = (e) => {
+        const { name, checked } = e.target;
+
+        if (name === "rent_type.full_apartment") {
+            setApartmentData(prev => ({
+                ...prev,
+                rent_type: { full_apartment: checked, partial_rent: { enabled: !checked, rooms_available: 0 } }
+            }));
+        } else if (name === "rent_type.partial_rent.enabled") {
+            setApartmentData(prev => ({
+                ...prev,
+                rent_type: { full_apartment: !checked, partial_rent: { enabled: checked, rooms_available: 0 } }
+            }));
+        } else {
+            setApartmentData(prev => ({ ...prev, [name]: checked }));
+        }
+    };
+
+
+
+    const handleImageUpload = (e) => {
+        const files = Array.from(e.target.files).filter(file => file.type.startsWith('image/'));
+
+        const readFiles = files.map(file => {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onloadend = () => {
+                    resolve({
+                        contentType: file.type,
+                        name: file.name,
+                        data: reader.result.split(',')[1] // Extract Base64 part
+                    });
+                };
+                reader.onerror = reject;
+            });
+        });
+
+        Promise.all(readFiles)
+            .then(images => {
+                setApartmentData(prev => ({ ...prev, images }));
+                console.log("Images processed successfully:", images.length);
+            })
+            .catch(error => console.error("Error processing images:", error));
+    };
+
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        const dataToSend = {
+            ...apartmentData,
+            location: {
+                ...apartmentData.location,
+                geolocation: {
+                    latitude: Number(apartmentData.location.geolocation.latitude),
+                    longitude: Number(apartmentData.location.geolocation.longitude),
+                }
+            },
+            bedrooms: {
+                ...apartmentData.bedrooms,
+                total: Number(apartmentData.bedrooms.total),
+                available: Number(apartmentData.bedrooms.available),
+                rooms_for_rent: apartmentData.bedrooms.rooms_for_rent.map(Number),
+            },
+            bathrooms: {
+                ...apartmentData.bathrooms,
+                total: Number(apartmentData.bathrooms.total),
+                common: Number(apartmentData.bathrooms.common),
+            },
+            rent: {
+                ...apartmentData.rent,
+                amount: Number(apartmentData.rent.amount),
+            },
+            rent_type: {
+                ...apartmentData.rent_type,
+                full_apartment: apartmentData.rent_type.full_apartment || false,
+                partial_rent: {
+                    enabled: apartmentData.rent_type.partial_rent.enabled || false,
+                    rooms_available: apartmentData.rent_type.partial_rent.rooms_available || 0,
+                }
+            },
+            status: apartmentData.status || 'available',
+        };
+
+        // Send the request
+        fetch('http://localhost:5000/api/apartments/add_apartment', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(dataToSend),
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to add apartment');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Apartment added:', data);
+                navigate('/view-apartments');
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to add apartment');
+            });
+    };
+
+    // Component to handle map events
+    const LocationSelector = ({ setApartmentData }) => {
+        useMapEvents({
+            click(e) {
+                // Ignore clicks originating from the "Move to Current Location" button
+                if (e.originalEvent.target.closest('.move-to-current-location-button')) {
+                    return;
+                }
+
+                const { lat, lng } = e.latlng;
+                setApartmentData(prev => ({
+                    ...prev,
+                    location: {
+                        ...prev.location,
+                        geolocation: { latitude: lat, longitude: lng }
+                    }
+                }));
+            }
+        });
+
+        return null;
+    };
+
+    const MoveToCurrentLocation = ({ setApartmentData }) => {
+        const map = useMap();
+
+        const handleMoveToCurrentLocation = (event) => {
+            event.stopPropagation(); // Prevent map click event
+
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const { latitude, longitude } = position.coords;
+
+                        // Update the map view
+                        map.flyTo([latitude, longitude], 17);
+
+                        // Update the apartmentData state
+                        setApartmentData(prev => ({
+                            ...prev,
+                            location: {
+                                ...prev.location,
+                                geolocation: { latitude, longitude }
+                            }
+                        }));
+                    },
+                    (error) => {
+                        console.error('Error fetching location:', error);
+                        alert('Unable to fetch your location. Please enable location services.');
+                    }
+                );
+            } else {
+                alert('Geolocation is not supported by your browser.');
+            }
+        };
+
+        return (
+            <IconButton
+                className="move-to-current-location-button" // Add a unique class name
+                style={{
+                    position: 'absolute',
+                    top: '10px',
+                    right: '10px',
+                    zIndex: 1000,
+                    backgroundColor: 'white',
+                    boxShadow: '0px 2px 5px rgba(0, 0, 0, 0.2)',
+                }}
+                onClick={handleMoveToCurrentLocation}
+            >
+                <MyLocationIcon style={{ color: '#1976d2' }} /> {/* Use the locate icon */}
+            </IconButton>
+        );
+    };
+
+    return (
+        <>
+            <AppSidebar />
+            <div className="AddApartmentPage">
+                <div className="formContainer">
+                    <form onSubmit={handleSubmit}>
+                        <TextField fullWidth label="Title" name="title" onChange={handleChange} required />
+                        <TextField fullWidth label="Address" name="location.address" onChange={handleChange} required />
+                        <TextField
+                            select
+                            fullWidth
+                            label="Area"
+                            name="location.area"
+                            value={apartmentData.location.area || ''} // Fallback to empty string
+                            onChange={handleChange}
+                            required
+                        >
+                            {areas.map((area, index) => (
+                                <MenuItem key={index} value={area}>
+                                    {area}
+                                </MenuItem>
+                            ))}
+                        </TextField>
+                        <TextField
+                            fullWidth
+                            label="Total Bedrooms"
+                            name="bedrooms.total"
+                            type="number"
+                            onChange={handleChange}
+                            onWheel={(e) => e.target.blur()} // Prevent mouse wheel scrolling
+                            onKeyDown={(e) => {
+                                if (['e', 'E', '+', '-'].includes(e.key)) {
+                                    e.preventDefault(); // Block invalid characters
+                                }
+                            }}
+                            inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }} // Restrict input to numbers
+                            required
+                        />
+
+                        <TextField
+                            fullWidth
+                            label="Available Bedrooms"
+                            name="bedrooms.available"
+                            type="number"
+                            onChange={handleChange}
+                            onWheel={(e) => e.target.blur()} // Prevent mouse wheel scrolling
+                            onKeyDown={(e) => {
+                                if (['e', 'E', '+', '-'].includes(e.key)) {
+                                    e.preventDefault(); // Block invalid characters
+                                }
+                            }}
+                            inputProps={{ inputMode: 'numeric', pattern: '[0-9]*', max: apartmentData.bedrooms.total }} // Restrict input to numbers
+                            required
+                        />
+
+                        <TextField
+                            fullWidth
+                            label="Rooms for Rent"
+                            name="bedrooms.rooms_for_rent"
+                            type="number"
+                            onChange={handleChange}
+                            onWheel={(e) => e.target.blur()} // Prevent mouse wheel scrolling
+                            onKeyDown={(e) => {
+                                if (['e', 'E', '+', '-'].includes(e.key)) {
+                                    e.preventDefault(); // Block invalid characters
+                                }
+                            }}
+                            inputProps={{ inputMode: 'numeric', pattern: '[0-9]*', max: apartmentData.bedrooms.available }} // Restrict input to numbers
+                        />
+
+                        <TextField
+                            fullWidth
+                            label="Total Bathrooms"
+                            name="bathrooms.total"
+                            type="number"
+                            onChange={handleChange}
+                            onWheel={(e) => e.target.blur()} // Prevent mouse wheel scrolling
+                            onKeyDown={(e) => {
+                                if (['e', 'E', '+', '-'].includes(e.key)) {
+                                    e.preventDefault(); // Block invalid characters
+                                }
+                            }}
+                            inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }} // Restrict input to numbers
+                            required
+                        />
+
+                        <TextField
+                            fullWidth
+                            label="Common Bathrooms"
+                            name="bathrooms.common"
+                            type="number"
+                            onChange={handleChange}
+                            onWheel={(e) => e.target.blur()} // Prevent mouse wheel scrolling
+                            onKeyDown={(e) => {
+                                if (['e', 'E', '+', '-'].includes(e.key)) {
+                                    e.preventDefault(); // Block invalid characters
+                                }
+                            }}
+                            inputProps={{ inputMode: 'numeric', pattern: '[0-9]*', max: apartmentData.bathrooms.total }} // Restrict input to numbers
+                            required
+                        />
+
+                        <FormControlLabel
+                            control={<Checkbox
+                                name="rent_type.full_apartment"
+                                checked={apartmentData.rent_type.full_apartment}
+                                onChange={handleCheckboxChange}
+                            />}
+                            label="Full Apartment for Rent"
+                        />
+
+                        <FormControlLabel control={<Checkbox
+                            name="rent_type.partial_rent.enabled"
+                            checked={apartmentData.rent_type.partial_rent.enabled}
+                            onChange={handleCheckboxChange}
+                        />}
+                            label="Partial Rent Available"
+                        />
+
+
+                        <TextField
+                            fullWidth
+                            label="Rent Amount"
+                            name="rent.amount"
+                            type="number"
+                            onChange={handleChange}
+                            onWheel={(e) => e.target.blur()} // Prevent mouse wheel scrolling
+                            onKeyDown={(e) => {
+                                if (['e', 'E', '+', '-'].includes(e.key)) {
+                                    e.preventDefault(); // Block invalid characters
+                                }
+                            }}
+                            inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }} // Restrict input to numbers
+                            required
+                        />
+                        <FormControlLabel control={<Checkbox name="rent.negotiable" onChange={handleCheckboxChange} />} label="Negotiable" />
+                        <FormControlLabel control={<Checkbox name="utility_bill_included" onChange={handleCheckboxChange} />} label="Utility Bill Included" />
+
+                        <TextField
+                            select
+                            fullWidth
+                            label="Preferred Department"
+                            name="tenancy_preferences.preferred_dept"
+                            value={apartmentData.tenancy_preferences.preferred_dept || ''} // Fallback to empty string
+                            onChange={handleChange}
+                            required
+                        >
+                            {departments.map((dept) => (
+                                <MenuItem key={dept} value={dept}>
+                                    {dept}
+                                </MenuItem>
+                            ))}
+                        </TextField>
+
+                        <TextField
+                            select
+                            fullWidth
+                            label="Preferred Semester"
+                            name="tenancy_preferences.preferred_semester"
+                            value={apartmentData.tenancy_preferences.preferred_semester || ''} // Fallback to empty string
+                            onChange={handleChange}
+                            required
+                        >
+                            {semesters.map((sem) => (
+                                <MenuItem key={sem} value={sem}>
+                                    {sem}
+                                </MenuItem>
+                            ))}
+                        </TextField>
+
+                        <TextField
+                            fullWidth
+                            label="Email"
+                            name="contact_info.email"
+                            type="email" // Use type="email" for automatic email validation
+                            onChange={handleChange}
+                            required
+                        />
+                        <TextField fullWidth label="Phone" name="contact_info.phone" onChange={handleChange} required />
+                        <TextField fullWidth label="Contact Name" name="contact_info.name" onChange={handleChange} required />
+
+                        <FormControlLabel control={<Checkbox name="amenities.gas" onChange={handleCheckboxChange} />} label="Gas" />
+                        <FormControlLabel control={<Checkbox name="amenities.lift" onChange={handleCheckboxChange} />} label="Lift" />
+                        <FormControlLabel control={<Checkbox name="amenities.generator" onChange={handleCheckboxChange} />} label="Generator" />
+                        <FormControlLabel control={<Checkbox name="amenities.parking" onChange={handleCheckboxChange} />} label="Parking" />
+                        <FormControlLabel control={<Checkbox name="amenities.security" onChange={handleCheckboxChange} />} label="Security" />
+
+                        <Input type="file" inputProps={{ multiple: true, accept: 'image/*' }} onChange={handleImageUpload} />
+                        <div style={{ height: '400px', width: '100%', marginTop: '20px', position: 'relative' }}>
+                            <MapContainer
+                                center={[apartmentData.location.geolocation.latitude, apartmentData.location.geolocation.longitude]} // Default center
+                                zoom={17}
+                                style={{ height: '100%', width: '100%' }}>
+                                <TileLayer
+                                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                                />
+                                <Marker position={[apartmentData.location.geolocation.latitude, apartmentData.location.geolocation.longitude]}>
+                                    <Popup>
+                                        Latitude: {apartmentData.location.geolocation.latitude.toFixed(4)} <br />
+                                        Longitude: {apartmentData.location.geolocation.longitude.toFixed(4)}
+                                    </Popup>
+                                </Marker>
+                                <LocationSelector setApartmentData={setApartmentData} />
+                                <MoveToCurrentLocation setApartmentData={setApartmentData} />
+                            </MapContainer>
+                        </div>
+                        <Button className="sendButton" variant="contained" color="primary" type="submit">Add</Button>
+                    </form>
+                </div>
+                <div className="sideContainer"></div>
+            </div>
+        </>
+    );
+}
+
+export default AddApartmentPage;
