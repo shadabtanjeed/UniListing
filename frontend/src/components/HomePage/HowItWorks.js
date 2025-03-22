@@ -10,11 +10,11 @@ import SectionTitle from './SectionTitle';
 const HowItWorks = () => {
   return (
     <Box sx={{ my: 8, py: 6, backgroundColor: '#f8f9fa', borderRadius: '10px', px: 4 }}>
-      <SectionTitle 
-        title="How Hospilink Works" 
+      <SectionTitle
+        title="How UniListing Works"
         subtitle="Easy steps to find what you need or list what you have"
       />
-      
+
       <Grid container spacing={4} justifyContent="center" className="stagger-children">
         {[
           {
@@ -33,21 +33,21 @@ const HowItWorks = () => {
             description: "Message other users and finalize your housing or purchase"
           }
         ].map((step) => (
-          <Grid 
-            item 
-            xs={12} 
-            md={4} 
-            key={step.step} 
+          <Grid
+            item
+            xs={12}
+            md={4}
+            key={step.step}
             textAlign="center"
             className="animate-fade-in"
           >
-            <Box sx={{ 
-              width: '80px', 
-              height: '80px', 
-              borderRadius: '50%', 
-              backgroundColor: '#2d4f8f', 
-              display: 'flex', 
-              alignItems: 'center', 
+            <Box sx={{
+              width: '80px',
+              height: '80px',
+              borderRadius: '50%',
+              backgroundColor: '#2d4f8f',
+              display: 'flex',
+              alignItems: 'center',
               justifyContent: 'center',
               margin: '0 auto',
               mb: 2,

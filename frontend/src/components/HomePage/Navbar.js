@@ -4,14 +4,14 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { 
-  AppBar, 
-  Toolbar, 
-  Typography, 
-  Button, 
-  IconButton, 
-  Box, 
-  useMediaQuery, 
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  Button,
+  IconButton,
+  Box,
+  useMediaQuery,
   useTheme,
   Drawer,
   List,
@@ -27,19 +27,19 @@ import ApartmentIcon from '@mui/icons-material/Apartment';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 
 const Logo = () => (
-  <Typography 
-    variant="h5" 
-    component={Link} 
+  <Typography
+    variant="h5"
+    component={Link}
     to="/"
-    sx={{ 
-      fontWeight: 700, 
+    sx={{
+      fontWeight: 700,
       color: '#2d4f8f',
       textDecoration: 'none',
       display: 'flex',
       alignItems: 'center',
     }}
   >
-    Hospilink
+    UniListing
   </Typography>
 );
 
@@ -100,10 +100,10 @@ const Navbar = () => {
   );
 
   return (
-    <AppBar 
-      position="fixed" 
-      sx={{ 
-        backgroundColor: scrolled ? 'white' : 'rgba(255,255,255,0.9)', 
+    <AppBar
+      position="fixed"
+      sx={{
+        backgroundColor: scrolled ? 'white' : 'rgba(255,255,255,0.9)',
         boxShadow: scrolled ? '0 2px 10px rgba(0,0,0,0.1)' : 'none',
         transition: 'all 0.3s ease',
         width: '100%', // Ensure full width
@@ -112,31 +112,31 @@ const Navbar = () => {
     >
       <Toolbar>
         {isMobile && (
-          <IconButton 
-            edge="start" 
-            color="inherit" 
-            aria-label="menu" 
+          <IconButton
+            edge="start"
+            color="inherit"
+            aria-label="menu"
             onClick={toggleDrawer(true)}
             sx={{ mr: 2, color: '#2d4f8f' }}
           >
             <MenuIcon />
           </IconButton>
         )}
-        
+
         <Logo />
-        
+
         <Box sx={{ flexGrow: 1 }} />
-        
+
         {!isMobile && (
           <>
             {navItems.map((item) => (
-              <Button 
+              <Button
                 key={item.text}
-                component={Link} 
+                component={Link}
                 to={item.path}
-                color="inherit" 
-                sx={{ 
-                  mx: 1, 
+                color="inherit"
+                sx={{
+                  mx: 1,
                   color: '#2d4f8f',
                   '&:hover': {
                     backgroundColor: 'rgba(45, 79, 143, 0.08)',
@@ -148,14 +148,14 @@ const Navbar = () => {
             ))}
           </>
         )}
-        
-        <Button 
-          variant="contained" 
+
+        <Button
+          variant="contained"
           component={Link}
           to="/login"
           startIcon={<PersonIcon />}
-          sx={{ 
-            ml: 2, 
+          sx={{
+            ml: 2,
             backgroundColor: '#2d4f8f',
             '&:hover': {
               backgroundColor: '#1e3a6a',

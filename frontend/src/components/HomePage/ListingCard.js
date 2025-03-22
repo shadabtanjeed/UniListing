@@ -4,14 +4,14 @@
  */
 
 import React from 'react';
-import { 
-  Card, 
-  CardMedia, 
-  CardContent, 
-  Typography, 
-  Box, 
-  Button, 
-  IconButton 
+import {
+  Card,
+  CardMedia,
+  CardContent,
+  Typography,
+  Box,
+  Button,
+  IconButton
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
@@ -19,20 +19,25 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 
 const ListingCard = ({ id, image, title, location, price, type }) => {
   const navigate = useNavigate();
-  
+
   const handleDetailsClick = () => {
     if (type === 'apartment') {
-      navigate(`/apartments/${id}`);
+      navigate(`/apartment/${id}`);
     } else {
       navigate(`/marketplace/${id}`);
     }
   };
 
+  // Default image in case the provided one fails
+  const defaultImage = type === 'apartment'
+    ? 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80'
+    : 'https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80';
+
   return (
-    <Card 
-      sx={{ 
-        height: '100%', 
-        display: 'flex', 
+    <Card
+      sx={{
+        height: '100%',
+        display: 'flex',
         flexDirection: 'column',
         borderRadius: '10px',
         overflow: 'hidden',
@@ -43,8 +48,12 @@ const ListingCard = ({ id, image, title, location, price, type }) => {
         <CardMedia
           component="img"
           height="200"
-          image={image || `https://via.placeholder.com/300x200?text=${title}`}
+          image={image || defaultImage}
           alt={title}
+          onError={(e) => {
+            e.target.src = defaultImage;
+          }}
+          sx={{ objectFit: 'cover' }}
         />
         <Box
           sx={{
@@ -67,47 +76,41 @@ const ListingCard = ({ id, image, title, location, price, type }) => {
           {title}
         </Typography>
         <Box display="flex" alignItems="center" sx={{ mb: 1 }}>
-          <LocationOnIcon sx={{ 
-            fontSize: 18, 
-            color: type === 'apartment' ? '#2d4f8f' : '#ff9800', 
-            mr: 0.5 
+          <LocationOnIcon sx={{
+            fontSize: 18,
+            color: type === 'apartment' ? '#2d4f8f' : '#ff9800',
+            mr: 0.5
           }} />
           <Typography variant="body2" color="text.secondary">
             {location}
           </Typography>
         </Box>
-        <Typography 
-          variant="h6" 
-          color={type === 'apartment' ? '#2d4f8f' : '#ff9800'} 
+        <Typography
+          variant="h6"
+          color={type === 'apartment' ? '#2d4f8f' : '#ff9800'}
           fontWeight={600}
         >
           {price} BDT
         </Typography>
         <Box sx={{ mt: 2, display: 'flex', justifyContent: 'space-between' }}>
-          <Button 
-            size="small" 
-            variant="outlined" 
+          <Button
+            size="small"
+            variant="outlined"
             onClick={handleDetailsClick}
-            sx={{ 
-              borderColor: type === 'apartment' ? '#2d4f8f' : '#ff9800', 
+            sx={{
+              borderColor: type === 'apartment' ? '#2d4f8f' : '#ff9800',
               color: type === 'apartment' ? '#2d4f8f' : '#ff9800',
               '&:hover': {
-                borderColor: type === 'apartment' ? '#1e3a6a' : '#e68a00',
-                backgroundColor: type === 'apartment' 
-                  ? 'rgba(45, 79, 143, 0.04)' 
-                  : 'rgba(255, 152, 0, 0.04)',
+                borderColor: type === 'apartment' ? '#1e3a6a' : '#e68900',
+                backgroundColor: type === 'apartment' ? 'rgba(45, 79, 143, 0.04)' : 'rgba(255, 152, 0, 0.04)',
               }
             }}
           >
             Details
           </Button>
-          <IconButton 
-            size="small" 
-            sx={{ color: '#f44336' }}
-            aria-label="add to favorites"
-          >
+          {/* <IconButton size="small" sx={{ color: '#f44336' }}>
             <FavoriteIcon />
-          </IconButton>
+          </IconButton> */}
         </Box>
       </CardContent>
     </Card>

@@ -9,10 +9,10 @@ import { Link } from 'react-router-dom';
 
 const StatsSection = () => {
   return (
-    <Box 
-      sx={{ 
-        my: 8, 
-        py: 6, 
+    <Box
+      sx={{
+        my: 8,
+        py: 6,
         backgroundImage: 'linear-gradient(rgba(45, 79, 143, 0.9), rgba(45, 79, 143, 0.9)), url("/images/campus-bg.jpg")',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
@@ -29,7 +29,7 @@ const StatsSection = () => {
         <Typography variant="body1" paragraph sx={{ mb: 6 }}>
           Join hundreds of students who have found their perfect housing and marketplace deals
         </Typography>
-        
+
         <Grid container spacing={4} justifyContent="center" className="stagger-children">
           {[
             { count: '200+', label: 'Apartments Listed' },
@@ -37,15 +37,15 @@ const StatsSection = () => {
             { count: '1000+', label: 'Active Users' },
             { count: '150+', label: 'Deals Closed' }
           ].map((stat, index) => (
-            <Grid 
-              item 
-              xs={6} 
-              md={3} 
+            <Grid
+              item
+              xs={6}
+              md={3}
               key={index}
               className="animate-fade-in"
             >
-              <Typography 
-                variant="h3" 
+              <Typography
+                variant="h3"
                 fontWeight={700}
                 sx={{
                   transition: 'transform 0.3s ease',
@@ -60,22 +60,22 @@ const StatsSection = () => {
             </Grid>
           ))}
         </Grid>
-        
-        <Button 
+
+        <Button
           component={Link}
           to="/signup"
-          variant="contained" 
-          size="large" 
-          sx={{ 
-            mt: 6, 
-            bgcolor: 'white', 
+          variant="contained"
+          size="large"
+          sx={{
+            mt: 6,
+            bgcolor: 'white',
             color: '#2d4f8f',
             '&:hover': {
               bgcolor: '#f0f0f0',
             }
           }}
         >
-          Join Hospilink Today
+          Join UniListing Today
         </Button>
       </Container>
     </Box>
