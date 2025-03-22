@@ -515,7 +515,7 @@ function AddApartmentPage() {
                                 {apartmentData.images.map((image, index) => (
                                     <img
                                         key={index}
-                                        src={image} // Use the Base64 URL as the image source
+                                        src={`data:${image.contentType};base64,${image.data}`} // Construct the full Base64 URL
                                         alt={`Uploaded ${index + 1}`}
                                         style={{
                                             width: '100px',
