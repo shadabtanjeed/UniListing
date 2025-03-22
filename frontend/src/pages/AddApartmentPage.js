@@ -31,7 +31,7 @@ function AddApartmentPage() {
         location: { address: '', geolocation: { latitude: 23.9475, longitude: 90.3792 }, area: '' }, // Default to IUT
         bedrooms: { total: '', available: '', rooms_for_rent: [] },
         bathrooms: { total: '', common: '' },
-        rent_type: { full_apartment: false, partial_rent: { enabled: false, rooms_available: 0 } },
+        rent_type: { full_apartment: true, partial_rent: { enabled: false, rooms_available: 0 } },
         rent: { amount: '', negotiable: false },
         utility_bill_included: false,
         amenities: { gas: false, lift: false, generator: false, parking: false, security: false },
@@ -105,26 +105,29 @@ function AddApartmentPage() {
     const handleCheckboxChange = (e) => {
         const { name, checked } = e.target;
 
-        if (name === "rent_type.full_apartment") {
+        if (name === "rent_type.partial_rent.enabled") {
             setApartmentData(prev => ({
                 ...prev,
-                rent_type: { full_apartment: checked, partial_rent: { enabled: !checked, rooms_available: 0 } }
-            }));
-        } else if (name === "rent_type.partial_rent.enabled") {
-            setApartmentData(prev => ({
-                ...prev,
-                rent_type: { full_apartment: !checked, partial_rent: { enabled: checked, rooms_available: 0 } }
+                rent_type: {
+                    full_apartment: !checked, // Automatically set full_apartment to false when partial_rent is enabled
+                    partial_rent: { enabled: checked, rooms_available: 0 }
+                }
             }));
         } else {
             setApartmentData(prev => ({ ...prev, [name]: checked }));
         }
     };
 
-
-
     const handleImageUpload = (e) => {
-        const files = Array.from(e.target.files).filter(file => file.type.startsWith('image/'));
+        const input = e.target; // Reference to the input element
+        const files = Array.from(input.files).filter(file => file.type.startsWith('image/')); // Filter only image files
 
+        if (files.length === 0) {
+            alert('Please upload only image files.');
+            input.value = ""; // Reset the input field
+            return;
+        }
+    
         const readFiles = files.map(file => {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
@@ -139,10 +142,10 @@ function AddApartmentPage() {
                 reader.onerror = reject;
             });
         });
-
+    
         Promise.all(readFiles)
             .then(images => {
-                setApartmentData(prev => ({ ...prev, images }));
+                setApartmentData(prev => ({ ...prev, images })); // Update the state with image data
                 console.log("Images processed successfully:", images.length);
             })
             .catch(error => console.error("Error processing images:", error));
@@ -324,7 +327,7 @@ function AddApartmentPage() {
                             required
                         />
 
-                        <TextField
+                        {/* <TextField
                             fullWidth
                             label="Available Bedrooms"
                             name="bedrooms.available"
@@ -338,9 +341,9 @@ function AddApartmentPage() {
                             }}
                             inputProps={{ inputMode: 'numeric', pattern: '[0-9]*', max: apartmentData.bedrooms.total }} // Restrict input to numbers
                             required
-                        />
+                        /> */}
 
-                        <TextField
+                        {/* <TextField
                             fullWidth
                             label="Rooms for Rent"
                             name="bedrooms.rooms_for_rent"
@@ -354,6 +357,47 @@ function AddApartmentPage() {
                             }}
                             inputProps={{ inputMode: 'numeric', pattern: '[0-9]*', max: apartmentData.bedrooms.available }} // Restrict input to numbers
                         />
+ */}
+                        
+
+                        {/* <FormControlLabel
+                            control={<Checkbox
+                                name="rent_type.full_apartment"
+                                checked={apartmentData.rent_type.full_apartment}
+                                onChange={handleCheckboxChange}
+                            />}
+                            label="Full Apartment for Rent"
+                        /> */}
+
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    name="rent_type.partial_rent.enabled"
+                                    checked={apartmentData.rent_type.partial_rent.enabled}
+                                    onChange={handleCheckboxChange}
+                                />
+                            }
+                            label="Partial Rent Available"
+                        />
+
+                        {/* Conditionally render the Available Bedrooms field */}
+                        {apartmentData.rent_type.partial_rent.enabled && (
+                            <TextField
+                                fullWidth
+                                label="Available Bedrooms"
+                                name="bedrooms.available"
+                                type="number"
+                                onChange={handleChange}
+                                onWheel={(e) => e.target.blur()} // Prevent mouse wheel scrolling
+                                onKeyDown={(e) => {
+                                    if (['e', 'E', '+', '-'].includes(e.key)) {
+                                        e.preventDefault(); // Block invalid characters
+                                    }
+                                }}
+                                inputProps={{ inputMode: 'numeric', pattern: '[0-9]*', max: apartmentData.bedrooms.total }} // Restrict input to numbers
+                                required
+                            />
+                        )}
 
                         <TextField
                             fullWidth
@@ -387,24 +431,6 @@ function AddApartmentPage() {
                             required
                         />
 
-                        <FormControlLabel
-                            control={<Checkbox
-                                name="rent_type.full_apartment"
-                                checked={apartmentData.rent_type.full_apartment}
-                                onChange={handleCheckboxChange}
-                            />}
-                            label="Full Apartment for Rent"
-                        />
-
-                        <FormControlLabel control={<Checkbox
-                            name="rent_type.partial_rent.enabled"
-                            checked={apartmentData.rent_type.partial_rent.enabled}
-                            onChange={handleCheckboxChange}
-                        />}
-                            label="Partial Rent Available"
-                        />
-
-
                         <TextField
                             fullWidth
                             label="Rent Amount"
@@ -430,7 +456,6 @@ function AddApartmentPage() {
                             name="tenancy_preferences.preferred_dept"
                             value={apartmentData.tenancy_preferences.preferred_dept || ''} // Fallback to empty string
                             onChange={handleChange}
-                            required
                         >
                             {departments.map((dept) => (
                                 <MenuItem key={dept} value={dept}>
@@ -446,7 +471,6 @@ function AddApartmentPage() {
                             name="tenancy_preferences.preferred_semester"
                             value={apartmentData.tenancy_preferences.preferred_semester || ''} // Fallback to empty string
                             onChange={handleChange}
-                            required
                         >
                             {semesters.map((sem) => (
                                 <MenuItem key={sem} value={sem}>
