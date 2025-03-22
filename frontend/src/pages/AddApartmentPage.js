@@ -315,8 +315,15 @@ function AddApartmentPage() {
                             type="number"
                             onChange={handleChange}
                             onWheel={(e) => e.target.blur()} // Prevent mouse wheel scrolling
+                            onKeyDown={(e) => {
+                                if (['e', 'E', '+', '-'].includes(e.key)) {
+                                    e.preventDefault(); // Block invalid characters
+                                }
+                            }}
+                            inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }} // Restrict input to numbers
                             required
                         />
+
                         <TextField
                             fullWidth
                             label="Available Bedrooms"
@@ -324,9 +331,15 @@ function AddApartmentPage() {
                             type="number"
                             onChange={handleChange}
                             onWheel={(e) => e.target.blur()} // Prevent mouse wheel scrolling
+                            onKeyDown={(e) => {
+                                if (['e', 'E', '+', '-'].includes(e.key)) {
+                                    e.preventDefault(); // Block invalid characters
+                                }
+                            }}
+                            inputProps={{ inputMode: 'numeric', pattern: '[0-9]*', max: apartmentData.bedrooms.total }} // Restrict input to numbers
                             required
-                            inputProps={{ max: apartmentData.bedrooms.total }}
                         />
+
                         <TextField
                             fullWidth
                             label="Rooms for Rent"
@@ -334,8 +347,14 @@ function AddApartmentPage() {
                             type="number"
                             onChange={handleChange}
                             onWheel={(e) => e.target.blur()} // Prevent mouse wheel scrolling
-                            inputProps={{ max: apartmentData.bedrooms.available }}
+                            onKeyDown={(e) => {
+                                if (['e', 'E', '+', '-'].includes(e.key)) {
+                                    e.preventDefault(); // Block invalid characters
+                                }
+                            }}
+                            inputProps={{ inputMode: 'numeric', pattern: '[0-9]*', max: apartmentData.bedrooms.available }} // Restrict input to numbers
                         />
+
                         <TextField
                             fullWidth
                             label="Total Bathrooms"
@@ -343,8 +362,15 @@ function AddApartmentPage() {
                             type="number"
                             onChange={handleChange}
                             onWheel={(e) => e.target.blur()} // Prevent mouse wheel scrolling
+                            onKeyDown={(e) => {
+                                if (['e', 'E', '+', '-'].includes(e.key)) {
+                                    e.preventDefault(); // Block invalid characters
+                                }
+                            }}
+                            inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }} // Restrict input to numbers
                             required
                         />
+
                         <TextField
                             fullWidth
                             label="Common Bathrooms"
@@ -352,8 +378,13 @@ function AddApartmentPage() {
                             type="number"
                             onChange={handleChange}
                             onWheel={(e) => e.target.blur()} // Prevent mouse wheel scrolling
+                            onKeyDown={(e) => {
+                                if (['e', 'E', '+', '-'].includes(e.key)) {
+                                    e.preventDefault(); // Block invalid characters
+                                }
+                            }}
+                            inputProps={{ inputMode: 'numeric', pattern: '[0-9]*', max: apartmentData.bathrooms.total }} // Restrict input to numbers
                             required
-                            inputProps={{ max: apartmentData.bathrooms.total }}
                         />
 
                         <FormControlLabel
@@ -381,6 +412,12 @@ function AddApartmentPage() {
                             type="number"
                             onChange={handleChange}
                             onWheel={(e) => e.target.blur()} // Prevent mouse wheel scrolling
+                            onKeyDown={(e) => {
+                                if (['e', 'E', '+', '-'].includes(e.key)) {
+                                    e.preventDefault(); // Block invalid characters
+                                }
+                            }}
+                            inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }} // Restrict input to numbers
                             required
                         />
                         <FormControlLabel control={<Checkbox name="rent.negotiable" onChange={handleCheckboxChange} />} label="Negotiable" />
