@@ -1,9 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { TextField, Button, MenuItem, FormControlLabel, Checkbox, Input } from '@mui/material';
+import { TextField, Button, MenuItem, FormControlLabel, Checkbox, Input, IconButton } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import AppSidebar from '../components/Sidebar';
 import '../styles/AddApartmentPage.css';
 import { v4 as uuidv4 } from 'uuid';
+import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
+import { MapContainer, TileLayer, Marker, useMapEvents, Popup, useMap } from 'react-leaflet';
+import MyLocationIcon from '@mui/icons-material/MyLocation';
+
+// Fix for default marker icon in Leaflet
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+    iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
+    iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+});
 
 const departments = ['CSE', 'EEE', 'MPE', 'BTM', 'CEE'];
 const semesters = ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th'];
@@ -14,9 +26,9 @@ function AddApartmentPage() {
 
     const [apartmentData, setApartmentData] = useState({
         title: '',
-        posted_by: 'halum', // Need to replace 'halum' with the actual session user
-        location: { address: '', geolocation: { latitude: '', longitude: '' }, area: '' },
-        bedrooms: { total: '', available: '', rooms_for_rent: [] }, // Initialize as an array
+        posted_by: 'halum', // Replace 'halum' with the actual session user
+        location: { address: '', geolocation: { latitude: 23.9475, longitude: 90.3792 }, area: '' }, // Default to IUT
+        bedrooms: { total: '', available: '', rooms_for_rent: [] },
         bathrooms: { total: '', common: '' },
         rent_type: { full_apartment: false, partial_rent: { enabled: false, rooms_available: 0 } },
         rent: { amount: '', negotiable: false },
@@ -37,13 +49,12 @@ function AddApartmentPage() {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setApartmentData({ ...apartmentData, [name]: value });
+        setApartmentData(prev => ({ ...prev, [name]: value }));
     };
 
     const handleCheckboxChange = (e) => {
         const { name, checked } = e.target;
 
-        // Ensure that only one rent type checkbox is selected at a time
         if (name === "rent_type.full_apartment") {
             setApartmentData(prev => ({
                 ...prev,
@@ -55,7 +66,7 @@ function AddApartmentPage() {
                 rent_type: { full_apartment: !checked, partial_rent: { enabled: checked, rooms_available: 0 } }
             }));
         } else {
-            setApartmentData({ ...apartmentData, [name]: checked });
+            setApartmentData(prev => ({ ...prev, [name]: checked }));
         }
     };
 
@@ -91,7 +102,6 @@ function AddApartmentPage() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Convert numeric values to numbers
         const dataToSend = {
             ...apartmentData,
             location: {
@@ -105,7 +115,7 @@ function AddApartmentPage() {
                 ...apartmentData.bedrooms,
                 total: Number(apartmentData.bedrooms.total),
                 available: Number(apartmentData.bedrooms.available),
-                rooms_for_rent: apartmentData.bedrooms.rooms_for_rent.map(Number),  // Ensure it's an array of numbers
+                rooms_for_rent: apartmentData.bedrooms.rooms_for_rent.map(Number),
             },
             bathrooms: {
                 ...apartmentData.bathrooms,
@@ -124,7 +134,7 @@ function AddApartmentPage() {
                     rooms_available: apartmentData.rent_type.partial_rent.rooms_available || 0,
                 }
             },
-            status: apartmentData.status || 'available',  // Ensure valid status
+            status: apartmentData.status || 'available',
         };
 
         // Send the request
@@ -151,6 +161,79 @@ function AddApartmentPage() {
             });
     };
 
+    // Component to handle map events
+    const LocationSelector = ({ setApartmentData }) => {
+        useMapEvents({
+            click(e) {
+                // Ignore clicks originating from the "Move to Current Location" button
+                if (e.originalEvent.target.closest('.move-to-current-location-button')) {
+                    return;
+                }
+
+                const { lat, lng } = e.latlng;
+                setApartmentData(prev => ({
+                    ...prev,
+                    location: {
+                        ...prev.location,
+                        geolocation: { latitude: lat, longitude: lng }
+                    }
+                }));
+            }
+        });
+
+        return null;
+    };
+
+    const MoveToCurrentLocation = ({ setApartmentData }) => {
+        const map = useMap();
+
+        const handleMoveToCurrentLocation = (event) => {
+            event.stopPropagation(); // Prevent map click event
+
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const { latitude, longitude } = position.coords;
+
+                        // Update the map view
+                        map.flyTo([latitude, longitude], 17);
+
+                        // Update the apartmentData state
+                        setApartmentData(prev => ({
+                            ...prev,
+                            location: {
+                                ...prev.location,
+                                geolocation: { latitude, longitude }
+                            }
+                        }));
+                    },
+                    (error) => {
+                        console.error('Error fetching location:', error);
+                        alert('Unable to fetch your location. Please enable location services.');
+                    }
+                );
+            } else {
+                alert('Geolocation is not supported by your browser.');
+            }
+        };
+
+        return (
+            <IconButton
+                className="move-to-current-location-button" // Add a unique class name
+                style={{
+                    position: 'absolute',
+                    top: '10px',
+                    right: '10px',
+                    zIndex: 1000,
+                    backgroundColor: 'white',
+                    boxShadow: '0px 2px 5px rgba(0, 0, 0, 0.2)',
+                }}
+                onClick={handleMoveToCurrentLocation}
+            >
+                <MyLocationIcon style={{ color: '#1976d2' }} /> {/* Use the locate icon */}
+            </IconButton>
+        );
+    };
 
     return (
         <>
@@ -161,8 +244,6 @@ function AddApartmentPage() {
                         <TextField fullWidth label="Title" name="title" onChange={handleChange} required />
                         <TextField fullWidth label="Address" name="location.address" onChange={handleChange} required />
                         <TextField fullWidth label="Area" name="location.area" onChange={handleChange} required />
-                        <TextField fullWidth label="Latitude" name="location.geolocation.latitude" onChange={handleChange} />
-                        <TextField fullWidth label="Longitude" name="location.geolocation.longitude" onChange={handleChange} />
                         <TextField
                             fullWidth
                             label="Total Bedrooms"
@@ -241,14 +322,35 @@ function AddApartmentPage() {
                         <FormControlLabel control={<Checkbox name="rent.negotiable" onChange={handleCheckboxChange} />} label="Negotiable" />
                         <FormControlLabel control={<Checkbox name="utility_bill_included" onChange={handleCheckboxChange} />} label="Utility Bill Included" />
 
-                        <TextField select fullWidth label="Preferred Department" name="tenancy_preferences.preferred_dept" onChange={handleChange} required>
+                        <TextField
+                            select
+                            fullWidth
+                            label="Preferred Department"
+                            name="tenancy_preferences.preferred_dept"
+                            value={apartmentData.tenancy_preferences.preferred_dept || ''} // Fallback to empty string
+                            onChange={handleChange}
+                            required
+                        >
                             {departments.map((dept) => (
-                                <MenuItem key={dept} value={dept}>{dept}</MenuItem>
+                                <MenuItem key={dept} value={dept}>
+                                    {dept}
+                                </MenuItem>
                             ))}
                         </TextField>
-                        <TextField select fullWidth label="Preferred Semester" name="tenancy_preferences.preferred_semester" onChange={handleChange} required>
+
+                        <TextField
+                            select
+                            fullWidth
+                            label="Preferred Semester"
+                            name="tenancy_preferences.preferred_semester"
+                            value={apartmentData.tenancy_preferences.preferred_semester || ''} // Fallback to empty string
+                            onChange={handleChange}
+                            required
+                        >
                             {semesters.map((sem) => (
-                                <MenuItem key={sem} value={sem}>{sem}</MenuItem>
+                                <MenuItem key={sem} value={sem}>
+                                    {sem}
+                                </MenuItem>
                             ))}
                         </TextField>
 
@@ -270,6 +372,25 @@ function AddApartmentPage() {
                         <FormControlLabel control={<Checkbox name="amenities.security" onChange={handleCheckboxChange} />} label="Security" />
 
                         <Input type="file" inputProps={{ multiple: true, accept: 'image/*' }} onChange={handleImageUpload} />
+                        <div style={{ height: '400px', width: '100%', marginTop: '20px', position: 'relative' }}>
+                            <MapContainer
+                                center={[apartmentData.location.geolocation.latitude, apartmentData.location.geolocation.longitude]} // Default center
+                                zoom={17}
+                                style={{ height: '100%', width: '100%' }}>
+                                <TileLayer
+                                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                                />
+                                <Marker position={[apartmentData.location.geolocation.latitude, apartmentData.location.geolocation.longitude]}>
+                                    <Popup>
+                                        Latitude: {apartmentData.location.geolocation.latitude.toFixed(4)} <br />
+                                        Longitude: {apartmentData.location.geolocation.longitude.toFixed(4)}
+                                    </Popup>
+                                </Marker>
+                                <LocationSelector setApartmentData={setApartmentData} />
+                                <MoveToCurrentLocation setApartmentData={setApartmentData} />
+                            </MapContainer>
+                        </div>
                         <Button className="sendButton" variant="contained" color="primary" type="submit">Add</Button>
                     </form>
                 </div>
