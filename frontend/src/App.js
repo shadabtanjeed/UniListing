@@ -5,6 +5,7 @@ import WelcomePage from './pages/WelcomePage';
 import ProtectedRoute from './components/ProtectedRoute';
 import ApartmentPage from './pages/ApartmentsPage';
 import ApartmentDetailsPage from './pages/ApartmentDetailsPage';
+import MessagesPage from './pages/MessagesPage';  // Add this import
 
 function App() {
   return (
@@ -24,6 +25,11 @@ function App() {
         <Route path="/apartment/:apartmentId" element={
           <ProtectedRoute>
             <ApartmentDetailsPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/messages" element={  // Add this route
+          <ProtectedRoute>
+            <MessagesPage />
           </ProtectedRoute>
         } />
         <Route path="*" element={
