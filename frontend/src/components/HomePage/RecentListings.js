@@ -8,7 +8,7 @@ import { Box, Grid, Typography, Card, CardMedia, Button } from '@mui/material';
 import { Link } from 'react-router-dom';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import SectionTitle from './SectionTitle';
-import { getRecentApartments } from '../services/apartmentService';
+import { getRecentApartments } from '../../services/apartmentService';
 
 const RecentListings = () => {
   const [recentApartments, setRecentApartments] = useState([]);

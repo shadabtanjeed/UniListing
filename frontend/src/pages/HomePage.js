@@ -7,13 +7,13 @@ import React from 'react';
 import { Box, Container } from '@mui/material';
 
 // Import components
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
-import HeroSection from '../components/HeroSection';
-import FeaturedListings from '../components/FeaturedListings';
-import HowItWorks from '../components/HowItWorks';
-import RecentListings from '../components/RecentListings';
-import StatsSection from '../components/StatsSection';
+import Navbar from '../components/HomePage/Navbar';
+import Footer from '../components/HomePage/Footer';
+import HeroSection from '../components/HomePage/HeroSection';
+import FeaturedListings from '../components/HomePage/FeaturedListings';
+import HowItWorks from '../components/HomePage/HowItWorks';
+import RecentListings from '../components/HomePage/RecentListings';
+import StatsSection from '../components/HomePage/StatsSection';
 
 const HomePage = () => {
     return (
