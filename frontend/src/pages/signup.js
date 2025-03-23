@@ -1,38 +1,40 @@
 import React, { useState } from 'react';
 import { Container, TextField, Button, Typography, IconButton, InputAdornment, Box } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
-import '../styles/LoginPage.css';
+import '../styles/SignUpPage.css';
 
-const LoginPage = () => {
+const SignUpPage = () => {
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
+    const [email, setEmail] = useState('');
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState(null);
+    const [successMessage, setSuccessMessage] = useState(null);
 
-    const handleLogin = async (e) => {
+    const handleSignUp = async (e) => {
         e.preventDefault();
         try {
-            const response = await fetch('http://localhost:5000/auth/login', {
+            const response = await fetch('http://localhost:5000/auth/signup', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ username, password }),
-                credentials: 'include' // Include credentials (cookies) with the request
+                body: JSON.stringify({ firstName, lastName, email, username, password }),
             });
             const data = await response.json();
             if (response.ok) {
-                window.location.href = `/welcome`;
+                setSuccessMessage('Sign Up Successful! Redirecting to login...');
+                setTimeout(() => {
+                    window.location.href = '/login'; // Redirect to the login page after 2 seconds
+                }, 2000);
             } else {
                 setError(data.message);
             }
         } catch (err) {
             setError('Server error');
         }
-    };
-
-    const handleSignUp = () => {
-        window.location.href = '/signup'; // Redirect to the signup page
     };
 
     return (
@@ -45,10 +47,35 @@ const LoginPage = () => {
                 minHeight="100vh"
             >
                 <Typography variant="h4" component="h1" gutterBottom>
-                    Login
+                    Sign Up
                 </Typography>
                 {error && <Typography color="error">{error}</Typography>}
-                <form onSubmit={handleLogin} style={{ width: '100%' }}>
+                {successMessage && <Typography color="primary">{successMessage}</Typography>}
+                <form onSubmit={handleSignUp} style={{ width: '100%' }}>
+                    <TextField
+                        label="First Name"
+                        variant="outlined"
+                        fullWidth
+                        margin="normal"
+                        value={firstName}
+                        onChange={(e) => setFirstName(e.target.value)}
+                    />
+                    <TextField
+                        label="Last Name"
+                        variant="outlined"
+                        fullWidth
+                        margin="normal"
+                        value={lastName}
+                        onChange={(e) => setLastName(e.target.value)}
+                    />
+                    <TextField
+                        label="Email"
+                        variant="outlined"
+                        fullWidth
+                        margin="normal"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                    />
                     <TextField
                         label="Username"
                         variant="outlined"
@@ -88,22 +115,12 @@ const LoginPage = () => {
                             backgroundColor: "#2d4f8f",
                         }}
                     >
-                        Login
+                        Sign Up
                     </Button>
                 </form>
-                <Typography variant="body2" style={{ marginTop: '16px' }}>
-                    Don't have an account?{' '}
-                    <Button
-                        variant="text"
-                        color="primary"
-                        onClick={handleSignUp}
-                    >
-                        Sign up
-                    </Button>
-                </Typography>
             </Box>
         </Container>
     );
 };
 
-export default LoginPage;
+export default SignUpPage;

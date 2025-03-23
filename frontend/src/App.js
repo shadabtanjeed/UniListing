@@ -11,6 +11,7 @@ import ApartmentPage from './pages/ApartmentsPage';
 import ApartmentDetailsPage from './pages/ApartmentDetailsPage';
 import MessagesPage from './pages/MessagesPage';
 import AddApartmentPage from './pages/AddApartmentPage';
+import Signup from './pages/signup';
 
 // New page imports
 import HomePage from './pages/HomePage';
@@ -53,6 +54,7 @@ function App() {
           {/* Public routes */}
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<Signup />} />
 
           {/* Protected routes */}
           <Route path="/welcome" element={
