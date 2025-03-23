@@ -321,7 +321,7 @@ const AdditionalDetails = ({ apartment }) => {
                         {!apartment.rent_type.full_apartment && (
                             <Box className="detail-item">
                                 <Typography variant="body2">Rooms Available:</Typography>
-                                <Typography>{apartment.rent_type.partial_rent.rooms_available}</Typography>
+                                <Typography>{apartment.bedrooms.available}</Typography>
                             </Box>
                         )}
 

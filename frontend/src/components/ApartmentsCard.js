@@ -176,7 +176,7 @@ const ApartmentCard = ({ apartment }) => {
                                                     <MeetingRoomIcon sx={{ color: '#ff9800', fontSize: 16 }} />
                                                 </Box>
                                             }
-                                            label={`Partial (${apartment.rent_type.partial_rent.rooms_available} rooms)`}
+                                            label={`Partial (${apartment.bedrooms.available} rooms)`}
                                             size="small"
                                             sx={{ bgcolor: '#ff9800', color: 'white' }}
                                         />
