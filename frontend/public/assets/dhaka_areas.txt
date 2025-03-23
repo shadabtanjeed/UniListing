@@ -7,6 +7,7 @@ Bashundhara
 Bawnia
 Badda
 Beraid
+Board Bazar
 Cantonment Area
 Dakshinkhan
 Dania
@@ -19,6 +20,7 @@ Gulshan
 Hatirjheel Lake
 Hazaribagh
 Islampur
+Joydebpur
 Jurain
 Kafrul
 Kamalapur
@@ -28,6 +30,7 @@ Khilkhet
 Khilgaon
 Kotwali
 Lalbagh
+Lalmatia
 Matuail
 Mirpur
 Mohammadpur
