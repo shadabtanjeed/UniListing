@@ -3,13 +3,13 @@ import { Navigate } from 'react-router-dom';
 
 const ProtectedRoute = ({ children }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(null);
-    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const checkAuth = async () => {
+        const checkSession = async () => {
             try {
                 const response = await fetch('http://localhost:5000/auth/session', {
-                    credentials: 'include'
+                    method: 'GET',
+                    credentials: 'include', // Include cookies with the request
                 });
 
                 if (response.ok) {
@@ -17,22 +17,20 @@ const ProtectedRoute = ({ children }) => {
                 } else {
                     setIsAuthenticated(false);
                 }
-            } catch (err) {
+            } catch (error) {
+                console.error('Error checking session:', error);
                 setIsAuthenticated(false);
-            } finally {
-                setLoading(false);
             }
         };
 
-        checkAuth();
+        checkSession();
     }, []);
 
-    if (loading) {
-        // You could return a loading spinner here
-        return <div>Loading...</div>;
+    if (isAuthenticated === null) {
+        return <div>Loading...</div>; // Show a loading indicator while checking authentication
     }
 
-    return isAuthenticated ? children : <Navigate to="/" />;
+    return isAuthenticated ? children : <Navigate to="/login" />;
 };
 
 export default ProtectedRoute;
