@@ -121,12 +121,12 @@ function AddApartmentPage() {
     const handleImageUpload = (e) => {
         const input = e.target; // Reference to the input element
         const files = Array.from(input.files).filter(file => file.type.startsWith('image/')); // Filter only image files
-    
+
         if (files.length === 0) {
             alert('Please upload only image files.');
             return;
         }
-    
+
         const readFiles = files.map(file => {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
@@ -141,7 +141,7 @@ function AddApartmentPage() {
                 reader.onerror = reject;
             });
         });
-    
+
         Promise.all(readFiles)
             .then(newImages => {
                 setApartmentData(prev => ({
@@ -321,6 +321,33 @@ function AddApartmentPage() {
                                 </MenuItem>
                             ))}
                         </TextField>
+
+
+                        {/* Mandatory Details Field */}
+                        <TextField
+                            fullWidth
+                            label="Details (Description)"
+                            name="optional_details.more_details"
+                            multiline
+                            rows={4} // Allow multiple lines for the description
+                            onChange={handleChange}
+                            required // Make this field mandatory
+                        />
+                        {/* Optional Size Field */}
+                        <TextField
+                            fullWidth
+                            label="Size (Square Feet)"
+                            name="optional_details.size"
+                            type="number"
+                            onChange={handleChange}
+                            onWheel={(e) => e.target.blur()} // Prevent mouse wheel scrolling
+                            onKeyDown={(e) => {
+                                if (['e', 'E', '+', '-'].includes(e.key)) {
+                                    e.preventDefault(); // Block invalid characters
+                                }
+                            }}
+                            inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }} // Restrict input to numbers
+                        />
                         <TextField
                             fullWidth
                             label="Total Bedrooms"
@@ -368,7 +395,7 @@ function AddApartmentPage() {
                             inputProps={{ inputMode: 'numeric', pattern: '[0-9]*', max: apartmentData.bedrooms.available }} // Restrict input to numbers
                         />
  */}
-                        
+
 
                         {/* <FormControlLabel
                             control={<Checkbox
@@ -507,28 +534,28 @@ function AddApartmentPage() {
                         <FormControlLabel control={<Checkbox name="amenities.security" onChange={handleCheckboxChange} />} label="Security" />
 
                         <Input type="file" inputProps={{ multiple: true, accept: 'image/*' }} // Restrict to image files
-                                onChange={handleImageUpload}
-                            />
+                            onChange={handleImageUpload}
+                        />
 
-                            {/* Thumbnails Section */}
-                            <div className="imageThumbnails">
-                                {apartmentData.images.map((image, index) => (
-                                    <img
-                                        key={index}
-                                        src={`data:${image.contentType};base64,${image.data}`} // Construct the full Base64 URL
-                                        alt={`Uploaded ${index + 1}`}
-                                        style={{
-                                            width: '100px',
-                                            height: '100px',
-                                            objectFit: 'cover',
-                                            margin: '5px',
-                                            borderRadius: '5px',
-                                            border: '1px solid #ccc'
-                                        }}
-                                    />
-                                ))}
-                            </div>
-                            <div style={{ height: '400px', width: '100%', marginTop: '20px', position: 'relative' }}>
+                        {/* Thumbnails Section */}
+                        <div className="imageThumbnails">
+                            {apartmentData.images.map((image, index) => (
+                                <img
+                                    key={index}
+                                    src={`data:${image.contentType};base64,${image.data}`} // Construct the full Base64 URL
+                                    alt={`Uploaded ${index + 1}`}
+                                    style={{
+                                        width: '100px',
+                                        height: '100px',
+                                        objectFit: 'cover',
+                                        margin: '5px',
+                                        borderRadius: '5px',
+                                        border: '1px solid #ccc'
+                                    }}
+                                />
+                            ))}
+                        </div>
+                        <div style={{ height: '400px', width: '100%', marginTop: '20px', position: 'relative' }}>
                             <MapContainer
                                 center={[apartmentData.location.geolocation.latitude, apartmentData.location.geolocation.longitude]} // Default center
                                 zoom={17}
@@ -548,32 +575,7 @@ function AddApartmentPage() {
                             </MapContainer>
                         </div>
 
-                        {/* Optional Size Field */}
-                        <TextField
-                            fullWidth
-                            label="Size (Square Feet)"
-                            name="optional_details.size"
-                            type="number"
-                            onChange={handleChange}
-                            onWheel={(e) => e.target.blur()} // Prevent mouse wheel scrolling
-                            onKeyDown={(e) => {
-                                if (['e', 'E', '+', '-'].includes(e.key)) {
-                                    e.preventDefault(); // Block invalid characters
-                                }
-                            }}
-                            inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }} // Restrict input to numbers
-                        />
 
-                        {/* Mandatory Details Field */}
-                        <TextField
-                            fullWidth
-                            label="Details (Description)"
-                            name="optional_details.more_details"
-                            multiline
-                            rows={4} // Allow multiple lines for the description
-                            onChange={handleChange}
-                            required // Make this field mandatory
-                        />
 
                         <Button className="sendButton" variant="contained" color="primary" type="submit">Add</Button>
                     </form>
