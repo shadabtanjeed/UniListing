@@ -29,6 +29,7 @@ function AddItemPage() {
         title: '',
         description: '',
         category: '',
+        price: '', // New field
         email: '',
         phone: '',
         images: [],
@@ -251,6 +252,17 @@ function AddItemPage() {
                                 </MenuItem>
                             ))}
                         </TextField>
+
+                        {/* Price Field */}
+                        <TextField
+                            fullWidth
+                            label="Price"
+                            name="price"
+                            type="number"
+                            onChange={handleChange}
+                            required
+                        />
+
                         <TextField
                             fullWidth
                             label="Email"
