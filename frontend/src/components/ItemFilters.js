@@ -16,11 +16,17 @@ const ItemFilters = ({ filters, onFilterChange }) => {
         onFilterChange({ [name]: value });
     };
 
+    const handleCheckboxChange = (e) => {
+        const { name, checked } = e.target;
+        onFilterChange({ [name]: checked });
+    };
+
     const handleClearFilters = () => {
         onFilterChange({
             category: '',
             minPrice: '',
             maxPrice: '',
+            negotiable: false
         });
     };
 
@@ -78,6 +84,20 @@ const ItemFilters = ({ filters, onFilterChange }) => {
                         margin="normal"
                     />
                 </Box>
+            </Box>
+
+            <Box className="filter-group">
+                <FormControlLabel
+                    control={
+                        <Checkbox
+                            name="negotiable"
+                            checked={filters.furnished}
+                            onChange={handleCheckboxChange}
+                            color="primary"
+                        />
+                    }
+                    label="Negotiable"
+                />
             </Box>
 
             <Button
