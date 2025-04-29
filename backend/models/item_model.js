@@ -42,9 +42,13 @@ const ItemSchema = new Schema({
         required: true,
         enum: ['Electronics', 'Furniture', 'Books', 'Clothing', 'Other'] // Predefined categories
     },
-    price: { // New field
+    price: {
         type: Number,
         required: true
+    },
+    negotiable: {
+        type: Boolean,
+        default: false
     },
     description: {
         type: String,
