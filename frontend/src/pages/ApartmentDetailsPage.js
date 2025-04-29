@@ -17,6 +17,7 @@ import {
     Tab,
 } from '@mui/material';
 import AppSidebar from '../components/Sidebar';
+import { API_BASE_URL } from '../config/api-config';
 
 // Icons
 import LocationOnIcon from '@mui/icons-material/LocationOn';
@@ -48,7 +49,6 @@ import '../styles/ApartmentDetails.css';
 
 // Lazy loaded components
 const ApartmentLocationMap = React.lazy(() => import('../components/ApartmentLocationMap'));
-
 
 // Image Carousel Component
 const ImageCarousel = ({ images }) => {
@@ -492,8 +492,7 @@ const ApartmentDetailsPage = () => {
         const fetchApartmentDetails = async () => {
             try {
                 setLoading(true);
-                // You'll need to create this endpoint in your backend
-                const response = await fetch(`http://localhost:5000/api/apartments/${apartmentId}`, {
+                const response = await fetch(`${API_BASE_URL}/api/apartments/${apartmentId}`, {
                     credentials: 'include'
                 });
 

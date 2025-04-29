@@ -1,4 +1,6 @@
-const API_URL = 'http://localhost:5000/api/messages';
+import { API_BASE_URL } from '../config/api-config';
+
+const API_URL = `${API_BASE_URL}/api/messages`;
 
 // Get all conversations for current user
 export const getConversations = async () => {
@@ -127,5 +129,5 @@ export const searchUsers = async (query) => {
 
 // Get image URL for a message - use absolute URL for images
 export const getImageUrl = (messageId) => {
-    return `http://localhost:5000/api/messages/image/${messageId}`;
+    return `${API_BASE_URL}/api/messages/image/${messageId}`;
 };

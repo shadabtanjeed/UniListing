@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Container, TextField, Button, Typography, IconButton, InputAdornment, Box, Link } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import '../styles/SignUpPage.css';
+import { API_BASE_URL } from '../config/api-config';
 
 const SignUpPage = () => {
     const [firstName, setFirstName] = useState('');
@@ -16,7 +17,7 @@ const SignUpPage = () => {
     const handleSignUp = async (e) => {
         e.preventDefault();
         try {
-            const response = await fetch('http://localhost:5000/auth/signup', {
+            const response = await fetch(`${API_BASE_URL}/auth/signup`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

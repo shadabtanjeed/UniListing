@@ -9,6 +9,7 @@ import L from 'leaflet';
 import { MapContainer, TileLayer, Marker, useMapEvents, Popup, useMap } from 'react-leaflet';
 import MyLocationIcon from '@mui/icons-material/MyLocation';
 import axios from 'axios'; // Import axios for API calls
+import { API_BASE_URL } from '../config/api-config';
 
 // Fix for default marker icon in Leaflet
 delete L.Icon.Default.prototype._getIconUrl;
@@ -154,7 +155,7 @@ function AddApartmentPage() {
     };
 
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
 
         // Transform the images array for the backend
@@ -201,7 +202,7 @@ function AddApartmentPage() {
         };
 
         // Send the request
-        fetch('http://localhost:5000/api/apartments/add_apartment', {
+        fetch(`${API_BASE_URL}/api/apartments/add_apartment`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

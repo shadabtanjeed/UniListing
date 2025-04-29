@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
+import { API_BASE_URL } from '../config/api-config';
 
 const ProtectedRoute = ({ children }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(null);
@@ -7,7 +8,7 @@ const ProtectedRoute = ({ children }) => {
     useEffect(() => {
         const checkSession = async () => {
             try {
-                const response = await fetch('http://localhost:5000/auth/session', {
+                const response = await fetch(`${API_BASE_URL}/auth/session`, {
                     method: 'GET',
                     credentials: 'include', // Include cookies with the request
                 });

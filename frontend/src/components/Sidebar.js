@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import '../styles/Sidebar.css';
 import logo from '../unilisting_rectangle.png';
+import { API_BASE_URL } from '../config/api-config';
 
 const AppSidebar = () => {
     const navRef = useRef(null);
@@ -59,7 +60,7 @@ const AppSidebar = () => {
         e.preventDefault();
         try {
             // Call the backend logout endpoint
-            await fetch('http://localhost:5000/auth/logout', {
+            await fetch(`${API_BASE_URL}/auth/logout`, {
                 method: 'POST',
                 credentials: 'include'
             });

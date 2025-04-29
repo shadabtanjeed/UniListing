@@ -4,6 +4,7 @@ import AppSidebar from '../components/Sidebar';
 import ApartmentFilters from '../components/ApartmentFilters';
 import ApartmentCard from '../components/ApartmentsCard';
 import ApartmentsList from '../components/ApartmentList';
+import { API_BASE_URL } from '../config/api-config';
 import '../styles/ApartmentPage.css';
 
 const ApartmentPage = () => {
@@ -30,7 +31,7 @@ const ApartmentPage = () => {
     const fetchApartments = async () => {
         try {
             setLoading(true);
-            const response = await fetch('http://localhost:5000/api/apartments/all_apartments', {
+            const response = await fetch(`${API_BASE_URL}/api/apartments/all_apartments`, {
                 credentials: 'include'
             });
 

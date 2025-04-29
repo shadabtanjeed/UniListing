@@ -1,10 +1,11 @@
 import { io } from 'socket.io-client';
+import { API_BASE_URL } from '../config/api-config';
 
 let socket;
 
 export const initSocket = (username) => {
     // Create socket connection
-    socket = io('http://localhost:5000', {
+    socket = io(API_BASE_URL, {
         withCredentials: true,
     });
 

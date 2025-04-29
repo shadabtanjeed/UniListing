@@ -43,6 +43,7 @@ import {
   searchUsers,
   getImageUrl
 } from '../services/chatService';
+import { API_BASE_URL } from '../config/api-config';
 
 // Avatar component that uses initials
 const UserAvatar = ({ username, online }) => {
@@ -276,7 +277,7 @@ const MessagesPage = () => {
   useEffect(() => {
     const fetchCurrentUser = async () => {
       try {
-        const response = await fetch('http://localhost:5000/auth/session', {
+        const response = await fetch(`${API_BASE_URL}/auth/session`, {
           credentials: 'include'
         });
 

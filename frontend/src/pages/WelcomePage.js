@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import AppSidebar from '../components/Sidebar';
 import { Box, Typography } from '@mui/material';
 import '../styles/WelcomePage.css';
+import { API_BASE_URL } from '../config/api-config';
 
 const WelcomePage = () => {
     const [username, setUsername] = useState('');
@@ -9,7 +10,7 @@ const WelcomePage = () => {
     useEffect(() => {
         const fetchUsername = async () => {
             try {
-                const response = await fetch('http://localhost:5000/auth/session', {
+                const response = await fetch(`${API_BASE_URL}/auth/session`, {
                     credentials: 'include'
                 });
                 const data = await response.json();
