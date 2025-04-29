@@ -13,6 +13,7 @@ import MessagesPage from './pages/MessagesPage';
 import AddApartmentPage from './pages/AddApartmentPage';
 import Signup from './pages/signup';
 import AddItemPage from './pages/AddItemPage';
+import ItemPage from './pages/ItemsPage';
 
 // New page imports
 import HomePage from './pages/HomePage';
@@ -71,6 +72,11 @@ function App() {
           <Route path="/add-apartments" element={
             <ProtectedRoute>
               <AddApartmentPage />
+            </ProtectedRoute>
+          } />
+          <Route path="/view-marketplace" element={
+            <ProtectedRoute>
+              <ItemPage />
             </ProtectedRoute>
           } />
           <Route path="/add-item" element={
