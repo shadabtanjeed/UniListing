@@ -4,8 +4,13 @@ const User_Demo = require('../models/users_demo');
 const multer = require('multer');
 const path = require('path');
 
+
+
 // Store connected users
 const connectedUsers = new Map();
+
+const jwt = require('jsonwebtoken');
+const JWT_SECRET = process.env.JWT_SECRET;
 
 // Setup socket connection for a user
 const setupSocket = (socket, io) => {
@@ -139,7 +144,15 @@ const setupSocket = (socket, io) => {
     const getMessageImage = async (req, res) => {
         try {
             const { messageId } = req.params;
-            const username = req.session.username;
+            // Get username from token in cookies
+            const token = req.cookies.token;
+            if (!token) {
+                return res.status(401).json({ message: 'Not authenticated' });
+            }
+
+            // Verify the token
+            const decoded = jwt.verify(token, JWT_SECRET);
+            const username = decoded.username;
 
             if (!username) {
                 return res.status(401).json({ message: 'Not authenticated' });
@@ -206,7 +219,15 @@ const setupSocket = (socket, io) => {
 // Get all conversations for a user
 const getUserConversations = async (req, res) => {
     try {
-        const username = req.session.username;
+        const token = req.cookies.token; // Get the token from cookies
+        if (!token) {
+            return res.status(401).json({ message: 'Not authenticated' });
+        }
+
+        // Verify the token
+        const decoded = jwt.verify(token, JWT_SECRET);
+        const username = decoded.username;
+
         if (!username) {
             return res.status(401).json({ message: 'Not authenticated' });
         }
@@ -247,7 +268,15 @@ const getUserConversations = async (req, res) => {
 const getConversationMessages = async (req, res) => {
     try {
         const { conversationId } = req.params;
-        const username = req.session.username;
+        // Get username from token in cookies
+        const token = req.cookies.token;
+        if (!token) {
+            return res.status(401).json({ message: 'Not authenticated' });
+        }
+
+        // Verify the token
+        const decoded = jwt.verify(token, JWT_SECRET);
+        const username = decoded.username;
 
         if (!username) {
             return res.status(401).json({ message: 'Not authenticated' });
@@ -299,51 +328,76 @@ const getConversationMessages = async (req, res) => {
 // Send a new message
 const sendMessage = async (req, res) => {
     try {
-        const { receiver, text, conversationId } = req.body;
-        const sender = req.session.username;
+        const { receiver, text, conversationId, image } = req.body;
+        const token = req.cookies.token;
+
+        if (!token) {
+            return res.status(401).json({ message: 'Not authenticated' });
+        }
+
+        const decoded = jwt.verify(token, JWT_SECRET);
+        const sender = decoded.username;
 
         if (!sender) {
             return res.status(401).json({ message: 'Not authenticated' });
         }
 
-        // If no conversation ID provided, create new conversation
         let convId = conversationId;
+
+        // Check if a conversation already exists
         if (!convId) {
-            const newConv = new Conversation({
-                participants: [sender, receiver],
-                lastMessage: text,
-                lastMessageTimestamp: new Date(),
-                unreadCount: new Map([[receiver, 1]])
+            const existingConv = await Conversation.findOne({
+                participants: { $all: [sender, receiver] },
             });
 
-            const savedConv = await newConv.save();
-            convId = savedConv._id;
+            if (existingConv) {
+                convId = existingConv._id;
+            } else {
+                // Create a new conversation if none exists
+                const newConv = new Conversation({
+                    participants: [sender, receiver],
+                    lastMessage: text,
+                    lastMessageTimestamp: new Date(),
+                    unreadCount: new Map([[receiver, 1]]),
+                });
+
+                const savedConv = await newConv.save();
+                convId = savedConv._id;
+            }
         } else {
-            // Update existing conversation
+            // Update the existing conversation
             await Conversation.findByIdAndUpdate(convId, {
                 lastMessage: text,
                 lastMessageTimestamp: new Date(),
-                $inc: { [`unreadCount.${receiver}`]: 1 }
+                $inc: { [`unreadCount.${receiver}`]: 1 },
             });
         }
 
-        // Create new message
+        // Create the new message
         const message = new Message({
             conversationId: convId,
             sender,
             receiver,
             text,
             timestamp: new Date(),
-            read: false
+            read: false,
+            hasImage: !!image,
         });
+
+        if (image) {
+            message.image = {
+                data: Buffer.from(image.data, 'base64'),
+                contentType: image.contentType,
+                originalName: image.fileName,
+            };
+        }
 
         const savedMessage = await message.save();
 
         res.status(201).json({
             message: savedMessage,
-            conversationId: convId
+            conversationId: convId,
         });
-
     } catch (error) {
         console.error('Error sending message:', error);
         res.status(500).json({ message: 'Server error' });
@@ -354,7 +408,15 @@ const sendMessage = async (req, res) => {
 const markAsRead = async (req, res) => {
     try {
         const { conversationId } = req.params;
-        const username = req.session.username;
+        // Get username from token in cookies
+        const token = req.cookies.token;
+        if (!token) {
+            return res.status(401).json({ message: 'Not authenticated' });
+        }
+
+        // Verify the token
+        const decoded = jwt.verify(token, JWT_SECRET);
+        const username = decoded.username;
 
         if (!username) {
             return res.status(401).json({ message: 'Not authenticated' });
@@ -388,7 +450,15 @@ const markAsRead = async (req, res) => {
 const createConversation = async (req, res) => {
     try {
         const { receiver } = req.body;
-        const sender = req.session.username;
+        const token = req.cookies.token; // Get the token from cookies
+
+        if (!token) {
+            return res.status(401).json({ message: 'Not authenticated' });
+        }
+
+        // Verify the token
+        const decoded = jwt.verify(token, JWT_SECRET);
+        const sender = decoded.username;
 
         if (!sender) {
             return res.status(401).json({ message: 'Not authenticated' });
@@ -425,7 +495,15 @@ const createConversation = async (req, res) => {
 const searchUsers = async (req, res) => {
     try {
         const { query } = req.query;
-        const currentUsername = req.session.username;
+        const token = req.cookies.token; // Get the token from cookies
+
+        if (!token) {
+            return res.status(401).json({ message: 'Not authenticated' });
+        }
+
+        // Verify the token
+        const decoded = jwt.verify(token, JWT_SECRET);
+        const currentUsername = decoded.username;
 
         if (!currentUsername) {
             return res.status(401).json({ message: 'Not authenticated' });
@@ -463,7 +541,15 @@ const searchUsers = async (req, res) => {
 const getMessageImage = async (req, res) => {
     try {
         const { messageId } = req.params;
-        const username = req.session.username;
+        // Get username from token in cookies
+        const token = req.cookies.token;
+        if (!token) {
+            return res.status(401).json({ message: 'Not authenticated' });
+        }
+
+        // Verify the token
+        const decoded = jwt.verify(token, JWT_SECRET);
+        const username = decoded.username;
 
         if (!username) {
             return res.status(401).json({ message: 'Not authenticated' });
