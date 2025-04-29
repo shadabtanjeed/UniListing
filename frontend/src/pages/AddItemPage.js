@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { TextField, Button, MenuItem, Input, IconButton, Snackbar, Alert } from '@mui/material'; // Import Snackbar and Alert
+import { TextField, Button, MenuItem, Input, IconButton, Snackbar, Alert, FormControlLabel, Checkbox, Box } from '@mui/material'; // Import Snackbar and Alert
 import { useNavigate } from 'react-router-dom';
 import AppSidebar from '../components/Sidebar';
 import '../styles/AddItemPage.css';
@@ -29,7 +29,8 @@ function AddItemPage() {
         title: '',
         description: '',
         category: '',
-        price: '', // New field
+        price: '',
+        negotiable: false,
         email: '',
         phone: '',
         images: [],
@@ -66,6 +67,14 @@ function AddItemPage() {
     const handleChange = (e) => {
         const { name, value } = e.target;
         setItemData((prev) => ({ ...prev, [name]: value }));
+    };
+
+    const handleCheckboxChange = (e) => {
+        const { name, checked } = e.target;
+        setItemData(prev => ({
+            ...prev,
+            [name]: checked
+        }));
     };
 
     const handleImageUpload = (e) => {
@@ -254,14 +263,27 @@ function AddItemPage() {
                         </TextField>
 
                         {/* Price Field */}
-                        <TextField
-                            fullWidth
-                            label="Price"
-                            name="price"
-                            type="number"
-                            onChange={handleChange}
-                            required
-                        />
+                        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', width: '100%', gap: 2 }}>
+                            <TextField
+                                sx={{ flex: '0 0 80%' }}
+                                label="Price"
+                                name="price"
+                                type="number"
+                                onChange={handleChange}
+                                required
+                            />
+                            <FormControlLabel
+                                control={
+                                    <Checkbox
+                                        name="negotiable"
+                                        checked={itemData.negotiable}
+                                        onChange={handleCheckboxChange}
+                                    />
+                                }
+                                label="Negotiable"
+                                sx={{ flex: '0 0 auto', mt: 1 }}
+                            />
+                        </Box>
 
                         <TextField
                             fullWidth
