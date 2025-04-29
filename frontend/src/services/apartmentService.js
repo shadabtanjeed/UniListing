@@ -10,7 +10,7 @@ import { API_BASE_URL } from '../config/api-config';
 export const getRecentApartments = async (limit = 4) => {
     try {
         // Using your existing endpoint to get all apartments
-        const response = await fetch('${API_BASE_URL}/api/apartments/all_apartments', {
+        const response = await fetch(`${API_BASE_URL}/api/apartments/all_apartments`, {
             credentials: 'include'
         });
 
@@ -34,7 +34,7 @@ export const getRecentApartments = async (limit = 4) => {
 export const getFeaturedApartments = async (limit = 4) => {
     try {
         // Using your existing endpoint to get all apartments
-        const response = await fetch('${API_BASE_URL}/api/apartments/all_apartments', {
+        const response = await fetch(`${API_BASE_URL}/api/apartments/all_apartments`, {
             credentials: 'include'
         });
 
