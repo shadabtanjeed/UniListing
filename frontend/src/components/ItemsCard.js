@@ -22,6 +22,40 @@ import { useNavigate } from 'react-router-dom';
 
 const ItemCard = ({ item }) => {
     const navigate = useNavigate();
+
+    // Function to convert Buffer data to image URL
+    const getFirstImageUrl = () => {
+        if (item.images && item.images.length > 0) {
+            try {
+                // Using base64 encoding
+                const base64String = btoa(
+                    new Uint8Array(item.images[0].data.data)
+                        .reduce((data, byte) => data + String.fromCharCode(byte), '')
+                );
+                return `data:${item.images[0].contentType};base64,${base64String}`;
+            } catch (err) {
+                console.error('Error processing image:', err);
+                return 'https://via.placeholder.com/300x200?text=No+Image+Available';
+            }
+        }
+        return 'https://via.placeholder.com/300x200?text=No+Image+Available';
+    };
+
+    const handleViewDetails = () => {
+        navigate(`/item/${item.item_id}`);
+    };
+
+    // Extract description directly from item
+    const description = item.description || "No description provided";
+
+    // Format listing date using posted_at
+    const formattedDate = item.posted_at ?
+        new Date(item.posted_at).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric'
+        }) : 'Not specified';
+
     return (
         <Card className="item-card-horizontal" sx={{ height: 'auto', mb: 2 }}>
             <Grid container sx={{ height: '100%' }}>
