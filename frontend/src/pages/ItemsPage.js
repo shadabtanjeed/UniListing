@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Typography, CircularProgress, Alert } from '@mui/material';
 import AppSidebar from '../components/Sidebar';
+import ItemFilters from '../components/ItemFilters';
 import ItemsList from '../components/ItemList';
 import { API_BASE_URL } from '../config/api-config';
 import '../styles/ItemPage.css';
@@ -10,9 +11,19 @@ const ItemPage = () => {
     const [filteredItems, setFilteredItems] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [filters, setFilters] = useState({
+        category: '',
+        minPrice: '',
+        maxPrice: '',
+    });
+
     useEffect(() => {
         fetchItems();
     }, []);
+
+    useEffect(() => {
+        applyFilters();
+    }, [items, filters]);
 
     const fetchItems = async () => {
         try {
@@ -27,7 +38,7 @@ const ItemPage = () => {
 
             const data = await response.json();
             setItems(data);
-            // setFilteredApartments(data);
+            setFilteredItems(data);
         } catch (err) {
             setError(err.message || 'Failed to fetch items');
             console.error('Error fetching items:', err);
@@ -35,6 +46,31 @@ const ItemPage = () => {
             setLoading(false);
         }
     };
+
+    const applyFilters = () => {
+        let filtered = [...items];
+
+        if (filters.category) {
+            filtered = filtered.filter(item =>
+                item.category.toLowerCase().includes(filters.category.toLowerCase())
+            );
+        }
+
+        if (filters.minPrice) {
+            filtered = filtered.filter(item => item.price >= Number(filters.minPrice));
+        }
+
+        if (filters.maxRent) {
+            filtered = filtered.filter(item => item.price <= Number(filters.maxPrice));
+        }
+
+        setFilteredItems(filtered);
+    };
+
+    const handleFilterChange = (newFilters) => {
+        setFilters({ ...filters, ...newFilters });
+    };
+
     return (
         <>
             <AppSidebar />
@@ -44,11 +80,10 @@ const ItemPage = () => {
                 </Typography>
 
                 <Box className="main-container" width="100%" maxWidth="1200px" mb={4}>
-                    {/* Filter Section */}
-                    {/* <ApartmentFilters
+                    <ItemFilters
                         filters={filters}
                         onFilterChange={handleFilterChange}
-                    /> */}
+                    />
 
                     {/* Apartment Listings */}
                     {loading ? (
@@ -61,7 +96,7 @@ const ItemPage = () => {
                         </Alert>
                     ) : (
                         <ItemsList
-                            items={items}//should be filteredItems after filters are done
+                            items={filteredItems}//should be filteredItems after filters are done
                         />
                     )}
                 </Box>
