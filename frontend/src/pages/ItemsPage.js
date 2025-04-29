@@ -64,6 +64,10 @@ const ItemPage = () => {
             filtered = filtered.filter(item => item.price <= Number(filters.maxPrice));
         }
 
+        if (filters.negotiable) {
+            filtered = filtered.filter(item => item.negotiable === true);
+        }
+
         setFilteredItems(filtered);
     };
 
