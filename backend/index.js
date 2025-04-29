@@ -56,6 +56,7 @@ const io = new Server(server, {
 const authRoutes = require('./routes/auth');
 const apartmentRoutes = require('./routes/apartment_routes');
 const messageRoutes = require('./routes/message_routes'); // We'll create this
+const itemRoutes = require('./routes/item_routes'); // We'll create this
 
 // Import chat controller for socket handlers
 const chatController = require('./controllers/chatController'); // We'll create this
@@ -63,6 +64,7 @@ const chatController = require('./controllers/chatController'); // We'll create 
 app.use('/auth', authRoutes);
 app.use('/api/apartments', apartmentRoutes);
 app.use('/api/messages', messageRoutes); // We'll add this route
+app.use('/api/items', itemRoutes); 
 
 // Socket.IO connection handler
 io.on('connection', (socket) => {

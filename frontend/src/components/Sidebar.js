@@ -115,9 +115,9 @@ const AppSidebar = () => {
                                 </Link>
                             </li>
                             <li className="list">
-                                <Link to="/add-post" className="nav-link">
+                                <Link to="/add-item" className="nav-link">
                                     <i className="bx bx-plus-circle icon"></i>
-                                    <span className="link">Add New Post</span>
+                                    <span className="link">Add New Item</span>
                                 </Link>
                             </li>
                             <li className="list">

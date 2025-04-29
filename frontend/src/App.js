@@ -12,6 +12,7 @@ import ApartmentDetailsPage from './pages/ApartmentDetailsPage';
 import MessagesPage from './pages/MessagesPage';
 import AddApartmentPage from './pages/AddApartmentPage';
 import Signup from './pages/signup';
+import AddItemPage from './pages/AddItemPage';
 
 // New page imports
 import HomePage from './pages/HomePage';
@@ -70,6 +71,11 @@ function App() {
           <Route path="/add-apartments" element={
             <ProtectedRoute>
               <AddApartmentPage />
+            </ProtectedRoute>
+          } />
+          <Route path="/add-item" element={
+            <ProtectedRoute>
+              <AddItemPage />
             </ProtectedRoute>
           } />
           <Route path="/apartment/:apartmentId" element={
