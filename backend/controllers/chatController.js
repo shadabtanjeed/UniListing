@@ -328,14 +328,13 @@ const getConversationMessages = async (req, res) => {
 // Send a new message
 const sendMessage = async (req, res) => {
     try {
-        const { receiver, text, conversationId } = req.body;
-        // Get sender from token in cookies
+        const { receiver, text, conversationId, image } = req.body;
         const token = req.cookies.token;
+
         if (!token) {
             return res.status(401).json({ message: 'Not authenticated' });
         }
 
-        // Verify the token
         const decoded = jwt.verify(token, JWT_SECRET);
         const sender = decoded.username;
 
@@ -343,44 +342,62 @@ const sendMessage = async (req, res) => {
             return res.status(401).json({ message: 'Not authenticated' });
         }
 
-        // If no conversation ID provided, create new conversation
         let convId = conversationId;
+
+        // Check if a conversation already exists
         if (!convId) {
-            const newConv = new Conversation({
-                participants: [sender, receiver],
-                lastMessage: text,
-                lastMessageTimestamp: new Date(),
-                unreadCount: new Map([[receiver, 1]])
+            const existingConv = await Conversation.findOne({
+                participants: { $all: [sender, receiver] },
             });
 
-            const savedConv = await newConv.save();
-            convId = savedConv._id;
+            if (existingConv) {
+                convId = existingConv._id;
+            } else {
+                // Create a new conversation if none exists
+                const newConv = new Conversation({
+                    participants: [sender, receiver],
+                    lastMessage: text,
+                    lastMessageTimestamp: new Date(),
+                    unreadCount: new Map([[receiver, 1]]),
+                });
+
+                const savedConv = await newConv.save();
+                convId = savedConv._id;
+            }
         } else {
-            // Update existing conversation
+            // Update the existing conversation
             await Conversation.findByIdAndUpdate(convId, {
                 lastMessage: text,
                 lastMessageTimestamp: new Date(),
-                $inc: { [`unreadCount.${receiver}`]: 1 }
+                $inc: { [`unreadCount.${receiver}`]: 1 },
             });
         }
 
-        // Create new message
+        // Create the new message
         const message = new Message({
             conversationId: convId,
             sender,
             receiver,
             text,
             timestamp: new Date(),
-            read: false
+            read: false,
+            hasImage: !!image,
         });
+
+        if (image) {
+            message.image = {
+                data: Buffer.from(image.data, 'base64'),
+                contentType: image.contentType,
+                originalName: image.fileName,
+            };
+        }
 
         const savedMessage = await message.save();
 
         res.status(201).json({
             message: savedMessage,
-            conversationId: convId
+            conversationId: convId,
         });
-
     } catch (error) {
         console.error('Error sending message:', error);
         res.status(500).json({ message: 'Server error' });

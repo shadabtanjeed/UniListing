@@ -136,6 +136,74 @@ const ContactInfoCard = ({ apartment }) => {
         });
     };
 
+    const handleSendMessage = async () => {
+        try {
+            // Check if posted_by exists and is a valid username
+            if (!apartment.posted_by) {
+                throw new Error('Cannot send message: Apartment poster information is missing');
+            }
+
+            console.log("Sending message to user:", apartment.posted_by);
+
+            const image = apartment.images[0];
+            console.log("Image selected:", image ? "Yes" : "No");
+
+            let imageData = null;
+            if (image) {
+                console.log("Processing image data...");
+                try {
+                    imageData = {
+                        data: btoa(
+                            new Uint8Array(image.data.data).reduce(
+                                (data, byte) => data + String.fromCharCode(byte),
+                                ''
+                            )
+                        ),
+                        contentType: image.contentType,
+                        fileName: image.name,
+                    };
+                    console.log("Image data processed successfully");
+                } catch (imageError) {
+                    console.error("Error processing image:", imageError);
+                }
+            }
+
+            console.log("Sending request to:", `${API_BASE_URL}/api/messages/send`);
+            console.log("Request payload:", {
+                receiver: apartment.posted_by, // Make sure this is the username
+                text: `I am interested in the apartment: ${apartment.title}`,
+                imageIncluded: !!imageData
+            });
+
+            const response = await fetch(`${API_BASE_URL}/api/messages/send`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include',
+                body: JSON.stringify({
+                    receiver: apartment.posted_by, // Ensure this is the username, not display name
+                    text: `I am interested in the apartment: ${apartment.title}`,
+                    conversationId: null,
+                    image: imageData,
+                }),
+            });
+
+            console.log("Response status:", response.status);
+            const responseData = await response.json();
+            console.log("Response data:", responseData);
+
+            if (!response.ok) {
+                throw new Error(responseData.message || 'Failed to send message');
+            }
+
+            alert('Message sent successfully!');
+        } catch (error) {
+            console.error('Error sending message:', error);
+            alert(`Failed to send message: ${error.message}`);
+        }
+    };
+
     return (
         <Card className="contact-card">
             <CardContent>
@@ -168,6 +236,7 @@ const ContactInfoCard = ({ apartment }) => {
                     variant="contained"
                     fullWidth
                     startIcon={<MessageIcon />}
+                    onClick={handleSendMessage}
                     sx={{
                         backgroundColor: "#2d4f8f",
                         '&:hover': {
