@@ -12,12 +12,7 @@ import {
     SvgIcon,
 } from '@mui/material';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
-import BedIcon from '@mui/icons-material/Bed';
-import BathroomIcon from '@mui/icons-material/Bathroom';
-import SquareFootIcon from '@mui/icons-material/SquareFoot';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
-import HomeIcon from '@mui/icons-material/Home';
-import MeetingRoomIcon from '@mui/icons-material/MeetingRoom';
 import { useNavigate } from 'react-router-dom';
 
 const ItemCard = ({ item }) => {
@@ -117,10 +112,16 @@ const ItemCard = ({ item }) => {
                                 {/* Main details */}
                                 <Box className="price-section" sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
                                     <Typography variant="caption" color="text.secondary" sx={{ mr: 1 }}>Price: </Typography>
+                                    
                                     <Typography variant="h6" component="span" sx={{ ml: 0.5, display: 'flex', alignItems: 'center' }}>
                                         {typeof item.price === 'number' 
                                             ? `${item.price.toLocaleString()} BDT`
                                             : 'Contact for price'}
+                                        {item.negotiable &&
+                                            <Typography component="span" variant="caption" sx={{ ml: 1, color: 'text.secondary' }}>
+                                                (Negotiable)
+                                            </Typography>
+                                        }
                                     </Typography>
                                 </Box>
 
