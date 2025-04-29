@@ -16,11 +16,9 @@ const WelcomePage = () => {
                 if (response.ok) {
                     setUsername(data.username);
                 }
-                // Removed the else block with window.location.href redirect
-                // as the ProtectedRoute component now handles this
+
             } catch (err) {
                 console.error('Error fetching username:', err);
-                // Removed redirect as it's handled by ProtectedRoute
             }
         };
 

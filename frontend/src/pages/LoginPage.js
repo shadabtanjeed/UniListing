@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Container, TextField, Button, Typography, IconButton, InputAdornment, Box } from '@mui/material';
+import { Container, TextField, Button, Typography, IconButton, InputAdornment, Box, Link } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import '../styles/LoginPage.css';
 
@@ -18,7 +18,7 @@ const LoginPage = () => {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({ username, password }),
-                credentials: 'include' // Include credentials (cookies) with the request
+                credentials: 'include'
             });
             const data = await response.json();
             if (response.ok) {
@@ -93,13 +93,14 @@ const LoginPage = () => {
                 </form>
                 <Typography variant="body2" style={{ marginTop: '16px' }}>
                     Don't have an account?{' '}
-                    <Button
-                        variant="text"
+                    <Link
+                        component="span"
                         color="primary"
                         onClick={handleSignUp}
+                        style={{ cursor: 'pointer' }}
                     >
-                        Sign up
-                    </Button>
+                        Signup
+                    </Link>
                 </Typography>
             </Box>
         </Container>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Container, TextField, Button, Typography, IconButton, InputAdornment, Box } from '@mui/material';
+import { Container, TextField, Button, Typography, IconButton, InputAdornment, Box, Link } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import '../styles/SignUpPage.css';
 
@@ -118,6 +118,17 @@ const SignUpPage = () => {
                         Sign Up
                     </Button>
                 </form>
+                <Typography variant="body2" style={{ marginTop: '16px' }}>
+                    Already have an account?{' '}
+                    <Link
+                        component="span"
+                        color="primary"
+                        onClick={() => window.location.href = '/login'}
+                        style={{ cursor: 'pointer' }}
+                    >
+                        Login
+                    </Link>
+                </Typography>
             </Box>
         </Container>
     );
