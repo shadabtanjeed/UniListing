@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, Suspense } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 import {
     Box,
@@ -128,6 +129,8 @@ const ImageCarousel = ({ images }) => {
 
 // Contact Info Component (sticky)
 const ContactInfoCard = ({ apartment }) => {
+    const navigate = useNavigate();
+
     const formatDate = (dateString) => {
         return new Date(dateString).toLocaleDateString('en-US', {
             year: 'numeric',
@@ -198,6 +201,7 @@ const ContactInfoCard = ({ apartment }) => {
             }
 
             alert('Message sent successfully!');
+            navigate('/messages');
         } catch (error) {
             console.error('Error sending message:', error);
             alert(`Failed to send message: ${error.message}`);
