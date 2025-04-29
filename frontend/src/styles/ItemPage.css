@@ -220,3 +220,15 @@
 .listings-section {
     flex: 1;
 }
+
+/* Responsive adjustments */
+@media (max-width: 960px) {
+    .main-container {
+        flex-direction: column;
+    }
+
+    .filter-section {
+        width: 100%;
+        position: static;
+    }
+}
