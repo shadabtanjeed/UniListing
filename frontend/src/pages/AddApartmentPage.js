@@ -11,6 +11,7 @@ import MyLocationIcon from '@mui/icons-material/MyLocation';
 import axios from 'axios'; // Import axios for API calls
 import { API_BASE_URL } from '../config/api-config';
 
+
 // Fix for default marker icon in Leaflet
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -51,7 +52,7 @@ function AddApartmentPage() {
         // Fetch the username from the session
         const fetchUsername = async () => {
             try {
-                const response = await axios.get('http://localhost:5000/auth/session', {
+                const response = await axios.get('${API_BASE_URL}/auth/session', {
                     withCredentials: true // Include credentials (cookies)
                 });
                 setApartmentData(prev => ({
