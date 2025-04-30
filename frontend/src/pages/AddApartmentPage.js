@@ -368,7 +368,7 @@ function AddApartmentPage() {
                     position: 'absolute',
                     top: '10px',
                     right: '10px',
-                    zIndex: 1000,
+                    zIndex: 400, // Lower than sidebar but higher than map
                     backgroundColor: 'white',
                     boxShadow: '0px 2px 5px rgba(0, 0, 0, 0.2)',
                     padding: '8px',

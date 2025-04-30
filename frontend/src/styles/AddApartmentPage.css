@@ -31,3 +31,23 @@
 .sideContainer {
     margin-top: 64px;
 }
+
+/* Add these z-index rules */
+.leaflet-control-zoom {
+    z-index: 1000 !important;
+}
+
+.move-to-current-location-button {
+    z-index: 1000 !important;
+}
+
+/* Optional: Add positioning context */
+.leaflet-container {
+    position: relative;
+    z-index: 1;
+}
+
+/* Ensure sidebar stays on top */
+.MuiDrawer-root {
+    z-index: 1200 !important;
+}
