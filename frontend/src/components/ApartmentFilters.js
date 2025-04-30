@@ -25,7 +25,9 @@ import BedIcon from '@mui/icons-material/Bed';
 import BathroomIcon from '@mui/icons-material/Bathroom';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import SquareFootIcon from '@mui/icons-material/SquareFoot';
+import HomeIcon from '@mui/icons-material/Home';
 import axios from 'axios';
+
 
 const ApartmentFilters = ({ filters, onFilterChange, sortOption, onSortChange }) => {
     const [areas, setAreas] = useState([]);
@@ -70,6 +72,7 @@ const ApartmentFilters = ({ filters, onFilterChange, sortOption, onSortChange })
             maxSize: '',
             bedrooms: '',
             bathrooms: '',
+            rentType: '',
             amenities: {
                 gas: false,
                 lift: false,
@@ -133,6 +136,30 @@ const ApartmentFilters = ({ filters, onFilterChange, sortOption, onSortChange })
                             {areas.map((area) => (
                                 <MenuItem key={area} value={area}>{area}</MenuItem>
                             ))}
+                        </Select>
+                    </FormControl>
+                </AccordionDetails>
+            </Accordion>
+
+            {/* Rent Type Filter */}
+            <Accordion>
+                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                    <Typography sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <HomeIcon /> Rent Type
+                    </Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                    <FormControl fullWidth size="small">
+                        <InputLabel>Rent Type</InputLabel>
+                        <Select
+                            name="rentType"
+                            value={filters.rentType || ''}
+                            onChange={handleTextChange}
+                            label="Rent Type"
+                        >
+                            <MenuItem value="">Any</MenuItem>
+                            <MenuItem value="full">Full House</MenuItem>
+                            <MenuItem value="partial">Partial Room</MenuItem>
                         </Select>
                     </FormControl>
                 </AccordionDetails>

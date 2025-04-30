@@ -24,6 +24,7 @@ const ApartmentPage = () => {
         maxSize: '',
         bedrooms: '',
         bathrooms: '',
+        rentType: '',
         amenities: {
             gas: false,
             lift: false,
@@ -89,6 +90,16 @@ const ApartmentPage = () => {
             filtered = filtered.filter(apt =>
                 apt.location.area.toLowerCase() === filters.area.toLowerCase()
             );
+        }
+
+        // Add this after the area filter and before the price filter
+        // Apply Rent Type filter
+        if (filters.rentType) {
+            if (filters.rentType === 'full') {
+                filtered = filtered.filter(apt => apt.rent_type.full_apartment === true);
+            } else if (filters.rentType === 'partial') {
+                filtered = filtered.filter(apt => apt.rent_type.partial_rent.enabled === true);
+            }
         }
 
         // Apply Price Range filter
