@@ -7,10 +7,18 @@ import {
     TextField,
     FormControlLabel,
     Checkbox,
-    Button
+    Button,
+    Select,
+    MenuItem,
+    FormControl,
+    Grid
 } from '@mui/material';
+import TuneIcon from '@mui/icons-material/Tune';
+import SortIcon from '@mui/icons-material/Sort';
+import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
+import CategoryIcon from '@mui/icons-material/Category';
 
-const ItemFilters = ({ filters, onFilterChange }) => {
+const ItemFilters = ({ filters, onFilterChange, sortOption, onSortChange }) => {
     const handleTextChange = (e) => {
         const { name, value } = e.target;
         onFilterChange({ [name]: value });
@@ -26,19 +34,47 @@ const ItemFilters = ({ filters, onFilterChange }) => {
             category: '',
             minPrice: '',
             maxPrice: '',
-            negotiable: false
+            negotiable: false,
         });
+        onSortChange('default');
     };
 
     return (
-        <Paper className="filter-section">
-            <Typography variant="h6" component="h2" className="filter-title">
-                Filters
+        <Paper className="filter-section" sx={{ p: 2 }}>
+            <Typography variant="h6" component="h2" className="filter-title" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <TuneIcon /> Filters
             </Typography>
             <Divider sx={{ my: 2 }} />
 
-            <Box className="filter-group">
-                <Typography variant="subtitle2">Category</Typography>
+            {/* Sorting Options - No Accordion */}
+            <Box sx={{ mb: 3 }}>
+                <Typography sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1, fontWeight: 'medium' }}>
+                    <SortIcon /> Sort By
+                </Typography>
+                <FormControl fullWidth size="small">
+                    <Select
+                        value={sortOption}
+                        onChange={(e) => onSortChange(e.target.value)}
+                        size="small"
+                    >
+                        <MenuItem value="default">Default (Newest)</MenuItem>
+                        <MenuItem value="name_asc">Name (A-Z)</MenuItem>
+                        <MenuItem value="name_desc">Name (Z-A)</MenuItem>
+                        <MenuItem value="price_asc">Price (Low to High)</MenuItem>
+                        <MenuItem value="price_desc">Price (High to Low)</MenuItem>
+                        <MenuItem value="date_desc">Date (Newest First)</MenuItem>
+                        <MenuItem value="date_asc">Date (Oldest First)</MenuItem>
+                    </Select>
+                </FormControl>
+            </Box>
+
+            <Divider sx={{ my: 2 }} />
+
+            {/* Category Filter - No Accordion */}
+            <Box sx={{ mb: 3 }}>
+                <Typography sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1, fontWeight: 'medium' }}>
+                    <CategoryIcon /> Category
+                </Typography>
                 <TextField
                     name="category"
                     select
@@ -49,7 +85,6 @@ const ItemFilters = ({ filters, onFilterChange }) => {
                     size="small"
                     value={filters.category}
                     onChange={handleTextChange}
-                    margin="normal"
                 >
                     <option value="">Any</option>
                     <option value="electronics">Electronics</option>
@@ -60,8 +95,13 @@ const ItemFilters = ({ filters, onFilterChange }) => {
                 </TextField>
             </Box>
 
-            <Box className="filter-group">
-                <Typography variant="subtitle2">Price Range (BDT)</Typography>
+            <Divider sx={{ my: 2 }} />
+
+            {/* Price Range Filter - No Accordion */}
+            <Box sx={{ mb: 3 }}>
+                <Typography sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1, fontWeight: 'medium' }}>
+                    <AttachMoneyIcon /> Price Range (BDT)
+                </Typography>
                 <Box sx={{ display: 'flex', gap: 2 }}>
                     <TextField
                         name="minPrice"
@@ -71,7 +111,7 @@ const ItemFilters = ({ filters, onFilterChange }) => {
                         type="number"
                         value={filters.minPrice}
                         onChange={handleTextChange}
-                        margin="normal"
+                        fullWidth
                     />
                     <TextField
                         name="maxPrice"
@@ -81,24 +121,22 @@ const ItemFilters = ({ filters, onFilterChange }) => {
                         type="number"
                         value={filters.maxPrice}
                         onChange={handleTextChange}
-                        margin="normal"
+                        fullWidth
                     />
                 </Box>
-            </Box>
-
-            <Box className="filter-group">
                 <FormControlLabel
                     control={
                         <Checkbox
                             name="negotiable"
-                            checked={filters.furnished}
+                            checked={filters.negotiable || false}
                             onChange={handleCheckboxChange}
-                            color="primary"
                         />
                     }
-                    label="Negotiable"
+                    label="Negotiable Only"
+                    sx={{ mt: 1 }}
                 />
             </Box>
+
 
             <Button
                 variant="outlined"
