@@ -37,7 +37,7 @@ const ItemCard = ({ item }) => {
     };
 
     const handleViewDetails = () => {
-        navigate(`/item/${item.item_id}`);
+        navigate(`/item/get_item/${item.item_id}`);
     };
 
     // Extract description directly from item
