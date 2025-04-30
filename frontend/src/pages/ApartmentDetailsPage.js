@@ -414,15 +414,24 @@ const TabPanel = (props) => {
 
 // Overview Section
 const Overview = ({ apartment }) => {
+    const splitDescription = (description) => {
+        if (!description) return ['No description provided for this property.'];
+        return description.split('.').filter((sentence) => sentence.trim() !== '').map((sentence) => sentence.trim() + '.');
+    };
+
     return (
         <Box id="overview-section" className="detail-section">
             <Box className="section-header">
                 <DescriptionIcon color="primary" />
                 <Typography variant="h6">Overview</Typography>
             </Box>
-            <Typography variant="body1" sx={{ mt: 2, lineHeight: 1.8 }}>
-                {apartment.optional_details.more_details || "No description provided for this property."}
-            </Typography>
+            <Box sx={{ mt: 2, lineHeight: 1.8 }}>
+                {splitDescription(apartment.optional_details.more_details).map((sentence, index) => (
+                    <Typography key={index} variant="body1" sx={{ mb: 1 }}>
+                        {sentence}
+                    </Typography>
+                ))}
+            </Box>
         </Box>
     );
 };

@@ -103,27 +103,21 @@ const ImageCarousel = ({ images }) => {
 };
 
 // Contact Info Component
-// Contact Info Component
 const ContactInfoCard = ({ item }) => {
     const navigate = useNavigate();
     const [isSaved, setIsSaved] = useState(false);
     const [savedPostId, setSavedPostId] = useState(null);
 
-    // check if item is already saved
     useEffect(() => {
         const checkIfSaved = async () => {
             try {
-
                 const itemIdToCheck = item.item_id;
-                console.log("Checking if item is saved with ID:", itemIdToCheck);
-
                 const response = await fetch(`${API_BASE_URL}/api/saved-posts/check/marketplace/${itemIdToCheck}`, {
-                    credentials: 'include'
+                    credentials: 'include',
                 });
 
                 if (response.ok) {
                     const data = await response.json();
-                    console.log("Is item saved:", data.isSaved, "PostId:", data.savedPostId);
                     setIsSaved(data.isSaved);
                     setSavedPostId(data.savedPostId);
                 }
@@ -137,14 +131,12 @@ const ContactInfoCard = ({ item }) => {
         }
     }, [item]);
 
-    // save/unsave toggle function
     const handleSaveToggle = async () => {
         try {
             if (isSaved) {
-                // Unsave the item
                 const response = await fetch(`${API_BASE_URL}/api/saved-posts/unsave/${savedPostId}`, {
                     method: 'DELETE',
-                    credentials: 'include'
+                    credentials: 'include',
                 });
 
                 if (response.ok) {
@@ -153,17 +145,16 @@ const ContactInfoCard = ({ item }) => {
                     alert('Item unsaved successfully!');
                 }
             } else {
-                // Save the item
                 const response = await fetch(`${API_BASE_URL}/api/saved-posts/save`, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
                     },
                     credentials: 'include',
                     body: JSON.stringify({
                         type: 'marketplace',
-                        item_id: item.item_id
-                    })
+                        item_id: item.item_id,
+                    }),
                 });
 
                 if (response.ok) {
@@ -189,42 +180,26 @@ const ContactInfoCard = ({ item }) => {
 
     const handleSendMessage = async () => {
         try {
-            // Check if posted_by exists and is a valid username
             if (!item.posted_by) {
                 throw new Error('Cannot send message: Item poster information is missing');
             }
 
-            console.log("Sending message to user:", item.posted_by);
-
             const image = item.images && item.images.length > 0 ? item.images[0] : null;
-            console.log("Image selected:", image ? "Yes" : "No");
-
             let imageData = null;
+
             if (image) {
-                console.log("Processing image data...");
                 try {
                     imageData = {
                         data: btoa(
-                            new Uint8Array(image.data.data).reduce(
-                                (data, byte) => data + String.fromCharCode(byte),
-                                ''
-                            )
+                            new Uint8Array(image.data.data).reduce((data, byte) => data + String.fromCharCode(byte), '')
                         ),
                         contentType: image.contentType,
                         fileName: image.name,
                     };
-                    console.log("Image data processed successfully");
                 } catch (imageError) {
-                    console.error("Error processing image:", imageError);
+                    console.error('Error processing image:', imageError);
                 }
             }
-
-            console.log("Sending request to:", `${API_BASE_URL}/api/messages/send`);
-            console.log("Request payload:", {
-                receiver: item.posted_by,
-                text: `I am interested in the item: ${item.title}`,
-                imageIncluded: !!imageData
-            });
 
             const response = await fetch(`${API_BASE_URL}/api/messages/send`, {
                 method: 'POST',
@@ -240,17 +215,12 @@ const ContactInfoCard = ({ item }) => {
                 }),
             });
 
-            console.log("Response status:", response.status);
-            const responseData = await response.json();
-            console.log("Response data:", responseData);
-
             if (!response.ok) {
+                const responseData = await response.json();
                 throw new Error(responseData.message || 'Failed to send message');
             }
 
             alert('Message sent successfully!');
-
-            // Add a small delay to ensure the backend has time to process the message
             setTimeout(() => {
                 navigate('/messages', { state: { forceRefresh: true } });
             }, 500);
@@ -303,20 +273,19 @@ const ContactInfoCard = ({ item }) => {
                     Send Message
                 </Button>
 
-                {/* Add Save/Unsave Button */}
                 <Button
                     variant="outlined"
                     fullWidth
                     startIcon={isSaved ? <BookmarkIcon /> : <BookmarkBorderIcon />}
                     onClick={handleSaveToggle}
                     sx={{
-                        mt: 2, // Add margin top
-                        borderColor: "#2d4f8f",
-                        color: "#2d4f8f",
+                        mt: 2,
+                        borderColor: '#2d4f8f',
+                        color: '#2d4f8f',
                         '&:hover': {
-                            borderColor: "#1e3a6a",
-                            backgroundColor: "#f0f3f9"
-                        }
+                            borderColor: '#1e3a6a',
+                            backgroundColor: '#f0f3f9',
+                        },
                     }}
                 >
                     {isSaved ? 'Unsave Item' : 'Save Item'}
@@ -328,15 +297,24 @@ const ContactInfoCard = ({ item }) => {
 
 // Overview Section
 const Overview = ({ item }) => {
+    const splitDescription = (description) => {
+        if (!description) return ['No description provided for this item.'];
+        return description.split('.').filter((sentence) => sentence.trim() !== '').map((sentence) => sentence.trim() + '.');
+    };
+
     return (
         <Box id="overview-section" className="detail-section">
             <Box className="section-header">
                 <DescriptionIcon color="primary" />
                 <Typography variant="h6">Overview</Typography>
             </Box>
-            <Typography variant="body1" sx={{ mt: 2, lineHeight: 1.8 }}>
-                {item.description || 'No description provided for this item.'}
-            </Typography>
+            <Box sx={{ mt: 2, lineHeight: 1.8 }}>
+                {splitDescription(item.description).map((sentence, index) => (
+                    <Typography key={index} variant="body1" sx={{ mb: 1 }}>
+                        {sentence}
+                    </Typography>
+                ))}
+            </Box>
         </Box>
     );
 };
@@ -456,16 +434,12 @@ const ItemDetailsPage = () => {
             <AppSidebar />
             <Box className="content item-details-content">
                 <Container maxWidth="lg">
-                    {/* Image Carousel */}
                     <Box mb={4}>
                         <ImageCarousel images={item.images} />
                     </Box>
 
-                    {/* Main Content Grid */}
                     <Grid container spacing={4}>
-                        {/* Left Content - Item Details */}
                         <Grid item xs={12} md={8}>
-                            {/* Title and Main Info Section */}
                             <Box className="item-title-section" mb={4}>
                                 <Typography variant="h4" component="h1" gutterBottom>
                                     {item.title}
@@ -493,14 +467,10 @@ const ItemDetailsPage = () => {
                                 </Box>
                             </Box>
 
-                            {/* Overview Section */}
                             <Overview item={item} />
-
-                            {/* Location Section */}
                             <Location item={item} />
                         </Grid>
 
-                        {/* Right Content - Contact Info */}
                         <Grid item xs={12} md={4}>
                             <ContactInfoCard item={item} />
                         </Grid>
