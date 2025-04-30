@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { TextField, Button, MenuItem, FormControlLabel, Checkbox, Input, IconButton, Snackbar, Alert } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import AppSidebar from '../components/Sidebar';
@@ -10,6 +10,7 @@ import { MapContainer, TileLayer, Marker, useMapEvents, Popup, useMap } from 're
 import MyLocationIcon from '@mui/icons-material/MyLocation';
 import axios from 'axios'; // Import axios for API calls
 import { API_BASE_URL } from '../config/api-config';
+import CloseIcon from '@mui/icons-material/Close'; // Add this import
 
 
 // Fix for default marker icon in Leaflet
@@ -52,6 +53,9 @@ function AddApartmentPage() {
 
     const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: '' });
     const [areas, setAreas] = useState([]); // State to store the list of areas
+
+    // Add a reference to the file input
+    const fileInputRef = useRef(null);
 
     useEffect(() => {
         // Fetch the username from the session
@@ -137,9 +141,42 @@ function AddApartmentPage() {
         }
     };
 
+    // Add this function to create a new DataTransfer with remaining files
+    const updateFileInput = (remainingImagesCount) => {
+        // Create a new DataTransfer object
+        const dataTransfer = new DataTransfer();
+        
+        // Create a new File object for each remaining image
+        for (let i = 0; i < remainingImagesCount; i++) {
+            const file = new File([""], `image${i}`, {
+                type: "image/jpeg",
+            });
+            dataTransfer.items.add(file);
+        }
+        
+        // Update the file input's files
+        if (fileInputRef.current) {
+            fileInputRef.current.files = dataTransfer.files;
+        }
+    };
+
+    // Update the handleRemoveImage function
+    const handleRemoveImage = (indexToRemove) => {
+        setApartmentData(prev => {
+            const newImages = prev.images.filter((_, index) => index !== indexToRemove);
+            // Update the file input to reflect the new number of images
+            updateFileInput(newImages.length);
+            return {
+                ...prev,
+                images: newImages
+            };
+        });
+    };
+
+    // Update the handleImageUpload function
     const handleImageUpload = (e) => {
-        const input = e.target; // Reference to the input element
-        const files = Array.from(input.files).filter(file => file.type.startsWith('image/')); // Filter only image files
+        const input = e.target;
+        const files = Array.from(input.files).filter(file => file.type.startsWith('image/'));
 
         if (files.length === 0) {
             alert('Please upload only image files.');
@@ -152,9 +189,9 @@ function AddApartmentPage() {
                 reader.readAsDataURL(file);
                 reader.onloadend = () => {
                     resolve({
-                        contentType: file.type, // MIME type (e.g., image/jpeg)
-                        name: file.name, // File name
-                        data: reader.result.split(',')[1] // Base64 data (without the prefix)
+                        contentType: file.type,
+                        name: file.name,
+                        data: reader.result.split(',')[1]
                     });
                 };
                 reader.onerror = reject;
@@ -163,11 +200,15 @@ function AddApartmentPage() {
 
         Promise.all(readFiles)
             .then(newImages => {
-                setApartmentData(prev => ({
-                    ...prev,
-                    images: [...prev.images, ...newImages] // Append new images to the existing ones
-                }));
-                console.log("Images processed successfully:", newImages.length);
+                setApartmentData(prev => {
+                    const updatedImages = [...prev.images, ...newImages];
+                    // Update the file input to reflect the total number of images
+                    updateFileInput(updatedImages.length);
+                    return {
+                        ...prev,
+                        images: updatedImages
+                    };
+                });
             })
             .catch(error => console.error("Error processing images:", error));
     };
@@ -586,26 +627,66 @@ function AddApartmentPage() {
                         <FormControlLabel control={<Checkbox name="amenities.parking" onChange={handleCheckboxChange} />} label="Parking" />
                         <FormControlLabel control={<Checkbox name="amenities.security" onChange={handleCheckboxChange} />} label="Security" />
 
-                        <Input type="file" inputProps={{ multiple: true, accept: 'image/*' }} // Restrict to image files
+                        {/* Update the Input component in your JSX */}
+                        <Input 
+                            type="file" 
+                            inputRef={fileInputRef}
+                            inputProps={{ 
+                                multiple: true, 
+                                accept: 'image/*'
+                            }}
                             onChange={handleImageUpload}
                         />
 
                         {/* Thumbnails Section */}
                         <div className="imageThumbnails">
                             {apartmentData.images.map((image, index) => (
-                                <img
-                                    key={index}
-                                    src={`data:${image.contentType};base64,${image.data}`} // Construct the full Base64 URL
-                                    alt={`Uploaded ${index + 1}`}
-                                    style={{
-                                        width: '100px',
-                                        height: '100px',
-                                        objectFit: 'cover',
-                                        margin: '5px',
-                                        borderRadius: '5px',
-                                        border: '1px solid #ccc'
+                                <div 
+                                    key={index} 
+                                    style={{ 
+                                        position: 'relative',
+                                        display: 'inline-block',
+                                        margin: '5px'
                                     }}
-                                />
+                                >
+                                    <img
+                                        src={`data:${image.contentType};base64,${image.data}`} // Construct the full Base64 URL
+                                        alt={`Uploaded ${index + 1}`}
+                                        style={{
+                                            width: '100px',
+                                            height: '100px',
+                                            objectFit: 'cover',
+                                            borderRadius: '5px',
+                                            border: '1px solid #ccc'
+                                        }}
+                                    />
+                                    <IconButton
+                                        size="small"
+                                        onClick={() => handleRemoveImage(index)}
+                                        sx={{
+                                            position: 'absolute',
+                                            top: -6,
+                                            right: -6,
+                                            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                                            width: '20px',
+                                            height: '20px',
+                                            padding: 0,
+                                            '&:hover': {
+                                                backgroundColor: 'rgba(0, 0, 0, 0.7)'
+                                            }
+                                        }}
+                                    >
+                                        <CloseIcon 
+                                            sx={{ 
+                                                fontSize: '14px',
+                                                color: 'white',
+                                                '&:hover': {
+                                                    color: '#ff4444'
+                                                }
+                                            }} 
+                                        />
+                                    </IconButton>
+                                </div>
                             ))}
                         </div>
                         <div style={{ height: '400px', width: '100%', marginTop: '20px', position: 'relative' }}>
