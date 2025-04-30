@@ -60,7 +60,7 @@ const ItemPage = () => {
             filtered = filtered.filter(item => item.price >= Number(filters.minPrice));
         }
 
-        if (filters.maxRent) {
+        if (filters.maxPrice) {
             filtered = filtered.filter(item => item.price <= Number(filters.maxPrice));
         }
 
