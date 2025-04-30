@@ -249,7 +249,7 @@ const MyPostsPage = () => {
                                                 image={getFirstImageUrl(apartment)}
                                                 alt={apartment.title}
                                             />
-                                            <Box
+                                            {/* <Box
                                                 position="absolute"
                                                 top={10}
                                                 right={10}
@@ -263,7 +263,7 @@ const MyPostsPage = () => {
                                                 }}
                                             >
                                                 Saved on {formatDate(post.dateSaved)}
-                                            </Box>
+                                            </Box> */}
                                         </Box>
                                     </Grid>
                                     <Grid item xs={12} md={9}>
@@ -422,7 +422,7 @@ const MyPostsPage = () => {
                                                 image={getFirstItemImageUrl(item)}
                                                 alt={item.title}
                                             />
-                                            <Box
+                                            {/* <Box
                                                 position="absolute"
                                                 top={10}
                                                 right={10}
@@ -436,7 +436,7 @@ const MyPostsPage = () => {
                                                 }}
                                             >
                                                 Saved on {formatDate(post.dateSaved)}
-                                            </Box>
+                                            </Box> */}
                                         </Box>
                                     </Grid>
                                     <Grid item xs={12} md={9}>
@@ -549,7 +549,7 @@ const MyPostsPage = () => {
                     mb={4}
                     sx={{ textAlign: 'center' }} // Add this line to center the text
                 >
-                    My Posts
+                    Manage Your Posts
                 </Typography>
 
                 <Paper sx={{
