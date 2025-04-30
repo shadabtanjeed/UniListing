@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { TextField, Button, MenuItem, Input, IconButton, Snackbar, Alert, FormControlLabel, Checkbox, Box } from '@mui/material'; // Import Snackbar and Alert
 import { useNavigate } from 'react-router-dom';
 import AppSidebar from '../components/Sidebar';
@@ -8,6 +8,7 @@ import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import { MapContainer, TileLayer, Marker, useMapEvents, Popup, useMap } from 'react-leaflet';
 import MyLocationIcon from '@mui/icons-material/MyLocation';
+import CloseIcon from '@mui/icons-material/Close';
 import axios from 'axios';
 import { API_BASE_URL } from '../config/api-config';
 
@@ -40,6 +41,8 @@ function AddItemPage() {
     });
 
     const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: '' }); // Snackbar state
+
+    const fileInputRef = useRef(null);
 
     useEffect(() => {
         const fetchUsername = async () => {
@@ -90,6 +93,32 @@ function AddItemPage() {
         }));
     };
 
+    const updateFileInput = (remainingImagesCount) => {
+        const dataTransfer = new DataTransfer();
+        
+        for (let i = 0; i < remainingImagesCount; i++) {
+            const file = new File([""], `image${i}`, {
+                type: "image/jpeg",
+            });
+            dataTransfer.items.add(file);
+        }
+        
+        if (fileInputRef.current) {
+            fileInputRef.current.files = dataTransfer.files;
+        }
+    };
+
+    const handleRemoveImage = (indexToRemove) => {
+        setItemData(prev => {
+            const newImages = prev.images.filter((_, index) => index !== indexToRemove);
+            updateFileInput(newImages.length);
+            return {
+                ...prev,
+                images: newImages
+            };
+        });
+    };
+
     const handleImageUpload = (e) => {
         const input = e.target;
         const files = Array.from(input.files).filter((file) => file.type.startsWith('image/'));
@@ -116,10 +145,14 @@ function AddItemPage() {
 
         Promise.all(readFiles)
             .then((newImages) => {
-                setItemData((prev) => ({
-                    ...prev,
-                    images: [...prev.images, ...newImages],
-                }));
+                setItemData((prev) => {
+                    const updatedImages = [...prev.images, ...newImages];
+                    updateFileInput(updatedImages.length);
+                    return {
+                        ...prev,
+                        images: updatedImages
+                    };
+                });
             })
             .catch((error) => console.error('Error processing images:', error));
     };
@@ -351,7 +384,65 @@ function AddItemPage() {
                             }}
                         />
                         <TextField fullWidth label="Address" name="location.address" onChange={handleChange} required />
-                        <Input type="file" inputProps={{ multiple: true, accept: 'image/*' }} onChange={handleImageUpload} />
+                        <Input 
+                            type="file" 
+                            inputRef={fileInputRef}
+                            inputProps={{ 
+                                multiple: true, 
+                                accept: 'image/*'
+                            }}
+                            onChange={handleImageUpload}
+                        />
+                        <div className="imageThumbnails">
+                            {itemData.images.map((image, index) => (
+                                <div 
+                                    key={index} 
+                                    style={{ 
+                                        position: 'relative',
+                                        display: 'inline-block',
+                                        margin: '5px'
+                                    }}
+                                >
+                                    <img
+                                        src={`data:${image.contentType};base64,${image.data}`}
+                                        alt={`Uploaded ${index + 1}`}
+                                        style={{
+                                            width: '100px',
+                                            height: '100px',
+                                            objectFit: 'cover',
+                                            borderRadius: '5px',
+                                            border: '1px solid #ccc'
+                                        }}
+                                    />
+                                    <IconButton
+                                        size="small"
+                                        onClick={() => handleRemoveImage(index)}
+                                        sx={{
+                                            position: 'absolute',
+                                            top: -6,
+                                            right: -6,
+                                            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                                            width: '20px',
+                                            height: '20px',
+                                            padding: 0,
+                                            '&:hover': {
+                                                backgroundColor: 'rgba(0, 0, 0, 0.7)'
+                                            }
+                                        }}
+                                    >
+                                        <CloseIcon 
+                                            sx={{ 
+                                                fontSize: '14px',
+                                                color: 'white',
+                                                '&:hover': {
+                                                    color: '#ff4444'
+                                                }
+                                            }} 
+                                        />
+                                    </IconButton>
+                                </div>
+                            ))}
+                        </div>
                         <div style={{ height: '400px', width: '100%', marginTop: '20px', position: 'relative' }}>
                             <MapContainer
                                 center={[itemData.location.geolocation.latitude, itemData.location.geolocation.longitude]}
