@@ -138,6 +138,15 @@ const MessagesPage = () => {
 
   const location = useLocation();
 
+  // Add this function to your component
+  const forceScrollToBottom = () => {
+    const messagesArea = document.querySelector('.messages-area');
+    if (messagesArea) {
+      messagesArea.scrollTop = messagesArea.scrollHeight;
+      console.log("Force scrolled to bottom:", messagesArea.scrollTop, messagesArea.scrollHeight);
+    }
+  };
+
   // Filter conversations based on search query (only in conversations mode)
   const filteredConversations = searchMode === 'conversations'
     ? conversations.filter(chat =>
@@ -504,12 +513,7 @@ const MessagesPage = () => {
 
       setMessages(formattedMessages);
 
-      // Force scroll after setting messages
-      setTimeout(() => {
-        if (messagesEndRef.current) {
-          messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
-        }
-      }, 200);
+      setTimeout(forceScrollToBottom, 200);
 
       // Mark messages as read
       await markMessagesAsRead(conversationId);
@@ -530,29 +534,35 @@ const MessagesPage = () => {
     }
   };
 
-  // Scroll to bottom when messages change or when a new chat is selected
+  // Replace your existing scroll useEffect with this:
   useEffect(() => {
-    // Use a longer timeout to ensure DOM is fully rendered
     const scrollToBottom = () => {
       if (messagesEndRef.current) {
-        // Use 'auto' instead of 'smooth' for more reliable scrolling
-        messagesEndRef.current.scrollIntoView({ behavior: 'auto' });
+        // Use scrollIntoView with a clearer behavior setting
+        try {
+          messagesEndRef.current.scrollIntoView({ block: 'end', inline: 'nearest' });
+        } catch (error) {
+          console.error("Scroll error:", error);
+          // Fallback method
+          const messagesArea = document.querySelector('.messages-area');
+          if (messagesArea) {
+            messagesArea.scrollTop = messagesArea.scrollHeight;
+          }
+        }
+      } else {
+        console.log("messagesEndRef not attached");
       }
     };
 
-    // First immediate scroll attempt
+    // Try multiple times with increasing delays to ensure scroll works
     scrollToBottom();
+    const timeouts = [
+      setTimeout(scrollToBottom, 100),
+      setTimeout(scrollToBottom, 300),
+      setTimeout(scrollToBottom, 500)
+    ];
 
-    // Then multiple attempts with increasing delays
-    const timeout1 = setTimeout(scrollToBottom, 100);
-    const timeout2 = setTimeout(scrollToBottom, 300);
-    const timeout3 = setTimeout(scrollToBottom, 500);
-
-    return () => {
-      clearTimeout(timeout1);
-      clearTimeout(timeout2);
-      clearTimeout(timeout3);
-    };
+    return () => timeouts.forEach(clearTimeout);
   }, [messages, selectedChat]);
 
   // Handle typing indicator
@@ -1074,7 +1084,8 @@ const MessagesPage = () => {
                           </Box>
                         )}
 
-                        <div ref={messagesEndRef} />
+                        {/* Make sure this is at the VERY END of your messages list */}
+                        <div ref={messagesEndRef} style={{ float: 'left', clear: 'both' }}></div>
                       </>
                     )}
                   </Box>
