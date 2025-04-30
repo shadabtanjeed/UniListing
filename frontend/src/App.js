@@ -17,6 +17,7 @@ import ItemDetailsPage from './pages/ItemDetailsPage';
 import ItemPage from './pages/ItemsPage';
 import HomePage from './pages/HomePage';
 import SavedPostsPage from './pages/SavedPostsPage';
+import OTPVerification from './components/OTPVerification';
 
 // Import global styles
 import './styles/global.css';
@@ -107,12 +108,7 @@ function App() {
             </ProtectedRoute>
           } />
 
-          {/* New public routes for the landing page navigation */}
-          <Route path="/apartments" element={<div>Apartments Page (Coming Soon)</div>} />
-          <Route path="/marketplace" element={<div>Marketplace Page (Coming Soon)</div>} />
-          <Route path="/signup" element={<div>Signup Page (Coming Soon)</div>} />
-          <Route path="/about" element={<div>About Page (Coming Soon)</div>} />
-          <Route path="/contact" element={<div>Contact Page (Coming Soon)</div>} />
+          <Route path="/verify-otp" element={<OTPVerification />} />
 
           {/* Fallback route */}
           <Route path="*" element={
