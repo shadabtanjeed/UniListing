@@ -203,12 +203,12 @@ const SavedPostsPage = () => {
                                                     startIcon={<BookmarkIcon />}
                                                     onClick={() => handleUnsave(post.postId)}
                                                     sx={{
-                                                        width: '7rem', // Add fixed width
-                                                        minWidth: 'fit-content', // Ensure text fits
-                                                        fontSize: '0.75rem', // Slightly smaller font
+                                                        width: '6rem',
+                                                        minWidth: 'fit-content',
+                                                        fontSize: '0.75rem',
                                                         border: '1px solid #d32f2f',
                                                         '&:hover': {
-                                                            backgroundColor: '#ffebee', // Light red background on hover
+                                                            backgroundColor: '#ffebee',
                                                             borderColor: '#c62828',
                                                         }
                                                     }}

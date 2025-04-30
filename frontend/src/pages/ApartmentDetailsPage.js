@@ -136,16 +136,21 @@ const ContactInfoCard = ({ apartment }) => {
     const [isSaved, setIsSaved] = useState(false);
     const [savedPostId, setSavedPostId] = useState(null);
 
-    // Check if apartment is already saved
+    // Update the checkIfSaved function in the ContactInfoCard component
     useEffect(() => {
         const checkIfSaved = async () => {
             try {
-                const response = await fetch(`${API_BASE_URL}/api/saved-posts/check/apartment/${apartment._id}`, {
+                // Use the same ID logic as the save function
+                const apartmentIdToCheck = apartment.apartment_id || apartment._id;
+                console.log("Checking if apartment is saved with ID:", apartmentIdToCheck);
+
+                const response = await fetch(`${API_BASE_URL}/api/saved-posts/check/apartment/${apartmentIdToCheck}`, {
                     credentials: 'include'
                 });
 
                 if (response.ok) {
                     const data = await response.json();
+                    console.log("Is apartment saved:", data.isSaved, "PostId:", data.savedPostId);
                     setIsSaved(data.isSaved);
                     setSavedPostId(data.savedPostId);
                 }
@@ -155,7 +160,7 @@ const ContactInfoCard = ({ apartment }) => {
         };
 
         checkIfSaved();
-    }, [apartment._id]);
+    }, [apartment._id, apartment.apartment_id]); // Add apartment.apartment_id to dependencies
 
     // Update the handleSaveToggle function in the ContactInfoCard component
 
