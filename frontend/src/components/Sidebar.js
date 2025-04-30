@@ -133,6 +133,13 @@ const AppSidebar = () => {
                                     <span className="link">My Messages</span>
                                 </Link>
                             </li>
+
+                            <li className="list">
+                                <Link to="/my_posts" className="nav-link">
+                                    <i className="bx bx-grid-alt icon"></i>
+                                    <span className="link">My Posts</span>
+                                </Link>
+                            </li>
                         </ul>
                         <div className="bottom-content">
                             <li className="list">

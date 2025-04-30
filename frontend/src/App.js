@@ -22,6 +22,9 @@ import AuthRedirect from './components/AuthRedirect';
 import { AuthProvider } from './context/AuthContext';
 
 
+import MyPostsPage from './pages/MyPostsPage';
+import EditApartmentPage from './pages/EditApartmentPage'
+import EditItemPage from './pages/EditItemPage'
 
 // Import global styles
 import './styles/global.css';
@@ -95,6 +98,23 @@ function App() {
             <Route path="/saved-posts" element={
               <ProtectedRoute>
                 <SavedPostsPage />
+              </ProtectedRoute>
+          } />
+
+          <Route path="/my_posts" element={
+            <ProtectedRoute>
+              <MyPostsPage />
+            </ProtectedRoute>
+          } />
+
+          <Route path="/edit-apartment/:apartmentId" element={
+              <ProtectedRoute>
+                  <EditApartmentPage />
+              </ProtectedRoute>
+          } />
+          <Route path="/edit-item/:itemId" element={
+              <ProtectedRoute>
+                  <EditItemPage />
               </ProtectedRoute>
             } />
 

@@ -59,6 +59,7 @@ const messageRoutes = require('./routes/message_routes');
 const itemRoutes = require('./routes/item_routes');
 const chatController = require('./controllers/chatController');
 const savedPostsRoutes = require('./routes/saved_posts_routes');
+const myPostsRoutes = require('./routes/my_posts_routes');
 const otpRoutes = require('./routes/otp_routes');
 
 
@@ -67,6 +68,7 @@ app.use('/api/apartments', apartmentRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/items', itemRoutes);
 app.use('/api/saved-posts', savedPostsRoutes);
+app.use('/api/my_posts', myPostsRoutes);
 app.use('/api/otp', otpRoutes);
 
 // Socket.IO connection handler
