@@ -43,7 +43,7 @@ const savePost = async (req, res) => {
 
         // Check if post is already saved
         const existingSavedPost = await Saved_Posts.findOne({
-            saved_by: user._id,
+            username: username,  // Use username instead of saved_by
             type,
             ...(type === 'apartment' ? { apartment_id } : { item_id })
         });
@@ -53,9 +53,11 @@ const savePost = async (req, res) => {
         }
 
         // Create new saved post with random postId
+        // In savePost function
         const newSavedPost = new Saved_Posts({
             postId: uuidv4(),
-            saved_by: user._id,
+            username: username,         // Store username directly
+            saved_by: user._id,         // Keep this for backward compatibility
             type,
             apartment_id: type === 'apartment' ? apartment_id : undefined,
             item_id: type === 'marketplace' ? item_id : undefined,
@@ -101,7 +103,7 @@ const unsavePost = async (req, res) => {
         }
 
         // Check if the user is the owner of the saved post
-        if (savedPost.saved_by.toString() !== user._id.toString()) {
+        if (savedPost.username !== username) {
             return res.status(403).json({ message: 'Access denied: You can only unsave your own saved posts' });
         }
 
@@ -138,8 +140,9 @@ const getSavedPosts = async (req, res) => {
         }
 
         // Find all saved posts for the user
-        const savedPosts = await Saved_Posts.find({ saved_by: user._id })
-            .sort({ dateSaved: -1 }); // Sort by date, newest first
+        // In getSavedPosts function - use username for query
+        const savedPosts = await Saved_Posts.find({ username: username })
+            .sort({ dateSaved: -1 });
 
         res.status(200).json(savedPosts);
     } catch (error) {
@@ -177,9 +180,9 @@ const getSavedPostsByType = async (req, res) => {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        // Find saved posts by type for the user
+        // In getSavedPostsByType function - use username for query
         const savedPosts = await Saved_Posts.find({
-            saved_by: user._id,
+            username: username,
             type
         }).sort({ dateSaved: -1 }); // Sort by date, newest first
 
@@ -220,8 +223,9 @@ const checkIfSaved = async (req, res) => {
         }
 
         // Find if post is saved
+        // In checkIfSaved function
         const savedPost = await Saved_Posts.findOne({
-            saved_by: user._id,
+            username: username,
             type,
             ...(type === 'apartment' ? { apartment_id: id } : { item_id: id })
         });

@@ -157,7 +157,8 @@ const ContactInfoCard = ({ apartment }) => {
         checkIfSaved();
     }, [apartment._id]);
 
-    // Handle save/unsave apartment
+    // Update the handleSaveToggle function in the ContactInfoCard component
+
     const handleSaveToggle = async () => {
         try {
             if (isSaved) {
@@ -170,6 +171,7 @@ const ContactInfoCard = ({ apartment }) => {
                 if (response.ok) {
                     setIsSaved(false);
                     setSavedPostId(null);
+                    alert('Apartment unsaved successfully!'); // Added success alert
                 }
             } else {
                 // Save the apartment
@@ -179,9 +181,10 @@ const ContactInfoCard = ({ apartment }) => {
                         'Content-Type': 'application/json'
                     },
                     credentials: 'include',
+                    // Update this in handleSaveToggle function
                     body: JSON.stringify({
                         type: 'apartment',
-                        apartment_id: apartment._id
+                        apartment_id: apartment.apartment_id || apartment._id // Try to use apartment_id if available
                     })
                 });
 
@@ -189,6 +192,7 @@ const ContactInfoCard = ({ apartment }) => {
                     const data = await response.json();
                     setIsSaved(true);
                     setSavedPostId(data.postId);
+                    alert('Apartment saved successfully!'); // Added success alert
                 }
             }
         } catch (error) {
