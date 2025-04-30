@@ -1,44 +1,21 @@
-/*
- * RECENT LISTINGS COMPONENT
- * Shows recently added apartments and marketplace items
- */
-
 import React, { useEffect, useState } from 'react';
 import { Box, Grid, Typography, Card, CardMedia, Button, Skeleton } from '@mui/material';
 import { Link } from 'react-router-dom';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import SectionTitle from './SectionTitle';
 import { getRecentApartments } from '../../services/apartmentService';
+import { getRecentItems } from '../../services/itemService';
 
 const RecentListings = () => {
   const [recentApartments, setRecentApartments] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  // Dummy data for marketplace items with real images
-  const recentItems = [
-    {
-      id: 1,
-      title: 'HP Laptop (i5, 8GB RAM, 512GB SSD)',
-      location: 'IUT Campus',
-      price: '45,000',
-      image: 'https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
-      type: 'item'
-    },
-    {
-      id: 2,
-      title: 'Study Desk with Chair',
-      location: 'Boardbazar',
-      price: '3,500',
-      image: 'https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=735&q=80',
-      type: 'item'
-    }
-  ];
-
+  const [recentItems, setRecentItems] = useState([]);
+  const [loadingApartments, setLoadingApartments] = useState(true);
+  const [loadingItems, setLoadingItems] = useState(true);
   // Fetch recent apartments from backend
   useEffect(() => {
     const fetchApartments = async () => {
       try {
-        setLoading(true);
+        setLoadingApartments(true);
         const data = await getRecentApartments(2);
         setRecentApartments(data);
       } catch (error) {
@@ -63,15 +40,51 @@ const RecentListings = () => {
           }
         ]);
       } finally {
-        setLoading(false);
+        setLoadingApartments(false);
       }
     };
 
     fetchApartments();
   }, []);
 
-  // Loading skeleton for apartment cards
-  const ApartmentCardSkeleton = () => (
+  // Fetch recent items from backend 
+  useEffect(() => {
+    const fetchItems = async () => {
+      try {
+        setLoadingItems(true);
+        const data = await getRecentItems(2);
+        setRecentItems(data);
+      } catch (error) {
+        console.error('Failed to fetch recent items:', error);
+        // Fallback to dummy data if API fails
+        setRecentItems([
+          {
+            id: 1,
+            title: 'HP Laptop (i5, 8GB RAM, 512GB SSD)',
+            location: 'IUT Campus',
+            price: '45,000',
+            image: 'https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
+            type: 'item'
+          },
+          {
+            id: 2,
+            title: 'Study Desk with Chair',
+            location: 'Boardbazar',
+            price: '3,500',
+            image: 'https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=735&q=80',
+            type: 'item'
+          }
+        ]);
+      } finally {
+        setLoadingItems(false);
+      }
+    };
+
+    fetchItems();
+  }, []);
+
+  // Loading skeleton for both card type
+  const CardSkeleton = () => (
     <Grid item xs={12}>
       <Card sx={{ display: 'flex', height: '140px' }}>
         <Skeleton variant="rectangular" sx={{ width: 180, height: '100%' }} />
@@ -92,6 +105,7 @@ const RecentListings = () => {
       />
 
       <Grid container spacing={4}>
+        {/* Apartments Section */}
         <Grid item xs={12} md={6} className="animate-slide-left">
           <Typography variant="h6" gutterBottom sx={{
             borderLeft: '4px solid #2d4f8f',
@@ -102,10 +116,10 @@ const RecentListings = () => {
           </Typography>
 
           <Grid container spacing={2}>
-            {loading ? (
+            {loadingApartments ? (
               <>
-                <ApartmentCardSkeleton />
-                <ApartmentCardSkeleton />
+                <CardSkeleton />
+                <CardSkeleton />
               </>
             ) : (
               recentApartments.map((apartment) => (
@@ -155,6 +169,7 @@ const RecentListings = () => {
           </Box>
         </Grid>
 
+        {/* Items Section */}
         <Grid item xs={12} md={6} className="animate-slide-right">
           <Typography variant="h6" gutterBottom sx={{
             borderLeft: '4px solid #ff9800',
@@ -165,38 +180,45 @@ const RecentListings = () => {
           </Typography>
 
           <Grid container spacing={2}>
-            {recentItems.map((item) => (
-              <Grid item key={item.id} xs={12}>
-                <Card sx={{
-                  display: 'flex',
-                  height: '140px',
-                  transition: 'transform 0.3s ease, box-shadow 0.3s ease',
-                  '&:hover': {
-                    transform: 'translateY(-3px)',
-                    boxShadow: '0 6px 12px rgba(0, 0, 0, 0.1)',
-                  },
-                }}>
-                  <CardMedia
-                    component="img"
-                    sx={{ width: 180, height: '100%', objectFit: 'cover' }}
-                    image={item.image}
-                    alt={item.title}
-                  />
-                  <Box sx={{ display: 'flex', flexDirection: 'column', p: 2, flexGrow: 1 }}>
-                    <Typography variant="subtitle1" fontWeight={600}>{item.title}</Typography>
-                    <Box display="flex" alignItems="center" sx={{ mt: 0.5 }}>
-                      <LocationOnIcon sx={{ fontSize: 16, color: '#ff9800', mr: 0.5 }} />
-                      <Typography variant="body2" color="text.secondary">
-                        {item.location}
+            {loadingItems ? (
+              <>
+                <CardSkeleton />
+                <CardSkeleton />
+              </>
+            ) : (
+              recentItems.map((item) => (
+                <Grid item key={item.id} xs={12}>
+                  <Card sx={{
+                    display: 'flex',
+                    height: '140px',
+                    transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+                    '&:hover': {
+                      transform: 'translateY(-3px)',
+                      boxShadow: '0 6px 12px rgba(0, 0, 0, 0.1)',
+                    },
+                  }}>
+                    <CardMedia
+                      component="img"
+                      sx={{ width: 180, height: '100%', objectFit: 'cover' }}
+                      image={item.image}
+                      alt={item.title}
+                    />
+                    <Box sx={{ display: 'flex', flexDirection: 'column', p: 2, flexGrow: 1 }}>
+                      <Typography variant="subtitle1" fontWeight={600}>{item.title}</Typography>
+                      <Box display="flex" alignItems="center" sx={{ mt: 0.5 }}>
+                        <LocationOnIcon sx={{ fontSize: 16, color: '#ff9800', mr: 0.5 }} />
+                        <Typography variant="body2" color="text.secondary">
+                          {item.location}
+                        </Typography>
+                      </Box>
+                      <Typography variant="subtitle1" color="#ff9800" sx={{ mt: 'auto' }}>
+                        {item.price} BDT
                       </Typography>
                     </Box>
-                    <Typography variant="subtitle1" color="#ff9800" sx={{ mt: 'auto' }}>
-                      {item.price} BDT
-                    </Typography>
-                  </Box>
-                </Card>
-              </Grid>
-            ))}
+                  </Card>
+                </Grid>
+              ))
+            )}
           </Grid>
 
           <Box sx={{ mt: 2, textAlign: 'right' }}>
