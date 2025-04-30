@@ -504,6 +504,13 @@ const MessagesPage = () => {
 
       setMessages(formattedMessages);
 
+      // Force scroll after setting messages
+      setTimeout(() => {
+        if (messagesEndRef.current) {
+          messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 200);
+
       // Mark messages as read
       await markMessagesAsRead(conversationId);
 
@@ -523,10 +530,30 @@ const MessagesPage = () => {
     }
   };
 
-  // Scroll to bottom when messages change
+  // Scroll to bottom when messages change or when a new chat is selected
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+    // Use a longer timeout to ensure DOM is fully rendered
+    const scrollToBottom = () => {
+      if (messagesEndRef.current) {
+        // Use 'auto' instead of 'smooth' for more reliable scrolling
+        messagesEndRef.current.scrollIntoView({ behavior: 'auto' });
+      }
+    };
+
+    // First immediate scroll attempt
+    scrollToBottom();
+
+    // Then multiple attempts with increasing delays
+    const timeout1 = setTimeout(scrollToBottom, 100);
+    const timeout2 = setTimeout(scrollToBottom, 300);
+    const timeout3 = setTimeout(scrollToBottom, 500);
+
+    return () => {
+      clearTimeout(timeout1);
+      clearTimeout(timeout2);
+      clearTimeout(timeout3);
+    };
+  }, [messages, selectedChat]);
 
   // Handle typing indicator
   const handleTyping = () => {

@@ -80,6 +80,7 @@
     overflow-y: auto;
     display: flex;
     flex-direction: column;
+    height: calc(100% - 120px);
 }
 
 .message-input-area {
