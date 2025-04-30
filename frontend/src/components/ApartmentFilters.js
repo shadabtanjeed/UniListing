@@ -105,12 +105,15 @@ const ApartmentFilters = ({ filters, onFilterChange, sortOption, onSortChange })
                         <Select
                             value={sortOption}
                             onChange={(e) => onSortChange(e.target.value)}
+                            size="small"
                         >
                             <MenuItem value="default">Default</MenuItem>
-                            <MenuItem value="name_asc">Name: A to Z</MenuItem>
-                            <MenuItem value="name_desc">Name: Z to A</MenuItem>
-                            <MenuItem value="price_asc">Price: Low to High</MenuItem>
-                            <MenuItem value="price_desc">Price: High to Low</MenuItem>
+                            <MenuItem value="name_asc">Name (A-Z)</MenuItem>
+                            <MenuItem value="name_desc">Name (Z-A)</MenuItem>
+                            <MenuItem value="price_asc">Price (Low to High)</MenuItem>
+                            <MenuItem value="price_desc">Price (High to Low)</MenuItem>
+                            <MenuItem value="date_asc">Date (Oldest First)</MenuItem>
+                            <MenuItem value="date_desc">Date (Newest First)</MenuItem>
                         </Select>
                     </FormControl>
                 </AccordionDetails>

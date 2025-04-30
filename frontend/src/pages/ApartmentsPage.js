@@ -159,6 +159,12 @@ const ApartmentPage = () => {
 
         // Apply Sorting
         switch (sortOption) {
+            case 'date_asc':
+                filtered.sort((a, b) => new Date(a.listing_date) - new Date(b.listing_date));
+                break;
+            case 'date_desc':
+                filtered.sort((a, b) => new Date(b.listing_date) - new Date(a.listing_date));
+                break;
             case 'name_asc':
                 filtered.sort((a, b) => a.title.localeCompare(b.title));
                 break;
@@ -172,7 +178,8 @@ const ApartmentPage = () => {
                 filtered.sort((a, b) => b.rent.amount - a.rent.amount);
                 break;
             default:
-                // Default sorting (could be by date_added or most relevant)
+                filtered.sort((a, b) => new Date(b.listing_date) - new Date(a.listing_date));
+
                 break;
         }
 
