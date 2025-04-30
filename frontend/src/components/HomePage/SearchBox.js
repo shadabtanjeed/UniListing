@@ -4,15 +4,15 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { 
-  Grid, 
-  Paper, 
-  TextField, 
-  Button, 
-  FormControl, 
-  InputLabel, 
-  Select, 
-  MenuItem, 
+import {
+  Grid,
+  Paper,
+  TextField,
+  Button,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
   InputAdornment,
   Box,
   CircularProgress,
@@ -40,10 +40,14 @@ const StyledSearchBox = styled(Paper)(({ theme }) => ({
 const SearchBox = () => {
   const [searchType, setSearchType] = useState('apartment');
   const [searchArea, setSearchArea] = useState('');
+  const [searchCategory, setSearchCategory] = useState('');
   const [searchKeyword, setSearchKeyword] = useState('');
   const [areas, setAreas] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+
+  // Categories for marketplace items
+  const categories = ['Electronics', 'Furniture', 'Books', 'Clothing', 'Other'];
 
   // Load areas from file
   useEffect(() => {
@@ -52,14 +56,14 @@ const SearchBox = () => {
         setLoading(true);
         const response = await fetch('/assets/dhaka_areas.txt');
         const text = await response.text();
-        
+
         // Parse text file - each line is an area
         const areasList = text
           .split('\n')
           .filter(area => area.trim() && !area.startsWith('//')) // Remove empty lines and comments
           .map(area => area.trim())
           .sort(); // Sort alphabetically
-        
+
         setAreas(areasList);
       } catch (error) {
         console.error('Error loading areas:', error);
@@ -80,14 +84,29 @@ const SearchBox = () => {
     fetchAreas();
   }, []);
 
+  // Update search type and reset the location/category field
+  const handleSearchTypeChange = (e) => {
+    setSearchType(e.target.value);
+    // Reset the other dropdown when changing search type
+    if (e.target.value === 'apartment') {
+      setSearchCategory('');
+    } else {
+      setSearchArea('');
+    }
+  };
+
+
+
   const handleSearch = (e) => {
     e.preventDefault();
-    const url = searchType === 'apartment' 
+    // Construct URL based on search type
+    const url = searchType === 'apartment'
       ? `/apartments/search?area=${searchArea}&keyword=${searchKeyword}`
-      : `/marketplace/search?area=${searchArea}&keyword=${searchKeyword}`;
-    
+      : `/marketplace/search?category=${searchCategory}&keyword=${searchKeyword}`;
+
     navigate(url);
   };
+
 
   // Common menu props to prevent scrollbar issues
   const menuProps = {
@@ -111,7 +130,7 @@ const SearchBox = () => {
   };
 
   return (
-    <StyledSearchBox 
+    <StyledSearchBox
       elevation={3}
       className="animate-fade-in"
       style={{ animationDelay: '0.6s' }}
@@ -124,7 +143,7 @@ const SearchBox = () => {
               <Select
                 labelId="search-type-label"
                 value={searchType}
-                onChange={(e) => setSearchType(e.target.value)}
+                onChange={handleSearchTypeChange}
                 label="I'm looking for"
                 MenuProps={menuProps}
               >
@@ -143,33 +162,53 @@ const SearchBox = () => {
               </Select>
             </FormControl>
           </Grid>
-          
+
           <Grid item xs={12} md={3}>
-            <FormControl fullWidth variant="outlined">
-              <InputLabel id="area-label">Area</InputLabel>
-              <Select
-                labelId="area-label"
-                value={searchArea}
-                onChange={(e) => setSearchArea(e.target.value)}
-                label="Area"
-                disabled={loading}
-                startAdornment={
-                  loading ? (
-                    <InputAdornment position="start">
-                      <CircularProgress size={20} />
-                    </InputAdornment>
-                  ) : null
-                }
-                MenuProps={menuProps}
-              >
-                <MenuItem value="">Any area</MenuItem>
-                {areas.map((area) => (
-                  <MenuItem key={area} value={area}>{area}</MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+            {searchType === 'apartment' ? (
+              <FormControl fullWidth variant="outlined">
+                <InputLabel id="area-label">Area</InputLabel>
+                <Select
+                  labelId="area-label"
+                  value={searchArea}
+                  onChange={(e) => setSearchArea(e.target.value)}
+                  label="Area"
+                  disabled={loading}
+                  startAdornment={
+                    loading ? (
+                      <InputAdornment position="start">
+                        <CircularProgress size={20} />
+                      </InputAdornment>
+                    ) : null
+                  }
+                  MenuProps={menuProps}
+                  sx={{ textAlign: 'left', '& .MuiSelect-select': { textAlign: 'left' } }}
+                >
+                  <MenuItem value="">Any area</MenuItem>
+                  {areas.map((area) => (
+                    <MenuItem key={area} value={area}>{area}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            ) : (
+              <FormControl fullWidth variant="outlined">
+                <InputLabel id="category-label">Category</InputLabel>
+                <Select
+                  labelId="category-label"
+                  value={searchCategory}
+                  onChange={(e) => setSearchCategory(e.target.value)}
+                  label="Category"
+                  MenuProps={menuProps}
+                  sx={{ textAlign: 'left', '& .MuiSelect-select': { textAlign: 'left' } }}
+                >
+                  <MenuItem value="">Any category</MenuItem>
+                  {categories.map((category) => (
+                    <MenuItem key={category} value={category}>{category}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            )}
           </Grid>
-          
+
           <Grid item xs={12} md={4}>
             <TextField
               fullWidth
@@ -186,14 +225,14 @@ const SearchBox = () => {
               }}
             />
           </Grid>
-          
+
           <Grid item xs={12} md={2}>
-            <Button 
-              fullWidth 
-              variant="contained" 
+            <Button
+              fullWidth
+              variant="contained"
               size="large"
               type="submit"
-              sx={{ 
+              sx={{
                 height: '56px',
                 backgroundColor: '#2d4f8f',
                 '&:hover': {
