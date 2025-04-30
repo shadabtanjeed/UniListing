@@ -110,6 +110,7 @@ const RecentListings = () => {
           <Typography variant="h6" gutterBottom sx={{
             borderLeft: '4px solid #2d4f8f',
             pl: 2,
+            mb: 1.5,
             fontWeight: 600
           }}>
             New Apartments
@@ -161,7 +162,7 @@ const RecentListings = () => {
             <Button
               variant="text"
               component={Link}
-              to="/apartments"
+              to="/view-apartments"
               sx={{ color: '#2d4f8f' }}
             >
               View all apartments →
@@ -174,6 +175,7 @@ const RecentListings = () => {
           <Typography variant="h6" gutterBottom sx={{
             borderLeft: '4px solid #ff9800',
             pl: 2,
+            mb: 1.5,
             fontWeight: 600
           }}>
             New Marketplace Items
@@ -225,7 +227,7 @@ const RecentListings = () => {
             <Button
               variant="text"
               component={Link}
-              to="/marketplace"
+              to="/view-marketplace"
               sx={{ color: '#ff9800' }}
             >
               View all items →
