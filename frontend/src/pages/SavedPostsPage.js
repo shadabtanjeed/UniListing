@@ -89,9 +89,13 @@ const SavedPostsPage = () => {
         setActiveTab(newValue);
     };
 
+
+    // OPTION 1: Change the function to accept apartmentId directly
     const handleViewDetails = (apartmentId) => {
         navigate(`/apartment/${apartmentId}`);
     };
+
+
 
     const handleUnsave = async (postId) => {
         try {
@@ -154,12 +158,12 @@ const SavedPostsPage = () => {
         }
 
         return (
-            <Grid container spacing={3}>
+            <Grid container spacing={3} sx={{ maxWidth: '80rem', mx: 'auto' }}>
                 {savedPosts.map((post) => {
                     const apartment = post.details;
                     return (
                         <Grid item xs={12} key={post.postId}>
-                            <Card className="saved-apartment-card">
+                            <Card className="saved-apartment-card" sx={{ maxWidth: '65rem', mx: 'auto' }}>
                                 <Grid container>
                                     <Grid item xs={12} md={3}>
                                         <Box sx={{ height: '100%', minHeight: 200, position: 'relative' }}>
@@ -198,6 +202,16 @@ const SavedPostsPage = () => {
                                                     size="small"
                                                     startIcon={<BookmarkIcon />}
                                                     onClick={() => handleUnsave(post.postId)}
+                                                    sx={{
+                                                        width: '7rem', // Add fixed width
+                                                        minWidth: 'fit-content', // Ensure text fits
+                                                        fontSize: '0.75rem', // Slightly smaller font
+                                                        border: '1px solid #d32f2f',
+                                                        '&:hover': {
+                                                            backgroundColor: '#ffebee', // Light red background on hover
+                                                            borderColor: '#c62828',
+                                                        }
+                                                    }}
                                                 >
                                                     Unsave
                                                 </Button>
@@ -253,7 +267,8 @@ const SavedPostsPage = () => {
                                             <Box mt={3} display="flex" justifyContent="flex-end">
                                                 <Button
                                                     variant="contained"
-                                                    onClick={() => handleViewDetails(apartment._id)}
+                                                    // Then in your button onClick:
+                                                    onClick={() => handleViewDetails(apartment.apartment_id || apartment._id)}
                                                     sx={{
                                                         bgcolor: "#2d4f8f",
                                                         '&:hover': {
@@ -289,11 +304,22 @@ const SavedPostsPage = () => {
         <>
             <AppSidebar />
             <Box className="content saved-posts-content">
-                <Typography variant="h4" component="h1" className="page-title" mb={4}>
-                    Saved Items
+                <Typography
+                    variant="h4"
+                    component="h1"
+                    className="page-title"
+                    mb={4}
+                    sx={{ textAlign: 'center' }} // Add this line to center the text
+                >
+                    Saved Posts
                 </Typography>
 
-                <Paper sx={{ width: '100%', mb: 4 }}>
+                <Paper sx={{
+                    width: '40rem',
+                    maxWidth: '100%',
+                    mx: 'auto',
+                    mb: 4
+                }}>
                     <Tabs
                         value={activeTab}
                         onChange={handleTabChange}

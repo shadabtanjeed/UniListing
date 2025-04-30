@@ -121,9 +121,9 @@ const AppSidebar = () => {
                                 </Link>
                             </li>
                             <li className="list">
-                                <Link to="/saved-items" className="nav-link">
+                                <Link to="/saved-posts" className="nav-link">
                                     <i className="bx bx-bookmark icon"></i>
-                                    <span className="link">Saved Items</span>
+                                    <span className="link">Saved Posts</span>
                                 </Link>
                             </li>
 
