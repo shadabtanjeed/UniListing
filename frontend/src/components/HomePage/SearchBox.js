@@ -92,14 +92,50 @@ const SearchBox = () => {
 
 
 
+  // Update the handleSearch function with more robust URL parameter handling
+
   const handleSearch = (e) => {
     e.preventDefault();
-    // URL based on search type
-    const url = searchType === 'apartment'
-      ? `/apartments/search?area=${searchArea}&keyword=${searchKeyword}`
-      : `/marketplace/search?category=${searchCategory}&keyword=${searchKeyword}`;
 
-    navigate(url);
+    let queryParams = new URLSearchParams();
+
+    if (searchType === 'apartment') {
+      // Add area parameter if it's not empty
+      if (searchArea) {
+        queryParams.append('area', searchArea);
+      }
+
+      // Add keyword parameter if it's not empty
+      if (searchKeyword.trim()) {
+        queryParams.append('keyword', searchKeyword.trim());
+      }
+
+      // Navigate to apartments page with or without parameters
+      const url = queryParams.toString()
+        ? `/view-apartments?${queryParams.toString()}`
+        : '/view-apartments';
+
+      navigate(url);
+    } else {
+
+      // For marketplace items
+      // Add category parameter if it's not empty
+      if (searchCategory) {
+        queryParams.append('category', searchCategory);
+      }
+
+      // Add keyword parameter if it's not empty
+      if (searchKeyword.trim()) {
+        queryParams.append('keyword', searchKeyword.trim());
+      }
+
+      // Navigate to marketplace page with or without parameters
+      const url = queryParams.toString()
+        ? `/view-marketplace?${queryParams.toString()}`
+        : '/view-marketplace';
+
+      navigate(url);
+    }
   };
 
 

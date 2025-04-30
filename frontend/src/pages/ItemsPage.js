@@ -6,22 +6,30 @@ import AppSidebar from '../components/Sidebar';
 import ItemFilters from '../components/ItemFilters';
 import ItemsList from '../components/ItemList';
 import { API_BASE_URL } from '../config/api-config';
+import { useLocation } from 'react-router-dom';
 import CategoryIcon from '@mui/icons-material/Category';
 import '../styles/ItemPage.css';
 
 const ItemPage = () => {
+    const location = useLocation();
+    const queryParams = new URLSearchParams(location.search);
+    const categoryParam = queryParams.get('category');
+    const keywordParam = queryParams.get('keyword');
+
     const [items, setItems] = useState([]);
     const [filteredItems, setFilteredItems] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [sortOption, setSortOption] = useState('default');
-    const [searchQuery, setSearchQuery] = useState('');
+    const [searchQuery, setSearchQuery] = useState(keywordParam || '');
     const [filters, setFilters] = useState({
-        category: '',
+        category: categoryParam || '',
         minPrice: '',
         maxPrice: '',
         negotiable: false,
     });
+
+
 
     useEffect(() => {
         fetchItems();
@@ -30,6 +38,14 @@ const ItemPage = () => {
     useEffect(() => {
         applyFiltersAndSort();
     }, [items, filters, sortOption, searchQuery]);
+
+    useEffect(() => {
+        setSearchQuery(keywordParam || '');
+        setFilters(prev => ({
+            ...prev,
+            category: categoryParam || ''
+        }));
+    }, [categoryParam, keywordParam]);
 
     const fetchItems = async () => {
         try {

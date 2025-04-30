@@ -7,16 +7,22 @@ import ApartmentFilters from '../components/ApartmentFilters';
 import ApartmentsList from '../components/ApartmentList';
 import { API_BASE_URL } from '../config/api-config';
 import '../styles/ApartmentPage.css';
+import { useLocation } from 'react-router-dom';
 
 const ApartmentPage = () => {
+    const location = useLocation();
+    const queryParams = new URLSearchParams(location.search);
+    const areaParam = queryParams.get('area');
+    const keywordParam = queryParams.get('keyword');
+
     const [apartments, setApartments] = useState([]);
     const [filteredApartments, setFilteredApartments] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [sortOption, setSortOption] = useState('default');
-    const [searchQuery, setSearchQuery] = useState('');
+    const [searchQuery, setSearchQuery] = useState(keywordParam || '');
     const [filters, setFilters] = useState({
-        area: '',
+        area: areaParam || '',
         minRent: '',
         maxRent: '',
         negotiable: false,
@@ -36,6 +42,8 @@ const ApartmentPage = () => {
         }
     });
 
+
+
     useEffect(() => {
         fetchApartments();
     }, []);
@@ -43,6 +51,14 @@ const ApartmentPage = () => {
     useEffect(() => {
         applyFiltersAndSort();
     }, [searchQuery, apartments, filters, sortOption]);
+
+    useEffect(() => {
+        setSearchQuery(keywordParam || '');
+        setFilters(prev => ({
+            ...prev,
+            area: areaParam || ''
+        }));
+    }, [areaParam, keywordParam]);
 
     const fetchApartments = async () => {
         try {
