@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { TextField, Button, MenuItem, FormControlLabel, Checkbox, Input, IconButton } from '@mui/material';
+import { TextField, Button, MenuItem, FormControlLabel, Checkbox, Input, IconButton, Snackbar, Alert } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import AppSidebar from '../components/Sidebar';
 import '../styles/AddApartmentPage.css';
@@ -40,12 +40,17 @@ function AddApartmentPage() {
         images: [],
         contact_info: { name: '', phone: '', email: '' },
         optional_details: { furnished: false, size: '', balcony: false, more_details: '' },
-        tenancy_preferences: { preferred_tenants: '', preferred_dept: '', preferred_semester: '' },
+        tenancy_preferences: { 
+            preferred_tenants: '', 
+            preferred_dept: [], // Change to array
+            preferred_semester: [] // Change to array
+        },
         current_tenants: { total: '', details: [] },
         upvotes: { count: 0, users: [] },
         status: 'available'
     });
 
+    const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: '' });
     const [areas, setAreas] = useState([]); // State to store the list of areas
 
     useEffect(() => {
@@ -88,9 +93,20 @@ function AddApartmentPage() {
     const handleChange = (e) => {
         const { name, value } = e.target;
 
-        if (name.includes('.')) {
+        // Special handling for preferred_dept and preferred_semester
+        if (name === 'tenancy_preferences.preferred_dept' || name === 'tenancy_preferences.preferred_semester') {
             const [parent, child] = name.split('.');
-            console.log(`Updating nested field: ${parent}.${child} = ${value}`); // Debugging
+            setApartmentData(prev => ({
+                ...prev,
+                [parent]: {
+                    ...prev[parent],
+                    [child]: Array.isArray(value) ? value : [value] // Ensure value is always an array
+                }
+            }));
+        }
+        // Regular handling for other nested fields
+        else if (name.includes('.')) {
+            const [parent, child] = name.split('.');
             setApartmentData((prev) => ({
                 ...prev,
                 [parent]: {
@@ -98,8 +114,9 @@ function AddApartmentPage() {
                     [child]: value,
                 },
             }));
-        } else {
-            console.log(`Updating top-level field: ${name} = ${value}`); // Debugging
+        }
+        // Regular handling for top-level fields
+        else {
             setApartmentData((prev) => ({ ...prev, [name]: value }));
         }
     };
@@ -155,6 +172,9 @@ function AddApartmentPage() {
             .catch(error => console.error("Error processing images:", error));
     };
 
+    const handleSnackbarClose = () => {
+        setSnackbar({ open: false, message: '', severity: '' });
+    };
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -199,6 +219,15 @@ function AddApartmentPage() {
                     rooms_available: apartmentData.rent_type.partial_rent.rooms_available || 0,
                 }
             },
+            tenancy_preferences: {
+                ...apartmentData.tenancy_preferences,
+                preferred_dept: Array.isArray(apartmentData.tenancy_preferences.preferred_dept) 
+                    ? apartmentData.tenancy_preferences.preferred_dept 
+                    : [],
+                preferred_semester: Array.isArray(apartmentData.tenancy_preferences.preferred_semester)
+                    ? apartmentData.tenancy_preferences.preferred_semester
+                    : []
+            },
             status: apartmentData.status || 'available',
         };
 
@@ -218,11 +247,20 @@ function AddApartmentPage() {
             })
             .then(data => {
                 console.log('Apartment added:', data);
-                navigate('/view-apartments');
+                setSnackbar({ 
+                    open: true, 
+                    message: 'Apartment added successfully!', 
+                    severity: 'success' 
+                });
+                setTimeout(() => navigate('/view-apartments'), 2000); // Delay navigation
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Failed to add apartment');
+                setSnackbar({ 
+                    open: true, 
+                    message: 'Failed to add apartment', 
+                    severity: 'error' 
+                });
             });
     };
 
@@ -500,8 +538,11 @@ function AddApartmentPage() {
                             fullWidth
                             label="Preferred Department"
                             name="tenancy_preferences.preferred_dept"
-                            value={apartmentData.tenancy_preferences.preferred_dept || ''} // Fallback to empty string
+                            value={apartmentData.tenancy_preferences.preferred_dept || []}
                             onChange={handleChange}
+                            SelectProps={{
+                                multiple: true
+                            }}
                         >
                             {departments.map((dept) => (
                                 <MenuItem key={dept} value={dept}>
@@ -515,8 +556,11 @@ function AddApartmentPage() {
                             fullWidth
                             label="Preferred Semester"
                             name="tenancy_preferences.preferred_semester"
-                            value={apartmentData.tenancy_preferences.preferred_semester || ''} // Fallback to empty string
+                            value={apartmentData.tenancy_preferences.preferred_semester || []}
                             onChange={handleChange}
+                            SelectProps={{
+                                multiple: true
+                            }}
                         >
                             {semesters.map((sem) => (
                                 <MenuItem key={sem} value={sem}>
@@ -591,6 +635,20 @@ function AddApartmentPage() {
                 </div>
                 <div className="sideContainer"></div>
             </div>
+            <Snackbar
+                open={snackbar.open}
+                autoHideDuration={6000}
+                onClose={handleSnackbarClose}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+            >
+                <Alert 
+                    onClose={handleSnackbarClose} 
+                    severity={snackbar.severity} 
+                    sx={{ width: '100%' }}
+                >
+                    {snackbar.message}
+                </Alert>
+            </Snackbar>
         </>
     );
 }

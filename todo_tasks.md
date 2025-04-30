@@ -3,12 +3,9 @@
 - Price range filter in view items page does not work properly (specially in max price filter)
 
 ## Pending Tasks
-- Create a new page for My Posts
-    - User can delete or edit the posts
-
-- Add two pages for editing the details of apartment/marketplace
-
 - Add email otp verification for signing up
+
+-Add relevant snackbars in addapt page
 
 ### Optional
 
@@ -21,3 +18,10 @@
     - In chat, it will show user profile pic
 
 - use firebase google authentication for iut mails only
+
+### Done
+
+- Create a new page for My Posts
+    - User can delete or edit the posts
+
+- Add two pages for editing the details of apartment/marketplace
