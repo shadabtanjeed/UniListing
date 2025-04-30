@@ -25,6 +25,9 @@ import MessageIcon from '@mui/icons-material/Message';
 import DescriptionIcon from '@mui/icons-material/Description';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import BookmarkIcon from '@mui/icons-material/Bookmark';
+import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
+
 import { useNavigate } from 'react-router-dom';
 
 // Styles
@@ -98,6 +101,78 @@ const ImageCarousel = ({ images }) => {
 // Contact Info Component
 const ContactInfoCard = ({ item }) => {
     const navigate = useNavigate();
+    const [isSaved, setIsSaved] = useState(false);
+    const [savedPostId, setSavedPostId] = useState(null);
+
+    // check if item is already saved
+    useEffect(() => {
+        const checkIfSaved = async () => {
+            try {
+
+                const itemIdToCheck = item.item_id;
+                console.log("Checking if item is saved with ID:", itemIdToCheck);
+
+                const response = await fetch(`${API_BASE_URL}/api/saved-posts/check/marketplace/${itemIdToCheck}`, {
+                    credentials: 'include'
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log("Is item saved:", data.isSaved, "PostId:", data.savedPostId);
+                    setIsSaved(data.isSaved);
+                    setSavedPostId(data.savedPostId);
+                }
+            } catch (error) {
+                console.error('Error checking if item is saved:', error);
+            }
+        };
+
+        if (item && item.item_id) {
+            checkIfSaved();
+        }
+    }, [item]);
+
+    // save/unsave toggle function
+    const handleSaveToggle = async () => {
+        try {
+            if (isSaved) {
+                // Unsave the item
+                const response = await fetch(`${API_BASE_URL}/api/saved-posts/unsave/${savedPostId}`, {
+                    method: 'DELETE',
+                    credentials: 'include'
+                });
+
+                if (response.ok) {
+                    setIsSaved(false);
+                    setSavedPostId(null);
+                    alert('Item unsaved successfully!');
+                }
+            } else {
+                // Save the item
+                const response = await fetch(`${API_BASE_URL}/api/saved-posts/save`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        type: 'marketplace',
+                        item_id: item.item_id
+                    })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    setIsSaved(true);
+                    setSavedPostId(data.postId);
+                    alert('Item saved successfully!');
+                }
+            }
+        } catch (error) {
+            console.error('Error toggling save status:', error);
+            alert('Failed to save/unsave item');
+        }
+    };
 
     const formatDate = (dateString) => {
         return new Date(dateString).toLocaleDateString('en-US', {
@@ -221,6 +296,25 @@ const ContactInfoCard = ({ item }) => {
                     }}
                 >
                     Send Message
+                </Button>
+
+                {/* Add Save/Unsave Button */}
+                <Button
+                    variant="outlined"
+                    fullWidth
+                    startIcon={isSaved ? <BookmarkIcon /> : <BookmarkBorderIcon />}
+                    onClick={handleSaveToggle}
+                    sx={{
+                        mt: 2, // Add margin top
+                        borderColor: "#2d4f8f",
+                        color: "#2d4f8f",
+                        '&:hover': {
+                            borderColor: "#1e3a6a",
+                            backgroundColor: "#f0f3f9"
+                        }
+                    }}
+                >
+                    {isSaved ? 'Unsave Item' : 'Save Item'}
                 </Button>
             </CardContent>
         </Card>
