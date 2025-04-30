@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, CircularProgress, Alert } from '@mui/material';
+import { Box, Typography, CircularProgress, Alert, TextField, InputAdornment, IconButton } from '@mui/material';
+import SearchIcon from '@mui/icons-material/Search';
+import CloseIcon from '@mui/icons-material/Close';
 import AppSidebar from '../components/Sidebar';
 import ApartmentFilters from '../components/ApartmentFilters';
-import ApartmentCard from '../components/ApartmentsCard';
 import ApartmentsList from '../components/ApartmentList';
 import { API_BASE_URL } from '../config/api-config';
 import '../styles/ApartmentPage.css';
@@ -13,6 +14,7 @@ const ApartmentPage = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [sortOption, setSortOption] = useState('default');
+    const [searchQuery, setSearchQuery] = useState('');
     const [filters, setFilters] = useState({
         area: '',
         minRent: '',
@@ -39,7 +41,7 @@ const ApartmentPage = () => {
 
     useEffect(() => {
         applyFiltersAndSort();
-    }, [apartments, filters, sortOption]);
+    }, [searchQuery, apartments, filters, sortOption]);
 
     const fetchApartments = async () => {
         try {
@@ -65,6 +67,17 @@ const ApartmentPage = () => {
 
     const applyFiltersAndSort = () => {
         let filtered = [...apartments];
+
+        // Apply search filter first
+        if (searchQuery.trim() !== '') {
+            const query = searchQuery.toLowerCase();
+            filtered = filtered.filter(apt =>
+                apt.title.toLowerCase().includes(query) ||
+                (apt.optional_details?.more_details &&
+                    apt.optional_details.more_details.toLowerCase().includes(query))
+            );
+        }
+
 
         // Apply Negotiable filter
         if (filters.negotiable) {
@@ -164,6 +177,14 @@ const ApartmentPage = () => {
         setSortOption(option);
     };
 
+    const handleSearchChange = (e) => {
+        setSearchQuery(e.target.value);
+    };
+
+    const handleClearSearch = () => {
+        setSearchQuery('');
+    };
+
     return (
         <>
             <AppSidebar />
@@ -171,6 +192,43 @@ const ApartmentPage = () => {
                 <Typography variant="h4" component="h1" className="page-title" mb={6}>
                     Apartments for Rent
                 </Typography>
+
+                {/* Search Bar */}
+                <Box sx={{
+                    width: '80%',
+                    maxWidth: '50rem',
+                    mb: 3,
+                    mx: 'auto'
+                }}>
+                    <TextField
+                        fullWidth
+                        placeholder="Search apartments by title or description"
+                        value={searchQuery}
+                        onChange={handleSearchChange}
+                        variant="outlined"
+                        InputProps={{
+                            startAdornment: (
+                                <InputAdornment position="start">
+                                    <SearchIcon sx={{ color: '#2d4f8f' }} />
+                                </InputAdornment>
+                            ),
+                            endAdornment: searchQuery && (
+                                <InputAdornment position="end">
+                                    <IconButton onClick={handleClearSearch} edge="end" size="small">
+                                        <CloseIcon />
+                                    </IconButton>
+                                </InputAdornment>
+                            )
+                        }}
+                        sx={{
+                            '& .MuiOutlinedInput-root': {
+                                '&.Mui-focused fieldset': {
+                                    borderColor: '#2d4f8f',
+                                }
+                            }
+                        }}
+                    />
+                </Box>
 
                 <Box className="main-container" width="100%" maxWidth="1200px" mb={4}>
                     {/* Filter Section */}
