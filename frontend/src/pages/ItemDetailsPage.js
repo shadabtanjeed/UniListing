@@ -11,6 +11,7 @@ import {
     Grid,
     Card,
     CardContent,
+    Chip,
 } from '@mui/material';
 import AppSidebar from '../components/Sidebar';
 import { API_BASE_URL } from '../config/api-config';
@@ -27,6 +28,10 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import BookmarkIcon from '@mui/icons-material/Bookmark';
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
+import CategoryIcon from '@mui/icons-material/Category';
+
+
+
 
 import { useNavigate } from 'react-router-dom';
 
@@ -465,6 +470,21 @@ const ItemDetailsPage = () => {
                                 <Typography variant="h4" component="h1" gutterBottom>
                                     {item.title}
                                 </Typography>
+
+                                <Box display="flex" alignItems="center" sx={{ mb: 2 }}>
+                                    <CategoryIcon color="primary" sx={{ mr: 1 }} />
+                                    <Chip
+                                        label={item.category}
+                                        size="medium"
+                                        sx={{
+                                            backgroundColor: '#f0f3f9',
+                                            color: '#2d4f8f',
+                                            fontWeight: 500,
+                                            fontSize: '0.9rem',
+                                            px: 1
+                                        }}
+                                    />
+                                </Box>
 
                                 <Box className="pricing-info" mb={3}>
                                     <Typography variant="h5" component="p">

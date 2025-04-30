@@ -6,6 +6,7 @@ import AppSidebar from '../components/Sidebar';
 import ItemFilters from '../components/ItemFilters';
 import ItemsList from '../components/ItemList';
 import { API_BASE_URL } from '../config/api-config';
+import CategoryIcon from '@mui/icons-material/Category';
 import '../styles/ItemPage.css';
 
 const ItemPage = () => {

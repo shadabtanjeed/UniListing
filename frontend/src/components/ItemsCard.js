@@ -13,6 +13,7 @@ import {
 } from '@mui/material';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+import CategoryIcon from '@mui/icons-material/Category';
 import { useNavigate } from 'react-router-dom';
 
 const ItemCard = ({ item }) => {
@@ -112,9 +113,9 @@ const ItemCard = ({ item }) => {
                                 {/* Main details */}
                                 <Box className="price-section" sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
                                     <Typography variant="caption" color="text.secondary" sx={{ mr: 1 }}>Price: </Typography>
-                                    
+
                                     <Typography variant="h6" component="span" sx={{ ml: 0.5, display: 'flex', alignItems: 'center' }}>
-                                        {typeof item.price === 'number' 
+                                        {typeof item.price === 'number'
                                             ? `${item.price.toLocaleString()} BDT`
                                             : 'Contact for price'}
                                         {item.negotiable &&
@@ -131,6 +132,17 @@ const ItemCard = ({ item }) => {
                                         label={`Listed: ${formattedDate}`}
                                         size="small"
                                         variant="outlined"
+                                    />
+
+                                    <Chip
+                                        icon={<CategoryIcon />}
+                                        label={item.category || 'Uncategorized'}
+                                        size="small"
+                                        sx={{
+                                            backgroundColor: '#f0f3f9',
+                                            color: '#2d4f8f',
+                                            fontWeight: 500
+                                        }}
                                     />
                                 </Box>
                             </Grid>
