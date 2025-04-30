@@ -5,12 +5,11 @@ const User_Demo = require('../models/users_demo');
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
-// Save a post (apartment or item)
+
 const savePost = async (req, res) => {
     try {
         const { type, apartment_id, item_id } = req.body;
 
-        // Validate request data
         if (!type || (type !== 'apartment' && type !== 'marketplace')) {
             return res.status(400).json({ message: 'Invalid post type' });
         }
@@ -70,7 +69,7 @@ const savePost = async (req, res) => {
     }
 };
 
-// Unsave a post
+
 const unsavePost = async (req, res) => {
     try {
         const { postId } = req.params;

@@ -44,6 +44,9 @@ import WeekendIcon from '@mui/icons-material/Weekend';
 import LocationCityIcon from '@mui/icons-material/LocationCity';
 import SchoolIcon from '@mui/icons-material/School';
 import GroupIcon from '@mui/icons-material/Group';
+import BookmarkIcon from '@mui/icons-material/Bookmark';
+import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
+
 
 // Styles
 import '../styles/ApartmentDetails.css';
@@ -130,6 +133,69 @@ const ImageCarousel = ({ images }) => {
 // Contact Info Component (sticky)
 const ContactInfoCard = ({ apartment }) => {
     const navigate = useNavigate();
+    const [isSaved, setIsSaved] = useState(false);
+    const [savedPostId, setSavedPostId] = useState(null);
+
+    // Check if apartment is already saved
+    useEffect(() => {
+        const checkIfSaved = async () => {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/saved-posts/check/apartment/${apartment._id}`, {
+                    credentials: 'include'
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    setIsSaved(data.isSaved);
+                    setSavedPostId(data.savedPostId);
+                }
+            } catch (error) {
+                console.error('Error checking if post is saved:', error);
+            }
+        };
+
+        checkIfSaved();
+    }, [apartment._id]);
+
+    // Handle save/unsave apartment
+    const handleSaveToggle = async () => {
+        try {
+            if (isSaved) {
+                // Unsave the apartment
+                const response = await fetch(`${API_BASE_URL}/api/saved-posts/unsave/${savedPostId}`, {
+                    method: 'DELETE',
+                    credentials: 'include'
+                });
+
+                if (response.ok) {
+                    setIsSaved(false);
+                    setSavedPostId(null);
+                }
+            } else {
+                // Save the apartment
+                const response = await fetch(`${API_BASE_URL}/api/saved-posts/save`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        type: 'apartment',
+                        apartment_id: apartment._id
+                    })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    setIsSaved(true);
+                    setSavedPostId(data.postId);
+                }
+            }
+        } catch (error) {
+            console.error('Error toggling save status:', error);
+            alert('Failed to save/unsave apartment');
+        }
+    };
 
     const formatDate = (dateString) => {
         return new Date(dateString).toLocaleDateString('en-US', {
@@ -253,6 +319,25 @@ const ContactInfoCard = ({ apartment }) => {
                     }}
                 >
                     Send Message
+                </Button>
+
+                {/* Save/Unsave Button */}
+                <Button
+                    variant="outlined"
+                    fullWidth
+                    startIcon={isSaved ? <BookmarkIcon /> : <BookmarkBorderIcon />}
+                    onClick={handleSaveToggle}
+                    sx={{
+                        mt: 2, // Add this line for top margin (16px)
+                        borderColor: "#2d4f8f",
+                        color: "#2d4f8f",
+                        '&:hover': {
+                            borderColor: "#1e3a6a",
+                            backgroundColor: "#f0f3f9"
+                        }
+                    }}
+                >
+                    {isSaved ? 'Unsave Apartment' : 'Save Apartment'}
                 </Button>
             </CardContent>
         </Card>
