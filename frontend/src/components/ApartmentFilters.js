@@ -1,17 +1,55 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Paper,
     Typography,
     Divider,
     Box,
     TextField,
-    Slider,
     FormControlLabel,
     Checkbox,
-    Button
+    Button,
+    Select,
+    MenuItem,
+    FormControl,
+    InputLabel,
+    Accordion,
+    AccordionSummary,
+    AccordionDetails,
+    Grid
 } from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import TuneIcon from '@mui/icons-material/Tune';
+import SortIcon from '@mui/icons-material/Sort';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
+import BedIcon from '@mui/icons-material/Bed';
+import BathroomIcon from '@mui/icons-material/Bathroom';
+import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
+import SquareFootIcon from '@mui/icons-material/SquareFoot';
+import axios from 'axios';
 
-const ApartmentFilters = ({ filters, onFilterChange }) => {
+const ApartmentFilters = ({ filters, onFilterChange, sortOption, onSortChange }) => {
+    const [areas, setAreas] = useState([]);
+
+    useEffect(() => {
+        // Fetch areas from dhaka_areas.txt
+        const fetchAreas = async () => {
+            try {
+                const response = await axios.get('/assets/dhaka_areas.txt');
+                const areaList = response.data
+                    .split('\n')
+                    .filter(area => area.trim() && !area.startsWith('//'))
+                    .map(area => area.trim())
+                    .sort();
+                setAreas(areaList);
+            } catch (error) {
+                console.error('Error fetching areas:', error);
+                setAreas(['Gazipur', 'Mirpur', 'Boardbazar', 'Joydebpur', 'Tongi', 'Uttara']);
+            }
+        };
+
+        fetchAreas();
+    }, []);
+
     const handleTextChange = (e) => {
         const { name, value } = e.target;
         onFilterChange({ [name]: value });
@@ -27,93 +65,308 @@ const ApartmentFilters = ({ filters, onFilterChange }) => {
             area: '',
             minRent: '',
             maxRent: '',
+            negotiable: false,
+            minSize: '',
+            maxSize: '',
             bedrooms: '',
-            furnished: false
+            bathrooms: '',
+            amenities: {
+                gas: false,
+                lift: false,
+                generator: false,
+                parking: false,
+                security: false,
+                balcony: false,
+                furnished: false
+            }
         });
+        onSortChange('default');
     };
 
     return (
         <Paper className="filter-section">
-            <Typography variant="h6" component="h2" className="filter-title">
-                Filters
+            <Typography variant="h6" component="h2" className="filter-title" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <TuneIcon /> Filters
             </Typography>
             <Divider sx={{ my: 2 }} />
 
-            <Box className="filter-group">
-                <Typography variant="subtitle2">Location</Typography>
-                <TextField
-                    name="area"
-                    placeholder="Area (e.g., Gulshan, Banani)"
-                    variant="outlined"
-                    fullWidth
-                    size="small"
-                    value={filters.area}
-                    onChange={handleTextChange}
-                    margin="normal"
-                />
-            </Box>
+            {/* Sorting Options */}
+            <Accordion>
+                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                    <Typography sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <SortIcon /> Sort By
+                    </Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                    <FormControl fullWidth size="small">
+                        <Select
+                            value={sortOption}
+                            onChange={(e) => onSortChange(e.target.value)}
+                        >
+                            <MenuItem value="default">Default</MenuItem>
+                            <MenuItem value="name_asc">Name: A to Z</MenuItem>
+                            <MenuItem value="name_desc">Name: Z to A</MenuItem>
+                            <MenuItem value="price_asc">Price: Low to High</MenuItem>
+                            <MenuItem value="price_desc">Price: High to Low</MenuItem>
+                        </Select>
+                    </FormControl>
+                </AccordionDetails>
+            </Accordion>
 
-            <Box className="filter-group">
-                <Typography variant="subtitle2">Price Range (BDT)</Typography>
-                <Box sx={{ display: 'flex', gap: 2 }}>
-                    <TextField
-                        name="minRent"
-                        placeholder="Min"
-                        variant="outlined"
-                        size="small"
-                        type="number"
-                        value={filters.minRent}
-                        onChange={handleTextChange}
-                        margin="normal"
-                    />
-                    <TextField
-                        name="maxRent"
-                        placeholder="Max"
-                        variant="outlined"
-                        size="small"
-                        type="number"
-                        value={filters.maxRent}
-                        onChange={handleTextChange}
-                        margin="normal"
-                    />
-                </Box>
-            </Box>
+            {/* Location Filter */}
+            <Accordion>
+                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                    <Typography sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <LocationOnIcon /> Location
+                    </Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                    <FormControl fullWidth size="small">
+                        <InputLabel>Area</InputLabel>
+                        <Select
+                            name="area"
+                            value={filters.area || ''}
+                            onChange={handleTextChange}
+                            label="Area"
+                        >
+                            <MenuItem value="">Any Area</MenuItem>
+                            {areas.map((area) => (
+                                <MenuItem key={area} value={area}>{area}</MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+                </AccordionDetails>
+            </Accordion>
 
-            <Box className="filter-group">
-                <Typography variant="subtitle2">Bedrooms</Typography>
-                <TextField
-                    name="bedrooms"
-                    select
-                    SelectProps={{
-                        native: true,
-                    }}
-                    fullWidth
-                    size="small"
-                    value={filters.bedrooms}
-                    onChange={handleTextChange}
-                    margin="normal"
-                >
-                    <option value="">Any</option>
-                    <option value="1">1+</option>
-                    <option value="2">2+</option>
-                    <option value="3">3+</option>
-                    <option value="4">4+</option>
-                </TextField>
-            </Box>
+            {/* Price Range Filter */}
+            <Accordion>
+                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                    <Typography sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <AttachMoneyIcon /> Price Range (BDT)
+                    </Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                    <Grid container spacing={2}>
+                        <Grid item xs={6}>
+                            <TextField
+                                name="minRent"
+                                placeholder="Min"
+                                variant="outlined"
+                                fullWidth
+                                size="small"
+                                type="number"
+                                value={filters.minRent || ''}
+                                onChange={handleTextChange}
+                            />
+                        </Grid>
+                        <Grid item xs={6}>
+                            <TextField
+                                name="maxRent"
+                                placeholder="Max"
+                                variant="outlined"
+                                fullWidth
+                                size="small"
+                                type="number"
+                                value={filters.maxRent || ''}
+                                onChange={handleTextChange}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sx={{ mt: 1 }}>
+                            <FormControlLabel
+                                control={
+                                    <Checkbox
+                                        name="negotiable"
+                                        checked={filters.negotiable || false}
+                                        onChange={handleCheckboxChange}
+                                    />
+                                }
+                                label="Negotiable Only"
+                            />
+                        </Grid>
+                    </Grid>
+                </AccordionDetails>
+            </Accordion>
 
-            <Box className="filter-group">
-                <FormControlLabel
-                    control={
-                        <Checkbox
-                            name="furnished"
-                            checked={filters.furnished}
-                            onChange={handleCheckboxChange}
-                            color="primary"
+            {/* Size Range Filter */}
+            <Accordion >
+                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                    <Typography sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <SquareFootIcon /> Size Range (sqft)
+                    </Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                    <Grid container spacing={2}>
+                        <Grid item xs={6}>
+                            <TextField
+                                name="minSize"
+                                placeholder="Min"
+                                variant="outlined"
+                                fullWidth
+                                size="small"
+                                type="number"
+                                value={filters.minSize || ''}
+                                onChange={handleTextChange}
+                            />
+                        </Grid>
+                        <Grid item xs={6}>
+                            <TextField
+                                name="maxSize"
+                                placeholder="Max"
+                                variant="outlined"
+                                fullWidth
+                                size="small"
+                                type="number"
+                                value={filters.maxSize || ''}
+                                onChange={handleTextChange}
+                            />
+                        </Grid>
+                    </Grid>
+                </AccordionDetails>
+            </Accordion>
+
+            {/* Bedrooms Filter */}
+            <Accordion >
+                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                    <Typography sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <BedIcon /> Bedrooms
+                    </Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                    <FormControl fullWidth size="small">
+                        <Select
+                            name="bedrooms"
+                            value={filters.bedrooms || ''}
+                            onChange={handleTextChange}
+                        >
+                            <MenuItem value="">Any</MenuItem>
+                            <MenuItem value="1">1+</MenuItem>
+                            <MenuItem value="2">2+</MenuItem>
+                            <MenuItem value="3">3+</MenuItem>
+                            <MenuItem value="4">4+</MenuItem>
+                            <MenuItem value="5">5+</MenuItem>
+                        </Select>
+                    </FormControl>
+                </AccordionDetails>
+            </Accordion>
+
+            {/* Bathrooms Filter */}
+            <Accordion >
+                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                    <Typography sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <BathroomIcon /> Bathrooms
+                    </Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                    <FormControl fullWidth size="small">
+                        <Select
+                            name="bathrooms"
+                            value={filters.bathrooms || ''}
+                            onChange={handleTextChange}
+                        >
+                            <MenuItem value="">Any</MenuItem>
+                            <MenuItem value="1">1+</MenuItem>
+                            <MenuItem value="2">2+</MenuItem>
+                            <MenuItem value="3">3+</MenuItem>
+                            <MenuItem value="4">4+</MenuItem>
+                        </Select>
+                    </FormControl>
+                </AccordionDetails>
+            </Accordion>
+
+            {/* Amenities Filter */}
+            <Accordion>
+                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                    <Typography>Amenities</Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                    <Box display="flex" flexDirection="column">
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    name="amenities.gas"
+                                    checked={filters.amenities?.gas || false}
+                                    onChange={e => onFilterChange({
+                                        amenities: { ...filters.amenities, gas: e.target.checked }
+                                    })}
+                                />
+                            }
+                            label="Gas Supply"
                         />
-                    }
-                    label="Furnished Only"
-                />
-            </Box>
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    name="amenities.lift"
+                                    checked={filters.amenities?.lift || false}
+                                    onChange={e => onFilterChange({
+                                        amenities: { ...filters.amenities, lift: e.target.checked }
+                                    })}
+                                />
+                            }
+                            label="Elevator"
+                        />
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    name="amenities.generator"
+                                    checked={filters.amenities?.generator || false}
+                                    onChange={e => onFilterChange({
+                                        amenities: { ...filters.amenities, generator: e.target.checked }
+                                    })}
+                                />
+                            }
+                            label="Generator"
+                        />
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    name="amenities.parking"
+                                    checked={filters.amenities?.parking || false}
+                                    onChange={e => onFilterChange({
+                                        amenities: { ...filters.amenities, parking: e.target.checked }
+                                    })}
+                                />
+                            }
+                            label="Parking"
+                        />
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    name="amenities.security"
+                                    checked={filters.amenities?.security || false}
+                                    onChange={e => onFilterChange({
+                                        amenities: { ...filters.amenities, security: e.target.checked }
+                                    })}
+                                />
+                            }
+                            label="Security"
+                        />
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    name="amenities.balcony"
+                                    checked={filters.amenities?.balcony || false}
+                                    onChange={e => onFilterChange({
+                                        amenities: { ...filters.amenities, balcony: e.target.checked }
+                                    })}
+                                />
+                            }
+                            label="Balcony"
+                        />
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    name="amenities.furnished"
+                                    checked={filters.amenities?.furnished || false}
+                                    onChange={e => onFilterChange({
+                                        amenities: { ...filters.amenities, furnished: e.target.checked }
+                                    })}
+                                />
+                            }
+                            label="Furnished"
+                        />
+                    </Box>
+                </AccordionDetails>
+            </Accordion>
 
             <Button
                 variant="outlined"
