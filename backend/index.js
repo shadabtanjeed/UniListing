@@ -55,16 +55,17 @@ const io = new Server(server, {
 // Import routes and models
 const authRoutes = require('./routes/auth');
 const apartmentRoutes = require('./routes/apartment_routes');
-const messageRoutes = require('./routes/message_routes'); // We'll create this
-const itemRoutes = require('./routes/item_routes'); // We'll create this
+const messageRoutes = require('./routes/message_routes');
+const itemRoutes = require('./routes/item_routes');
+const chatController = require('./controllers/chatController');
+const savedPostsRoutes = require('./routes/saved_posts_routes');
 
-// Import chat controller for socket handlers
-const chatController = require('./controllers/chatController'); // We'll create this
 
 app.use('/auth', authRoutes);
 app.use('/api/apartments', apartmentRoutes);
-app.use('/api/messages', messageRoutes); // We'll add this route
-app.use('/api/items', itemRoutes); 
+app.use('/api/messages', messageRoutes);
+app.use('/api/items', itemRoutes);
+app.use('/api/saved-posts', savedPostsRoutes);
 
 // Socket.IO connection handler
 io.on('connection', (socket) => {
