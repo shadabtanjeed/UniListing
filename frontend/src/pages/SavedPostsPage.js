@@ -119,6 +119,11 @@ const SavedPostsPage = () => {
 
     // Function to convert Buffer data to image URL
     const getFirstImageUrl = (apartment) => {
+        // guard clause to check if apartment exists
+        if (!apartment || !apartment.images || !apartment.images.length) {
+            return 'https://via.placeholder.com/300x200?text=No+Image+Available';
+        }
+
         if (apartment.images && apartment.images.length > 0) {
             try {
                 // Using base64 encoding
@@ -132,7 +137,6 @@ const SavedPostsPage = () => {
                 return 'https://via.placeholder.com/300x200?text=No+Image+Available';
             }
         }
-        return 'https://via.placeholder.com/300x200?text=No+Image+Available';
     };
 
     const formatDate = (dateString) => {
@@ -161,6 +165,12 @@ const SavedPostsPage = () => {
             <Grid container spacing={3} sx={{ maxWidth: '80rem', mx: 'auto' }}>
                 {savedPosts.map((post) => {
                     const apartment = post.details;
+
+                    if (!apartment) {
+                        // Skip rendering if apartment details are not available
+                        return null;
+                    }
+
                     return (
                         <Grid item xs={12} key={post.postId}>
                             <Card className="saved-apartment-card" sx={{ maxWidth: '65rem', mx: 'auto' }}>
