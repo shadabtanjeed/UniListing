@@ -292,10 +292,17 @@ function AddApartmentPage() {
                     zIndex: 1000,
                     backgroundColor: 'white',
                     boxShadow: '0px 2px 5px rgba(0, 0, 0, 0.2)',
+                    padding: '8px',
+                    width: '40px',
+                    height: '40px',
+                    borderRadius: '4px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
                 }}
                 onClick={handleMoveToCurrentLocation}
             >
-                <MyLocationIcon style={{ color: '#1976d2' }} /> {/* Use the locate icon */}
+                <MyLocationIcon style={{ color: '#1976d2', fontSize: '22px' }} />
             </IconButton>
         );
     };

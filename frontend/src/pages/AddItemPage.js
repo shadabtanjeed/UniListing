@@ -222,10 +222,17 @@ function AddItemPage() {
                     zIndex: 1000,
                     backgroundColor: 'white',
                     boxShadow: '0px 2px 5px rgba(0, 0, 0, 0.2)',
+                    padding: '8px',  // Add padding
+                    width: '40px',   // Set fixed width
+                    height: '40px',  // Set fixed height
+                    borderRadius: '4px', // Make it slightly rounded
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
                 }}
                 onClick={handleMoveToCurrentLocation}
             >
-                <MyLocationIcon style={{ color: '#1976d2' }} />
+                <MyLocationIcon style={{ color: '#1976d2', fontSize: '22px' }} />
             </IconButton>
         );
     };
