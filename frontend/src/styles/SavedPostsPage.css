@@ -1,0 +1,35 @@
+.saved-posts-content {
+    margin-top: 80px;
+    padding: 24px;
+    font-family: "Poppins", sans-serif;
+}
+
+.page-title {
+    margin-bottom: 24px;
+    font-weight: 600;
+    color: #2d4f8f;
+}
+
+.saved-apartment-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 16px;
+}
+
+.saved-apartment-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.apartment-title {
+    font-weight: 600;
+    color: #2d4f8f;
+    margin-bottom: 8px;
+}
+
+@media (max-width: 600px) {
+    .saved-posts-content {
+        padding: 16px;
+    }
+}

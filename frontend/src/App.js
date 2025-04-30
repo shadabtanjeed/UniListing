@@ -14,9 +14,8 @@ import AddApartmentPage from './pages/AddApartmentPage';
 import Signup from './pages/signup';
 import AddItemPage from './pages/AddItemPage';
 import ItemPage from './pages/ItemsPage';
-
-// New page imports
 import HomePage from './pages/HomePage';
+import SavedPostsPage from './pages/SavedPostsPage';
 
 // Import global styles
 import './styles/global.css';
@@ -92,6 +91,13 @@ function App() {
           <Route path="/messages" element={
             <ProtectedRoute>
               <MessagesPage />
+            </ProtectedRoute>
+          } />
+
+
+          <Route path="/saved-posts" element={
+            <ProtectedRoute>
+              <SavedPostsPage />
             </ProtectedRoute>
           } />
 
