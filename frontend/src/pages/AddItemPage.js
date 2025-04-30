@@ -160,8 +160,13 @@ function AddItemPage() {
             })
             .then((data) => {
                 console.log('Success:', data);
-                setSnackbar({ open: true, message: 'Item added successfully!', severity: 'success' });
-                setTimeout(() => navigate('/view-items'), 2000); // Delay navigation by 2 seconds
+                setSnackbar({
+                    open: true,
+                    message: 'Item added successfully!',
+                    severity: 'success'
+                });
+
+                setTimeout(() => navigate('/view-marketplace'), 2000);
             })
             .catch((error) => {
                 console.error('Error:', error);
@@ -382,9 +387,19 @@ function AddItemPage() {
                 open={snackbar.open}
                 autoHideDuration={6000}
                 onClose={handleSnackbarClose}
-                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
             >
-                <Alert onClose={handleSnackbarClose} severity={snackbar.severity} sx={{ width: '100%' }}>
+                <Alert
+                    onClose={handleSnackbarClose}
+                    severity={snackbar.severity}
+                    sx={{
+                        width: '100%',
+                        borderLeft: snackbar.severity === 'success' ? '4px solid #2d4f8f' : undefined,
+                        '& .MuiAlert-icon': {
+                            color: snackbar.severity === 'success' ? '#2d4f8f' : undefined
+                        }
+                    }}
+                >
                     {snackbar.message}
                 </Alert>
             </Snackbar>

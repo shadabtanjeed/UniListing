@@ -73,8 +73,8 @@ const Navbar = () => {
   // Simplified navigation items - removed About Us, Contact, and Messages
   const navItems = [
     { text: 'Home', icon: <HomeIcon />, path: '/' },
-    { text: 'Apartments', icon: <ApartmentIcon />, path: '/apartments' },
-    { text: 'Marketplace', icon: <ShoppingCartIcon />, path: '/marketplace' },
+    { text: 'Apartments', icon: <ApartmentIcon />, path: '/view-apartments' },
+    { text: 'Marketplace', icon: <ShoppingCartIcon />, path: '/view-marketplace' },
   ];
 
   const drawer = (
