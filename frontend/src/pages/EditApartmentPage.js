@@ -73,7 +73,26 @@ const EditApartmentPage = () => {
             }
             
             const data = await response.json();
-            setApartmentData(data);
+            
+            // Ensure preferred_dept and preferred_semester are arrays
+            const formattedData = {
+                ...data,
+                tenancy_preferences: {
+                    ...data.tenancy_preferences,
+                    preferred_dept: Array.isArray(data.tenancy_preferences?.preferred_dept) 
+                        ? data.tenancy_preferences.preferred_dept 
+                        : data.tenancy_preferences?.preferred_dept 
+                            ? [data.tenancy_preferences.preferred_dept] 
+                            : [],
+                    preferred_semester: Array.isArray(data.tenancy_preferences?.preferred_semester)
+                        ? data.tenancy_preferences.preferred_semester
+                        : data.tenancy_preferences?.preferred_semester
+                            ? [data.tenancy_preferences.preferred_semester]
+                            : []
+                }
+            };
+            
+            setApartmentData(formattedData);
             setLoading(false);
         } catch (error) {
             console.error('Error fetching apartment data:', error);
@@ -84,7 +103,20 @@ const EditApartmentPage = () => {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        if (name.includes('.')) {
+        
+        // Special handling for preferred_dept and preferred_semester
+        if (name === 'tenancy_preferences.preferred_dept' || name === 'tenancy_preferences.preferred_semester') {
+            const [parent, child] = name.split('.');
+            setApartmentData(prev => ({
+                ...prev,
+                [parent]: {
+                    ...prev[parent],
+                    [child]: Array.isArray(value) ? value : [value] // Ensure value is always an array
+                }
+            }));
+        }
+        // Regular handling for other fields
+        else if (name.includes('.')) {
             const [parent, child] = name.split('.');
             setApartmentData(prev => ({
                 ...prev,
@@ -405,8 +437,11 @@ const EditApartmentPage = () => {
                             fullWidth
                             label="Preferred Department"
                             name="tenancy_preferences.preferred_dept"
-                            value={apartmentData.tenancy_preferences?.preferred_dept || ''}
+                            value={apartmentData.tenancy_preferences?.preferred_dept || []} // Change to array
                             onChange={handleChange}
+                            SelectProps={{
+                                multiple: true // Enable multiple selection
+                            }}
                         >
                             {departments.map((dept) => (
                                 <MenuItem key={dept} value={dept}>{dept}</MenuItem>
@@ -418,8 +453,11 @@ const EditApartmentPage = () => {
                             fullWidth
                             label="Preferred Semester"
                             name="tenancy_preferences.preferred_semester"
-                            value={apartmentData.tenancy_preferences?.preferred_semester || ''}
+                            value={apartmentData.tenancy_preferences?.preferred_semester || []} // Change to array
                             onChange={handleChange}
+                            SelectProps={{
+                                multiple: true // Enable multiple selection
+                            }}
                         >
                             {semesters.map((sem) => (
                                 <MenuItem key={sem} value={sem}>{sem}</MenuItem>
