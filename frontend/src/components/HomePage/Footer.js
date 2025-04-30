@@ -29,7 +29,7 @@ const Footer = () => {
           >
             <Typography variant="h6" gutterBottom>UniListing</Typography>
             <Typography variant="body2" sx={{ mb: 2 }}>
-              Connecting IUT students with housing solutions and marketplace items since 2023.
+              Connecting IUT students with housing solutions and marketplace items since 2025.
             </Typography>
             <Typography variant="body2">
               Islamic University of Technology (IUT)<br />
