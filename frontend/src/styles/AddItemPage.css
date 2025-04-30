@@ -14,7 +14,8 @@
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     width: 100%;
     max-width: 800px;
-    margin-top: 64px; /* Adjust the value as needed */
+    margin-top: 64px;
+    /* Adjust the value as needed */
 }
 
 .formContainer form {
@@ -30,4 +31,17 @@
 
 .sideContainer {
     margin-top: 64px;
+}
+
+/* Remove increment/decrement arrows from number inputs */
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* For Firefox */
+input[type=number] {
+    -moz-appearance: textfield;
+    appearance: textfield;
 }
