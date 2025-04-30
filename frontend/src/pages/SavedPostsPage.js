@@ -391,7 +391,7 @@ const SavedPostsPage = () => {
                                                 top={10}
                                                 right={10}
                                                 sx={{
-                                                    bgcolor: '#ff9800',  // Orange color for marketplace items
+                                                    bgcolor: '#2d4f8f', // Changed from '#ff9800'
                                                     color: 'white',
                                                     px: 1,
                                                     py: 0.5,
@@ -431,7 +431,7 @@ const SavedPostsPage = () => {
                                             </Box>
 
                                             <Box display="flex" alignItems="center" mt={1} mb={2}>
-                                                <LocationOnIcon sx={{ color: '#ff9800', mr: 1 }} />
+                                                <LocationOnIcon sx={{ color: '#2d4f8f', mr: 1 }} />
                                                 <Typography variant="body1">
                                                     {item.location && item.location.address
                                                         ? item.location.address
@@ -452,7 +452,7 @@ const SavedPostsPage = () => {
 
                                             <Box display="flex" justifyContent="space-between" flexWrap="wrap">
                                                 <Box display="flex" alignItems="center" mr={3} mb={1}>
-                                                    <Typography variant="h6" color="#ff9800" fontWeight="bold">
+                                                    <Typography variant="h6" color="#2d4f8f" fontWeight="bold"> {/* Changed from '#ff9800' */}
                                                         {item.price !== undefined && item.price !== null
                                                             ? `${item.price.toLocaleString()} BDT`
                                                             : "Price not specified"}
@@ -471,11 +471,12 @@ const SavedPostsPage = () => {
                                                         label={item.category || "Uncategorized"}
                                                         size="small"
                                                         sx={{
-                                                            bgcolor: '#fff3e0',
-                                                            color: '#ff9800',
+                                                            bgcolor: '#f0f3f9',
+                                                            color: '#2d4f8f',
                                                             fontWeight: 500
                                                         }}
                                                     />
+
                                                 </Box>
                                             </Box>
 
@@ -484,9 +485,9 @@ const SavedPostsPage = () => {
                                                     variant="contained"
                                                     onClick={() => handleViewItemDetails(item.item_id)}
                                                     sx={{
-                                                        bgcolor: "#ff9800",
+                                                        bgcolor: "#2d4f8f",
                                                         '&:hover': {
-                                                            bgcolor: '#f57c00',
+                                                            bgcolor: '#1e3a6a',
                                                         }
                                                     }}
                                                 >
