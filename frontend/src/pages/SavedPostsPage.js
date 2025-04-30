@@ -74,8 +74,30 @@ const SavedPostsPage = () => {
                     })
                 );
                 setSavedPosts(detailedPosts.filter(post => post.details !== null));
-            } else {
-                setSavedPosts(data);
+            }
+            // marketplace type 
+            else {
+                const detailedPosts = await Promise.all(
+                    data.map(async (savedPost) => {
+                        try {
+                            const detailResponse = await fetch(`${API_BASE_URL}/api/items/get_item/${savedPost.item_id}`, {
+                                credentials: 'include'
+                            });
+
+                            if (!detailResponse.ok) {
+                                console.warn(`Could not fetch details for item ${savedPost.item_id}`);
+                                return { ...savedPost, details: null };
+                            }
+
+                            const itemData = await detailResponse.json();
+                            return { ...savedPost, details: itemData };
+                        } catch (error) {
+                            console.warn(`Error fetching item ${savedPost.item_id} details:`, error);
+                            return { ...savedPost, details: null };
+                        }
+                    })
+                );
+                setSavedPosts(detailedPosts.filter(post => post.details !== null));
             }
         } catch (err) {
             setError(err.message || 'Failed to fetch saved posts');
@@ -95,7 +117,9 @@ const SavedPostsPage = () => {
         navigate(`/apartment/${apartmentId}`);
     };
 
-
+    const handleViewItemDetails = (itemId) => {
+        navigate(`/item/get_item/${itemId}`);
+    };
 
     const handleUnsave = async (postId) => {
         try {
@@ -139,6 +163,28 @@ const SavedPostsPage = () => {
         }
     };
 
+    const getFirstItemImageUrl = (item) => {
+        // Guard clause to check if item exists
+        if (!item || !item.images || !item.images.length) {
+            return 'https://via.placeholder.com/300x200?text=No+Image+Available';
+        }
+
+        if (item.images && item.images.length > 0) {
+            try {
+                // Using base64 encoding
+                const base64String = btoa(
+                    new Uint8Array(item.images[0].data.data)
+                        .reduce((data, byte) => data + String.fromCharCode(byte), '')
+                );
+                return `data:${item.images[0].contentType};base64,${base64String}`;
+            } catch (err) {
+                console.error('Error processing image:', err);
+                return 'https://via.placeholder.com/300x200?text=No+Image+Available';
+            }
+        }
+        return 'https://via.placeholder.com/300x200?text=No+Image+Available';
+    };
+
     const formatDate = (dateString) => {
         return new Date(dateString).toLocaleDateString('en-US', {
             year: 'numeric',
@@ -167,7 +213,6 @@ const SavedPostsPage = () => {
                     const apartment = post.details;
 
                     if (!apartment) {
-                        // Skip rendering if apartment details are not available
                         return null;
                     }
 
@@ -230,7 +275,9 @@ const SavedPostsPage = () => {
                                             <Box display="flex" alignItems="center" mt={1} mb={2}>
                                                 <LocationOnIcon sx={{ color: '#2d4f8f', mr: 1 }} />
                                                 <Typography variant="body1">
-                                                    {apartment.location.area}, {apartment.location.address}
+                                                    {apartment.location
+                                                        ? `${apartment.location.area || ''}, ${apartment.location.address || ''}`
+                                                        : "Location not specified"}
                                                 </Typography>
                                             </Box>
 
@@ -239,9 +286,12 @@ const SavedPostsPage = () => {
                                             <Box display="flex" justifyContent="space-between" flexWrap="wrap">
                                                 <Box display="flex" alignItems="center" mr={3} mb={1}>
                                                     <Typography variant="h6" color="#2d4f8f" fontWeight="bold">
-                                                        {apartment.rent.amount.toLocaleString()} BDT
+                                                        {apartment.rent && apartment.rent.amount !== undefined
+                                                            ? `${apartment.rent.amount.toLocaleString()} BDT`
+                                                            : "Price not specified"}
                                                     </Typography>
-                                                    {apartment.rent.negotiable && (
+
+                                                    {apartment.rent && apartment.rent.negotiable && (
                                                         <Chip
                                                             label="Negotiable"
                                                             size="small"
@@ -254,13 +304,13 @@ const SavedPostsPage = () => {
                                                     <Box display="flex" alignItems="center">
                                                         <BedIcon sx={{ color: '#2d4f8f', mr: 0.5 }} />
                                                         <Typography variant="body2">
-                                                            {apartment.bedrooms.total} BR
+                                                            {apartment.bedrooms ? `${apartment.bedrooms.total} BR` : "N/A"}
                                                         </Typography>
                                                     </Box>
                                                     <Box display="flex" alignItems="center">
                                                         <BathroomIcon sx={{ color: '#2d4f8f', mr: 0.5 }} />
                                                         <Typography variant="body2">
-                                                            {apartment.bathrooms.total} Bath
+                                                            {apartment.bathrooms ? `${apartment.bathrooms.total} Bath` : "N/A"}
                                                         </Typography>
                                                     </Box>
                                                     {apartment.optional_details && apartment.optional_details.size && (
@@ -301,12 +351,156 @@ const SavedPostsPage = () => {
     };
 
     const renderMarketplaceCards = () => {
+        if (savedPosts.length === 0 && !loading) {
+            return (
+                <Box textAlign="center" py={4}>
+                    <Typography variant="h6" color="text.secondary">
+                        No saved marketplace items found
+                    </Typography>
+                    <Typography variant="body1" color="text.secondary" mt={1}>
+                        Items you save will appear here
+                    </Typography>
+                </Box>
+            );
+        }
+
         return (
-            <Box textAlign="center" py={4}>
-                <Typography variant="h6" color="text.secondary">
-                    Marketplace saved items coming soon
-                </Typography>
-            </Box>
+            <Grid container spacing={3} sx={{ maxWidth: '80rem', mx: 'auto' }}>
+                {savedPosts.map((post) => {
+                    const item = post.details;
+
+                    if (!item) {
+                        // Skip rendering if item details are not available
+                        return null;
+                    }
+
+                    return (
+                        <Grid item xs={12} key={post.postId}>
+                            <Card className="saved-apartment-card" sx={{ maxWidth: '65rem', mx: 'auto' }}>
+                                <Grid container>
+                                    <Grid item xs={12} md={3}>
+                                        <Box sx={{ height: '100%', minHeight: 200, position: 'relative' }}>
+                                            <CardMedia
+                                                component="img"
+                                                sx={{ height: '100%', objectFit: 'cover' }}
+                                                image={getFirstItemImageUrl(item)}
+                                                alt={item.title}
+                                            />
+                                            <Box
+                                                position="absolute"
+                                                top={10}
+                                                right={10}
+                                                sx={{
+                                                    bgcolor: '#ff9800',  // Orange color for marketplace items
+                                                    color: 'white',
+                                                    px: 1,
+                                                    py: 0.5,
+                                                    borderRadius: 1,
+                                                    fontSize: '0.75rem'
+                                                }}
+                                            >
+                                                Saved on {formatDate(post.dateSaved)}
+                                            </Box>
+                                        </Box>
+                                    </Grid>
+                                    <Grid item xs={12} md={9}>
+                                        <CardContent>
+                                            <Box display="flex" justifyContent="space-between" alignItems="flex-start">
+                                                <Typography variant="h5" component="h2" className="apartment-title">
+                                                    {item.title}
+                                                </Typography>
+                                                <Button
+                                                    variant="outlined"
+                                                    color="error"
+                                                    size="small"
+                                                    startIcon={<BookmarkIcon />}
+                                                    onClick={() => handleUnsave(post.postId)}
+                                                    sx={{
+                                                        width: '6rem',
+                                                        minWidth: 'fit-content',
+                                                        fontSize: '0.75rem',
+                                                        border: '1px solid #d32f2f',
+                                                        '&:hover': {
+                                                            backgroundColor: '#ffebee',
+                                                            borderColor: '#c62828',
+                                                        }
+                                                    }}
+                                                >
+                                                    Unsave
+                                                </Button>
+                                            </Box>
+
+                                            <Box display="flex" alignItems="center" mt={1} mb={2}>
+                                                <LocationOnIcon sx={{ color: '#ff9800', mr: 1 }} />
+                                                <Typography variant="body1">
+                                                    {item.location && item.location.address
+                                                        ? item.location.address
+                                                        : "Location not specified"}
+                                                </Typography>
+                                            </Box>
+
+
+                                            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                                                {item.description
+                                                    ? (item.description.length > 150
+                                                        ? item.description.substring(0, 150) + '...'
+                                                        : item.description)
+                                                    : "No description available"}
+                                            </Typography>
+
+                                            <Divider sx={{ my: 2 }} />
+
+                                            <Box display="flex" justifyContent="space-between" flexWrap="wrap">
+                                                <Box display="flex" alignItems="center" mr={3} mb={1}>
+                                                    <Typography variant="h6" color="#ff9800" fontWeight="bold">
+                                                        {item.price !== undefined && item.price !== null
+                                                            ? `${item.price.toLocaleString()} BDT`
+                                                            : "Price not specified"}
+                                                    </Typography>
+                                                    {item.negotiable && (
+                                                        <Chip
+                                                            label="Negotiable"
+                                                            size="small"
+                                                            sx={{ ml: 1 }}
+                                                        />
+                                                    )}
+                                                </Box>
+
+                                                <Box display="flex" gap={2} flexWrap="wrap">
+                                                    <Chip
+                                                        label={item.category || "Uncategorized"}
+                                                        size="small"
+                                                        sx={{
+                                                            bgcolor: '#fff3e0',
+                                                            color: '#ff9800',
+                                                            fontWeight: 500
+                                                        }}
+                                                    />
+                                                </Box>
+                                            </Box>
+
+                                            <Box mt={3} display="flex" justifyContent="flex-end">
+                                                <Button
+                                                    variant="contained"
+                                                    onClick={() => handleViewItemDetails(item.item_id)}
+                                                    sx={{
+                                                        bgcolor: "#ff9800",
+                                                        '&:hover': {
+                                                            bgcolor: '#f57c00',
+                                                        }
+                                                    }}
+                                                >
+                                                    View Details
+                                                </Button>
+                                            </Box>
+                                        </CardContent>
+                                    </Grid>
+                                </Grid>
+                            </Card>
+                        </Grid>
+                    );
+                })}
+            </Grid>
         );
     };
 
