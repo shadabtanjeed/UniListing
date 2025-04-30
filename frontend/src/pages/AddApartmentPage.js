@@ -40,7 +40,11 @@ function AddApartmentPage() {
         images: [],
         contact_info: { name: '', phone: '', email: '' },
         optional_details: { furnished: false, size: '', balcony: false, more_details: '' },
-        tenancy_preferences: { preferred_tenants: '', preferred_dept: '', preferred_semester: '' },
+        tenancy_preferences: { 
+            preferred_tenants: '', 
+            preferred_dept: [], // Change to array
+            preferred_semester: [] // Change to array
+        },
         current_tenants: { total: '', details: [] },
         upvotes: { count: 0, users: [] },
         status: 'available'
@@ -88,9 +92,20 @@ function AddApartmentPage() {
     const handleChange = (e) => {
         const { name, value } = e.target;
 
-        if (name.includes('.')) {
+        // Special handling for preferred_dept and preferred_semester
+        if (name === 'tenancy_preferences.preferred_dept' || name === 'tenancy_preferences.preferred_semester') {
             const [parent, child] = name.split('.');
-            console.log(`Updating nested field: ${parent}.${child} = ${value}`); // Debugging
+            setApartmentData(prev => ({
+                ...prev,
+                [parent]: {
+                    ...prev[parent],
+                    [child]: Array.isArray(value) ? value : [value] // Ensure value is always an array
+                }
+            }));
+        }
+        // Regular handling for other nested fields
+        else if (name.includes('.')) {
+            const [parent, child] = name.split('.');
             setApartmentData((prev) => ({
                 ...prev,
                 [parent]: {
@@ -98,8 +113,9 @@ function AddApartmentPage() {
                     [child]: value,
                 },
             }));
-        } else {
-            console.log(`Updating top-level field: ${name} = ${value}`); // Debugging
+        }
+        // Regular handling for top-level fields
+        else {
             setApartmentData((prev) => ({ ...prev, [name]: value }));
         }
     };
@@ -198,6 +214,15 @@ function AddApartmentPage() {
                     enabled: apartmentData.rent_type.partial_rent.enabled || false,
                     rooms_available: apartmentData.rent_type.partial_rent.rooms_available || 0,
                 }
+            },
+            tenancy_preferences: {
+                ...apartmentData.tenancy_preferences,
+                preferred_dept: Array.isArray(apartmentData.tenancy_preferences.preferred_dept) 
+                    ? apartmentData.tenancy_preferences.preferred_dept 
+                    : [],
+                preferred_semester: Array.isArray(apartmentData.tenancy_preferences.preferred_semester)
+                    ? apartmentData.tenancy_preferences.preferred_semester
+                    : []
             },
             status: apartmentData.status || 'available',
         };
@@ -500,8 +525,11 @@ function AddApartmentPage() {
                             fullWidth
                             label="Preferred Department"
                             name="tenancy_preferences.preferred_dept"
-                            value={apartmentData.tenancy_preferences.preferred_dept || ''} // Fallback to empty string
+                            value={apartmentData.tenancy_preferences.preferred_dept || []}
                             onChange={handleChange}
+                            SelectProps={{
+                                multiple: true
+                            }}
                         >
                             {departments.map((dept) => (
                                 <MenuItem key={dept} value={dept}>
@@ -515,8 +543,11 @@ function AddApartmentPage() {
                             fullWidth
                             label="Preferred Semester"
                             name="tenancy_preferences.preferred_semester"
-                            value={apartmentData.tenancy_preferences.preferred_semester || ''} // Fallback to empty string
+                            value={apartmentData.tenancy_preferences.preferred_semester || []}
                             onChange={handleChange}
+                            SelectProps={{
+                                multiple: true
+                            }}
                         >
                             {semesters.map((sem) => (
                                 <MenuItem key={sem} value={sem}>
