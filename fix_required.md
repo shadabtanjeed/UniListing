@@ -1,3 +1,0 @@
-- newline isn't maintained when input as description in add_apartment page
-- After adding an item, the "item added" message should be shown in top of the screen instead of bottom
-- Price range filter in view items page does not work properly (specially in max price filter)
