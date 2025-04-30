@@ -356,7 +356,7 @@ const sendMessage = async (req, res) => {
                 // Create a new conversation if none exists
                 const newConv = new Conversation({
                     participants: [sender, receiver],
-                    lastMessage: text,
+                    lastMessage: image ? '📷 Image' : text,
                     lastMessageTimestamp: new Date(),
                     unreadCount: new Map([[receiver, 1]]),
                 });
@@ -364,13 +364,6 @@ const sendMessage = async (req, res) => {
                 const savedConv = await newConv.save();
                 convId = savedConv._id;
             }
-        } else {
-            // Update the existing conversation
-            await Conversation.findByIdAndUpdate(convId, {
-                lastMessage: text,
-                lastMessageTimestamp: new Date(),
-                $inc: { [`unreadCount.${receiver}`]: 1 },
-            });
         }
 
         // Create the new message
@@ -393,6 +386,16 @@ const sendMessage = async (req, res) => {
         }
 
         const savedMessage = await message.save();
+
+        // Always update the conversation after saving the message
+        await Conversation.findByIdAndUpdate(
+            convId,
+            {
+                lastMessage: image ? '📷 Image' : text,
+                lastMessageTimestamp: new Date(),
+                $inc: { [`unreadCount.${receiver}`]: 1 }
+            }
+        );
 
         res.status(201).json({
             message: savedMessage,

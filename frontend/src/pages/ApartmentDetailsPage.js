@@ -201,7 +201,11 @@ const ContactInfoCard = ({ apartment }) => {
             }
 
             alert('Message sent successfully!');
-            navigate('/messages');
+
+            // Add a small delay to ensure the backend has time to process the message
+            setTimeout(() => {
+                navigate('/messages', { state: { forceRefresh: true } });
+            }, 500);
         } catch (error) {
             console.error('Error sending message:', error);
             alert(`Failed to send message: ${error.message}`);

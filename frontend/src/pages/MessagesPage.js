@@ -31,6 +31,7 @@ import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import ImageIcon from '@mui/icons-material/Image';
 import CancelIcon from '@mui/icons-material/Cancel';
 import '../styles/MessagesPageStyle.css';
+import { useLocation } from 'react-router-dom';
 
 // Import socket and chat services
 import { initSocket, getSocket, disconnectSocket } from '../services/socketService';
@@ -44,6 +45,8 @@ import {
   getImageUrl
 } from '../services/chatService';
 import { API_BASE_URL } from '../config/api-config';
+
+
 
 // Avatar component that uses initials
 const UserAvatar = ({ username, online }) => {
@@ -132,6 +135,8 @@ const MessagesPage = () => {
   const typingTimeoutRef = useRef(null);
   const searchTimeoutRef = useRef(null);
   const fileInputRef = useRef(null);
+
+  const location = useLocation();
 
   // Filter conversations based on search query (only in conversations mode)
   const filteredConversations = searchMode === 'conversations'
@@ -415,7 +420,7 @@ const MessagesPage = () => {
       socket.off('user_status');
       socket.off('user_typing');
     };
-  }, [currentUsername, selectedChat]);
+  }, [currentUsername, selectedChat, location.state?.forceRefresh]);
 
   // Fetch all conversations
   const fetchConversations = async () => {
@@ -443,6 +448,23 @@ const MessagesPage = () => {
       setConvLoading(false);
     }
   };
+
+  useEffect(() => {
+    // Fetch conversations on mount and when page becomes visible
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible') {
+        fetchConversations();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
+
+    // Initial fetch
+    fetchConversations();
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibility);
+    };
+  }, [currentUsername, location.state?.forceRefresh]);
 
   // Fetch messages when a chat is selected
   useEffect(() => {
