@@ -127,12 +127,7 @@ const ItemCard = ({ item }) => {
                                 </Box>
 
                                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 1 }}>
-                                    <Chip
-                                        icon={<CalendarTodayIcon />}
-                                        label={`Listed: ${formattedDate}`}
-                                        size="small"
-                                        variant="outlined"
-                                    />
+
 
                                     <Chip
                                         icon={<CategoryIcon />}
@@ -143,6 +138,13 @@ const ItemCard = ({ item }) => {
                                             color: '#2d4f8f',
                                             fontWeight: 500
                                         }}
+                                    />
+
+                                    <Chip
+                                        icon={<CalendarTodayIcon />}
+                                        label={`Listed: ${formattedDate}`}
+                                        size="small"
+                                        variant="outlined"
                                     />
                                 </Box>
                             </Grid>
