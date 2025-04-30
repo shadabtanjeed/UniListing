@@ -25,6 +25,7 @@ import MessageIcon from '@mui/icons-material/Message';
 import DescriptionIcon from '@mui/icons-material/Description';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import { useNavigate } from 'react-router-dom';
 
 // Styles
 import '../styles/ItemDetails.css';
@@ -94,13 +95,89 @@ const ImageCarousel = ({ images }) => {
 };
 
 // Contact Info Component
+// Contact Info Component
 const ContactInfoCard = ({ item }) => {
+    const navigate = useNavigate();
+
     const formatDate = (dateString) => {
         return new Date(dateString).toLocaleDateString('en-US', {
             year: 'numeric',
             month: 'long',
             day: 'numeric',
         });
+    };
+
+    const handleSendMessage = async () => {
+        try {
+            // Check if posted_by exists and is a valid username
+            if (!item.posted_by) {
+                throw new Error('Cannot send message: Item poster information is missing');
+            }
+
+            console.log("Sending message to user:", item.posted_by);
+
+            const image = item.images && item.images.length > 0 ? item.images[0] : null;
+            console.log("Image selected:", image ? "Yes" : "No");
+
+            let imageData = null;
+            if (image) {
+                console.log("Processing image data...");
+                try {
+                    imageData = {
+                        data: btoa(
+                            new Uint8Array(image.data.data).reduce(
+                                (data, byte) => data + String.fromCharCode(byte),
+                                ''
+                            )
+                        ),
+                        contentType: image.contentType,
+                        fileName: image.name,
+                    };
+                    console.log("Image data processed successfully");
+                } catch (imageError) {
+                    console.error("Error processing image:", imageError);
+                }
+            }
+
+            console.log("Sending request to:", `${API_BASE_URL}/api/messages/send`);
+            console.log("Request payload:", {
+                receiver: item.posted_by,
+                text: `I am interested in the item: ${item.title}`,
+                imageIncluded: !!imageData
+            });
+
+            const response = await fetch(`${API_BASE_URL}/api/messages/send`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include',
+                body: JSON.stringify({
+                    receiver: item.posted_by,
+                    text: `I am interested in the item: ${item.title}`,
+                    conversationId: null,
+                    image: imageData,
+                }),
+            });
+
+            console.log("Response status:", response.status);
+            const responseData = await response.json();
+            console.log("Response data:", responseData);
+
+            if (!response.ok) {
+                throw new Error(responseData.message || 'Failed to send message');
+            }
+
+            alert('Message sent successfully!');
+
+            // Add a small delay to ensure the backend has time to process the message
+            setTimeout(() => {
+                navigate('/messages', { state: { forceRefresh: true } });
+            }, 500);
+        } catch (error) {
+            console.error('Error sending message:', error);
+            alert(`Failed to send message: ${error.message}`);
+        }
     };
 
     return (
@@ -135,6 +212,7 @@ const ContactInfoCard = ({ item }) => {
                     variant="contained"
                     fullWidth
                     startIcon={<MessageIcon />}
+                    onClick={handleSendMessage}
                     sx={{
                         backgroundColor: '#2d4f8f',
                         '&:hover': {
