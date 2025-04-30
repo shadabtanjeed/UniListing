@@ -66,7 +66,20 @@ function AddItemPage() {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setItemData((prev) => ({ ...prev, [name]: value }));
+
+        // Handle nested properties like location.address
+        if (name.includes('.')) {
+            const [parent, child] = name.split('.');
+            setItemData((prev) => ({
+                ...prev,
+                [parent]: {
+                    ...prev[parent],
+                    [child]: value
+                }
+            }));
+        } else {
+            setItemData((prev) => ({ ...prev, [name]: value }));
+        }
     };
 
     const handleCheckboxChange = (e) => {
@@ -268,9 +281,21 @@ function AddItemPage() {
                                 sx={{ flex: '0 0 80%' }}
                                 label="Price"
                                 name="price"
-                                type="number"
-                                onChange={handleChange}
+                                // Change to text type to have more control
+                                type="text"
+                                value={itemData.price}
+                                onChange={(e) => {
+                                    // Only allow numbers and decimal point
+                                    const value = e.target.value;
+                                    // Regex to match only numbers and single decimal point
+                                    if (value === '' || /^[0-9]+(\.[0-9]*)?$/.test(value)) {
+                                        setItemData(prev => ({ ...prev, price: value }));
+                                    }
+                                }}
                                 required
+                                inputProps={{
+                                    inputMode: 'decimal', // Helps show numeric keyboard on mobile
+                                }}
                             />
                             <FormControlLabel
                                 control={
@@ -293,13 +318,25 @@ function AddItemPage() {
                             onChange={handleChange}
                             required
                         />
+
                         <TextField
                             fullWidth
                             label="Phone Number"
                             name="phone"
                             type="tel"
-                            onChange={handleChange}
+                            value={itemData.phone}
+                            onChange={(e) => {
+                                // Only allow digits, +, and -
+                                const value = e.target.value;
+                                // Regex to match only digits, +, and -
+                                if (/^[0-9+\-]*$/.test(value)) {
+                                    setItemData(prev => ({ ...prev, phone: value }));
+                                }
+                            }}
                             required
+                            inputProps={{
+                                inputMode: 'tel', // Helps show telephone keyboard on mobile
+                            }}
                         />
                         <TextField fullWidth label="Address" name="location.address" onChange={handleChange} required />
                         <Input type="file" inputProps={{ multiple: true, accept: 'image/*' }} onChange={handleImageUpload} />
