@@ -1,8 +1,3 @@
-/*
- * SEARCH BOX COMPONENT
- * Search functionality for apartments and marketplace items
- */
-
 import React, { useState, useEffect } from 'react';
 import {
   Grid,
@@ -23,7 +18,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import ApartmentIcon from '@mui/icons-material/Apartment';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 
-// Styled components
+
 const StyledSearchBox = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(3),
   maxWidth: '800px',
@@ -99,7 +94,7 @@ const SearchBox = () => {
 
   const handleSearch = (e) => {
     e.preventDefault();
-    // Construct URL based on search type
+    // URL based on search type
     const url = searchType === 'apartment'
       ? `/apartments/search?area=${searchArea}&keyword=${searchKeyword}`
       : `/marketplace/search?category=${searchCategory}&keyword=${searchKeyword}`;
