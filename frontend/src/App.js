@@ -17,6 +17,9 @@ import ItemDetailsPage from './pages/ItemDetailsPage';
 import ItemPage from './pages/ItemsPage';
 import HomePage from './pages/HomePage';
 import SavedPostsPage from './pages/SavedPostsPage';
+import MyPostsPage from './pages/MyPostsPage';
+import EditApartmentPage from './pages/EditApartmentPage'
+import EditItemPage from './pages/EditItemPage'
 
 // Import global styles
 import './styles/global.css';
@@ -105,6 +108,23 @@ function App() {
             <ProtectedRoute>
               <SavedPostsPage />
             </ProtectedRoute>
+          } />
+
+          <Route path="/my_posts" element={
+            <ProtectedRoute>
+              <MyPostsPage />
+            </ProtectedRoute>
+          } />
+
+          <Route path="/edit-apartment/:apartmentId" element={
+              <ProtectedRoute>
+                  <EditApartmentPage />
+              </ProtectedRoute>
+          } />
+          <Route path="/edit-item/:itemId" element={
+              <ProtectedRoute>
+                  <EditItemPage />
+              </ProtectedRoute>
           } />
 
           {/* New public routes for the landing page navigation */}
