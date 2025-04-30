@@ -161,7 +161,7 @@ function AddItemPage() {
             .then((data) => {
                 console.log('Success:', data);
                 setSnackbar({ open: true, message: 'Item added successfully!', severity: 'success' });
-                setTimeout(() => navigate('/view-items'), 2000); // Delay navigation by 2 seconds
+                setTimeout(() => navigate('/view-marketplace'), 2000); // Delay navigation by 2 seconds
             })
             .catch((error) => {
                 console.error('Error:', error);
