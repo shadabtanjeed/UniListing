@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { TextField, Button, MenuItem, FormControlLabel, Checkbox, Input, IconButton } from '@mui/material';
+import { TextField, Button, MenuItem, FormControlLabel, Checkbox, Input, IconButton, Snackbar, Alert } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import AppSidebar from '../components/Sidebar';
 import '../styles/AddApartmentPage.css';
@@ -50,6 +50,7 @@ function AddApartmentPage() {
         status: 'available'
     });
 
+    const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: '' });
     const [areas, setAreas] = useState([]); // State to store the list of areas
 
     useEffect(() => {
@@ -171,6 +172,9 @@ function AddApartmentPage() {
             .catch(error => console.error("Error processing images:", error));
     };
 
+    const handleSnackbarClose = () => {
+        setSnackbar({ open: false, message: '', severity: '' });
+    };
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -243,11 +247,20 @@ function AddApartmentPage() {
             })
             .then(data => {
                 console.log('Apartment added:', data);
-                navigate('/view-apartments');
+                setSnackbar({ 
+                    open: true, 
+                    message: 'Apartment added successfully!', 
+                    severity: 'success' 
+                });
+                setTimeout(() => navigate('/view-apartments'), 2000); // Delay navigation
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Failed to add apartment');
+                setSnackbar({ 
+                    open: true, 
+                    message: 'Failed to add apartment', 
+                    severity: 'error' 
+                });
             });
     };
 
@@ -622,6 +635,20 @@ function AddApartmentPage() {
                 </div>
                 <div className="sideContainer"></div>
             </div>
+            <Snackbar
+                open={snackbar.open}
+                autoHideDuration={6000}
+                onClose={handleSnackbarClose}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+            >
+                <Alert 
+                    onClose={handleSnackbarClose} 
+                    severity={snackbar.severity} 
+                    sx={{ width: '100%' }}
+                >
+                    {snackbar.message}
+                </Alert>
+            </Snackbar>
         </>
     );
 }
