@@ -18,6 +18,7 @@ import {
     Tab,
 } from '@mui/material';
 import AppSidebar from '../components/Sidebar';
+import ProtectedFeature from '../components/ProtectedFeature';
 import { API_BASE_URL } from '../config/api-config';
 
 // Icons
@@ -138,24 +139,39 @@ const ContactInfoCard = ({ apartment }) => {
 
     // Update the checkIfSaved function in the ContactInfoCard component
     useEffect(() => {
-        const checkIfSaved = async () => {
-            try {
-                // Use the same ID logic as the save function
-                const apartmentIdToCheck = apartment.apartment_id || apartment._id;
-                console.log("Checking if apartment is saved with ID:", apartmentIdToCheck);
+        // Inside ContactInfoCard component, update the checkIfSaved function:
 
-                const response = await fetch(`${API_BASE_URL}/api/saved-posts/check/apartment/${apartmentIdToCheck}`, {
-                    credentials: 'include'
+        const checkIfSaved = async () => {
+
+            const apartmentIdToCheck = apartment.apartment_id || apartment._id;
+            console.log("Checking if apartment is saved with ID:", apartmentIdToCheck);
+
+            // First check if user is logged in to avoid unnecessary API calls
+            try {
+                const sessionResponse = await fetch(`${API_BASE_URL}/auth/session`, {
+                    method: 'GET',
+                    credentials: 'include',
                 });
 
-                if (response.ok) {
-                    const data = await response.json();
-                    console.log("Is apartment saved:", data.isSaved, "PostId:", data.savedPostId);
-                    setIsSaved(data.isSaved);
-                    setSavedPostId(data.savedPostId);
+                // Only proceed if user is logged in
+                if (sessionResponse.ok) {
+                    const response = await fetch(`${API_BASE_URL}/api/saved-posts/check/apartment/${apartmentIdToCheck}`, {
+                        credentials: 'include',
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        setIsSaved(data.isSaved);
+                    } else {
+                        setIsSaved(false);
+                    }
+                } else {
+                    // Not logged in, so apartment is definitely not saved
+                    setIsSaved(false);
                 }
             } catch (error) {
-                console.error('Error checking if post is saved:', error);
+                console.error('Error checking saved status:', error);
+                setIsSaved(false);
             }
         };
 
@@ -315,39 +331,44 @@ const ContactInfoCard = ({ apartment }) => {
                     <Typography>{apartment.contact_info.email}</Typography>
                 </Box>
 
-                <Button
-                    variant="contained"
-                    fullWidth
-                    startIcon={<MessageIcon />}
-                    onClick={handleSendMessage}
-                    sx={{
-                        backgroundColor: "#2d4f8f",
-                        '&:hover': {
-                            backgroundColor: "#1e3a6a"
-                        }
-                    }}
+                <ProtectedFeature
+                    onAuthSuccess={handleSendMessage}
                 >
-                    Send Message
-                </Button>
+                    <Button
+                        variant="contained"
+                        fullWidth
+                        startIcon={<MessageIcon />}
+                        sx={{
+                            backgroundColor: "#2d4f8f",
+                            '&:hover': {
+                                backgroundColor: "#1e3a6a"
+                            }
+                        }}
+                    >
+                        Send Message
+                    </Button>
+                </ProtectedFeature>
 
-                {/* Save/Unsave Button */}
-                <Button
-                    variant="outlined"
-                    fullWidth
-                    startIcon={isSaved ? <BookmarkIcon /> : <BookmarkBorderIcon />}
-                    onClick={handleSaveToggle}
-                    sx={{
-                        mt: 2, // Add this line for top margin (16px)
-                        borderColor: "#2d4f8f",
-                        color: "#2d4f8f",
-                        '&:hover': {
-                            borderColor: "#1e3a6a",
-                            backgroundColor: "#f0f3f9"
-                        }
-                    }}
+                <ProtectedFeature
+                    onAuthSuccess={handleSaveToggle}
                 >
-                    {isSaved ? 'Unsave Apartment' : 'Save Apartment'}
-                </Button>
+                    <Button
+                        variant="outlined"
+                        fullWidth
+                        startIcon={isSaved ? <BookmarkIcon /> : <BookmarkBorderIcon />}
+                        sx={{
+                            mt: 2,
+                            borderColor: "#2d4f8f",
+                            color: "#2d4f8f",
+                            '&:hover': {
+                                borderColor: "#1e3a6a",
+                                backgroundColor: "#f0f3f9"
+                            }
+                        }}
+                    >
+                        {isSaved ? 'Unsave Apartment' : 'Save Apartment'}
+                    </Button>
+                </ProtectedFeature>
             </CardContent>
         </Card>
     );

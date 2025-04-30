@@ -15,6 +15,7 @@ import {
 } from '@mui/material';
 import AppSidebar from '../components/Sidebar';
 import { API_BASE_URL } from '../config/api-config';
+import ProtectedFeature from '../components/ProtectedFeature';
 
 // Icons
 import LocationOnIcon from '@mui/icons-material/LocationOn';
@@ -112,17 +113,37 @@ const ContactInfoCard = ({ item }) => {
         const checkIfSaved = async () => {
             try {
                 const itemIdToCheck = item.item_id;
-                const response = await fetch(`${API_BASE_URL}/api/saved-posts/check/marketplace/${itemIdToCheck}`, {
+
+                // First check if user is logged in to avoid unnecessary API calls
+                const sessionResponse = await fetch(`${API_BASE_URL}/auth/session`, {
+                    method: 'GET',
                     credentials: 'include',
                 });
 
-                if (response.ok) {
-                    const data = await response.json();
-                    setIsSaved(data.isSaved);
-                    setSavedPostId(data.savedPostId);
+                // Only proceed if user is logged in
+                if (sessionResponse.ok) {
+                    const response = await fetch(`${API_BASE_URL}/api/saved-posts/check/marketplace/${itemIdToCheck}`, {
+                        credentials: 'include',
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        setIsSaved(data.isSaved);
+                        setSavedPostId(data.savedPostId);
+                    } else {
+                        // API request failed, ensure state is reset
+                        setIsSaved(false);
+                        setSavedPostId(null);
+                    }
+                } else {
+                    // Not logged in, so item is definitely not saved
+                    setIsSaved(false);
+                    setSavedPostId(null);
                 }
             } catch (error) {
                 console.error('Error checking if item is saved:', error);
+                setIsSaved(false);
+                setSavedPostId(null);
             }
         };
 
@@ -258,38 +279,42 @@ const ContactInfoCard = ({ item }) => {
                     <Typography>{item.email}</Typography>
                 </Box>
 
-                <Button
-                    variant="contained"
-                    fullWidth
-                    startIcon={<MessageIcon />}
-                    onClick={handleSendMessage}
-                    sx={{
-                        backgroundColor: '#2d4f8f',
-                        '&:hover': {
-                            backgroundColor: '#1e3a6a',
-                        },
-                    }}
-                >
-                    Send Message
-                </Button>
 
-                <Button
-                    variant="outlined"
-                    fullWidth
-                    startIcon={isSaved ? <BookmarkIcon /> : <BookmarkBorderIcon />}
-                    onClick={handleSaveToggle}
-                    sx={{
-                        mt: 2,
-                        borderColor: '#2d4f8f',
-                        color: '#2d4f8f',
-                        '&:hover': {
-                            borderColor: '#1e3a6a',
-                            backgroundColor: '#f0f3f9',
-                        },
-                    }}
-                >
-                    {isSaved ? 'Unsave Item' : 'Save Item'}
-                </Button>
+
+                <ProtectedFeature onAuthSuccess={handleSendMessage}>
+                    <Button
+                        variant="contained"
+                        fullWidth
+                        startIcon={<MessageIcon />}
+                        sx={{
+                            backgroundColor: '#2d4f8f',
+                            '&:hover': {
+                                backgroundColor: '#1e3a6a',
+                            },
+                        }}
+                    >
+                        Send Message
+                    </Button>
+                </ProtectedFeature>
+
+                <ProtectedFeature onAuthSuccess={handleSaveToggle}>
+                    <Button
+                        variant="outlined"
+                        fullWidth
+                        startIcon={isSaved ? <BookmarkIcon /> : <BookmarkBorderIcon />}
+                        sx={{
+                            mt: 2,
+                            borderColor: '#2d4f8f',
+                            color: '#2d4f8f',
+                            '&:hover': {
+                                borderColor: '#1e3a6a',
+                                backgroundColor: '#f0f3f9',
+                            },
+                        }}
+                    >
+                        {isSaved ? 'Unsave Item' : 'Save Item'}
+                    </Button>
+                </ProtectedFeature>
             </CardContent>
         </Card>
     );
