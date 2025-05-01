@@ -23,7 +23,7 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Configure CORS with updated settings for Socket.IO
 app.use(cors({
-    origin: 'http://localhost:3000',
+    origin: ['http://localhost:3000', 'https://unilisting.onrender.com'],
     credentials: true
 }));
 
