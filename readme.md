@@ -5,6 +5,8 @@
 # UniListing
 UniListing is a comprehensive platform designed to help users find housing and facilitate buying or selling of used items within their local community. With an intuitive interface and powerful features, UniListing connects property seekers with landlords, individuals looking for roommates, and buyers with sellers in one convenient marketplace.
 
+You can try out the live site here: https://unilisting.onrender.com/
+
 ## Features
 
 - **Housing Listings**: Browse apartments at your preferred location with detailed information
