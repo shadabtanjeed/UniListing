@@ -47,7 +47,7 @@ function AddItemPage() {
     useEffect(() => {
         const fetchUsername = async () => {
             try {
-                const response = await axios.get('http://localhost:5000/auth/session', {
+                const response = await axios.get(`${API_BASE_URL}/auth/session`, {
                     withCredentials: true,
                 });
                 setItemData((prev) => ({
