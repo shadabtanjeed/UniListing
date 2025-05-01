@@ -296,8 +296,8 @@ const AppNavbar = () => {
                       top: '100%',
                       right: 0,
                       mt: 1,
-                      bgcolor: 'white',
-                      boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                      bgcolor: '#2d4f8f', // Change to blue background
+                      boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
                       borderRadius: 1,
                       width: 200,
                       zIndex: 1300,
@@ -310,10 +310,11 @@ const AppNavbar = () => {
                         to={item.path}
                         sx={{
                           py: 1.5,
-                          '&:hover': { backgroundColor: 'rgba(45, 79, 143, 0.08)' }
+                          color: 'white', // Make text white
+                          '&:hover': { backgroundColor: 'rgba(255, 255, 255, 0.1)' }
                         }}
                       >
-                        <ListItemIcon sx={{ color: '#2d4f8f' }}>{item.icon}</ListItemIcon>
+                        <ListItemIcon sx={{ color: 'white' }}>{item.icon}</ListItemIcon>
                         <ListItemText primary={item.text} />
                       </MenuItem>
                     ))}
@@ -347,8 +348,8 @@ const AppNavbar = () => {
                       top: '100%',
                       right: 0,
                       mt: 1,
-                      bgcolor: 'white',
-                      boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                      bgcolor: '#2d4f8f', // Change to blue background
+                      boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
                       borderRadius: 1,
                       width: 200,
                       zIndex: 1300,
@@ -356,7 +357,7 @@ const AppNavbar = () => {
                   >
                     {profileItems.map((item, index) => (
                       item.divider ?
-                        <Divider key={`divider-${index}`} /> :
+                        <Divider key={`divider-${index}`} sx={{ backgroundColor: 'rgba(255, 255, 255, 0.2)' }} /> :
                         <MenuItem
                           key={item.text}
                           component={item.onClick ? 'div' : Link}
@@ -364,10 +365,11 @@ const AppNavbar = () => {
                           onClick={item.onClick}
                           sx={{
                             py: 1.5,
-                            '&:hover': { backgroundColor: 'rgba(45, 79, 143, 0.08)' }
+                            color: 'white', // Make text white
+                            '&:hover': { backgroundColor: 'rgba(255, 255, 255, 0.1)' }
                           }}
                         >
-                          <ListItemIcon sx={{ color: '#2d4f8f' }}>{item.icon}</ListItemIcon>
+                          <ListItemIcon sx={{ color: 'white' }}>{item.icon}</ListItemIcon>
                           <ListItemText primary={item.text} />
                         </MenuItem>
                     ))}
