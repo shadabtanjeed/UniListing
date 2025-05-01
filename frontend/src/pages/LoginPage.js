@@ -23,7 +23,7 @@ const LoginPage = () => {
             });
             const data = await response.json();
             if (response.ok) {
-                window.location.href = `/welcome`;
+                window.location.href = `/home`;
             } else {
                 setError(data.message);
             }
