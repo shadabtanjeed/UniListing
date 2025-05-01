@@ -15,7 +15,7 @@ import {
     Alert,
     Input
 } from '@mui/material';
-import Navbar from '../components/HomePage/Navbar'; 
+import AppNavbar from '../components/Navbar';
 import { API_BASE_URL } from '../config/api-config';
 import { MapContainer, TileLayer, Marker, useMapEvents, Popup, useMap } from 'react-leaflet';
 import MyLocationIcon from '@mui/icons-material/MyLocation';
@@ -67,22 +67,22 @@ const EditApartmentPage = () => {
             const response = await fetch(`${API_BASE_URL}/api/apartments/${apartmentId}`, {
                 credentials: 'include'
             });
-            
+
             if (!response.ok) {
                 throw new Error('Failed to fetch apartment data');
             }
-            
+
             const data = await response.json();
-            
+
             // Ensure preferred_dept and preferred_semester are arrays
             const formattedData = {
                 ...data,
                 tenancy_preferences: {
                     ...data.tenancy_preferences,
-                    preferred_dept: Array.isArray(data.tenancy_preferences?.preferred_dept) 
-                        ? data.tenancy_preferences.preferred_dept 
-                        : data.tenancy_preferences?.preferred_dept 
-                            ? [data.tenancy_preferences.preferred_dept] 
+                    preferred_dept: Array.isArray(data.tenancy_preferences?.preferred_dept)
+                        ? data.tenancy_preferences.preferred_dept
+                        : data.tenancy_preferences?.preferred_dept
+                            ? [data.tenancy_preferences.preferred_dept]
                             : [],
                     preferred_semester: Array.isArray(data.tenancy_preferences?.preferred_semester)
                         ? data.tenancy_preferences.preferred_semester
@@ -91,7 +91,7 @@ const EditApartmentPage = () => {
                             : []
                 }
             };
-            
+
             setApartmentData(formattedData);
             setLoading(false);
         } catch (error) {
@@ -103,7 +103,7 @@ const EditApartmentPage = () => {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        
+
         // Special handling for preferred_dept and preferred_semester
         if (name === 'tenancy_preferences.preferred_dept' || name === 'tenancy_preferences.preferred_semester') {
             const [parent, child] = name.split('.');
@@ -287,25 +287,25 @@ const EditApartmentPage = () => {
                     </Typography>
                     <form onSubmit={handleSubmit}>
                         {/* Basic Information */}
-                        <TextField 
-                            fullWidth 
-                            label="Title" 
-                            name="title" 
-                            value={apartmentData.title || ''} 
-                            onChange={handleChange} 
-                            required 
+                        <TextField
+                            fullWidth
+                            label="Title"
+                            name="title"
+                            value={apartmentData.title || ''}
+                            onChange={handleChange}
+                            required
                         />
-                        
+
                         {/* Location Fields */}
-                        <TextField 
-                            fullWidth 
-                            label="Address" 
-                            name="location.address" 
-                            value={apartmentData.location?.address || ''} 
-                            onChange={handleChange} 
-                            required 
+                        <TextField
+                            fullWidth
+                            label="Address"
+                            name="location.address"
+                            value={apartmentData.location?.address || ''}
+                            onChange={handleChange}
+                            required
                         />
-                        
+
                         <TextField
                             select
                             fullWidth

@@ -17,7 +17,7 @@ import {
     Tabs,
     Tab,
 } from '@mui/material';
-import Navbar from '../components/HomePage/Navbar'; 
+import AppNavbar from '../components/Navbar';
 import ProtectedFeature from '../components/ProtectedFeature';
 import { API_BASE_URL } from '../config/api-config';
 

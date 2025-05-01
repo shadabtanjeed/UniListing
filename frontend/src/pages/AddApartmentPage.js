@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { TextField, Button, MenuItem, FormControlLabel, Checkbox, Input, IconButton, Snackbar, Alert } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import Navbar from '../components/HomePage/Navbar'; 
+import AppNavbar from '../components/Navbar';
 import '../styles/AddApartmentPage.css';
 import { v4 as uuidv4 } from 'uuid';
 import 'leaflet/dist/leaflet.css';
@@ -387,7 +387,7 @@ function AddApartmentPage() {
 
     return (
         <>
-            <Navbar />
+            <AppNavbar />
             <div className="AddApartmentPage">
                 <div className="formContainer">
                     <form onSubmit={handleSubmit}>

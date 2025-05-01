@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
+import Box from '@mui/material/Box';
 
 // Page imports
 import LoginPage from './pages/LoginPage';
@@ -64,7 +65,8 @@ function App() {
         <Router>
           <AppNavbar />
           {/* Add padding to account for fixed navbar */}
-          <Box sx={{ paddingTop: '64px' }}>
+          {/* <Box sx={{ paddingTop: '64px' }}> */}
+          <Box sx={{}}>
             <Routes>
               {/* Public routes */}
               <Route path="/" element={<HomePage />} />

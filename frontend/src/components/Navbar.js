@@ -246,7 +246,7 @@ const AppNavbar = () => {
           }}
         >
           <img src={logo} alt="UniListing" style={{ height: '40px', marginRight: '10px' }} />
-          UniListing
+
         </Typography>
 
         <Box sx={{ flexGrow: 1 }} />

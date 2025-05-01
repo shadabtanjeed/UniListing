@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { TextField, Button, MenuItem, Input, IconButton, Snackbar, Alert, FormControlLabel, Checkbox, Box } from '@mui/material'; // Import Snackbar and Alert
 import { useNavigate } from 'react-router-dom';
-import Navbar from '../components/HomePage/Navbar'; 
+import AppNavbar from '../components/Navbar';
 import '../styles/AddItemPage.css';
 import { v4 as uuidv4 } from 'uuid';
 import 'leaflet/dist/leaflet.css';
@@ -95,14 +95,14 @@ function AddItemPage() {
 
     const updateFileInput = (remainingImagesCount) => {
         const dataTransfer = new DataTransfer();
-        
+
         for (let i = 0; i < remainingImagesCount; i++) {
             const file = new File([""], `image${i}`, {
                 type: "image/jpeg",
             });
             dataTransfer.items.add(file);
         }
-        
+
         if (fileInputRef.current) {
             fileInputRef.current.files = dataTransfer.files;
         }
@@ -384,20 +384,20 @@ function AddItemPage() {
                             }}
                         />
                         <TextField fullWidth label="Address" name="location.address" onChange={handleChange} required />
-                        <Input 
-                            type="file" 
+                        <Input
+                            type="file"
                             inputRef={fileInputRef}
-                            inputProps={{ 
-                                multiple: true, 
+                            inputProps={{
+                                multiple: true,
                                 accept: 'image/*'
                             }}
                             onChange={handleImageUpload}
                         />
                         <div className="imageThumbnails">
                             {itemData.images.map((image, index) => (
-                                <div 
-                                    key={index} 
-                                    style={{ 
+                                <div
+                                    key={index}
+                                    style={{
                                         position: 'relative',
                                         display: 'inline-block',
                                         margin: '5px'
@@ -430,14 +430,14 @@ function AddItemPage() {
                                             }
                                         }}
                                     >
-                                        <CloseIcon 
-                                            sx={{ 
+                                        <CloseIcon
+                                            sx={{
                                                 fontSize: '14px',
                                                 color: 'white',
                                                 '&:hover': {
                                                     color: '#ff4444'
                                                 }
-                                            }} 
+                                            }}
                                         />
                                     </IconButton>
                                 </div>

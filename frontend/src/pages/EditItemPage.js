@@ -17,7 +17,7 @@ import {
     IconButton,
     Snackbar
 } from '@mui/material';
-import Navbar from '../components/HomePage/Navbar'; 
+import AppNavbar from '../components/Navbar';
 import { API_BASE_URL } from '../config/api-config';
 import { MapContainer, TileLayer, Marker, useMapEvents, Popup, useMap } from 'react-leaflet';
 import MyLocationIcon from '@mui/icons-material/MyLocation';
@@ -56,11 +56,11 @@ const EditItemPage = () => {
             const response = await fetch(`${API_BASE_URL}/api/items/get_item/${itemId}`, {
                 credentials: 'include'
             });
-            
+
             if (!response.ok) {
                 throw new Error('Failed to fetch item data');
             }
-            
+
             const data = await response.json();
             setItemData(data);
             setLoading(false);
@@ -177,7 +177,7 @@ const EditItemPage = () => {
 
     const MoveToCurrentLocation = ({ setItemData }) => {
         const map = useMap();
-        
+
         const handleMoveToCurrentLocation = (event) => {
             event.stopPropagation();
             if (navigator.geolocation) {
@@ -240,13 +240,13 @@ const EditItemPage = () => {
                         Edit Item
                     </Typography>
                     <form onSubmit={handleSubmit}>
-                        <TextField 
-                            fullWidth 
-                            label="Title" 
-                            name="title" 
-                            value={itemData.title || ''} 
-                            onChange={handleChange} 
-                            required 
+                        <TextField
+                            fullWidth
+                            label="Title"
+                            name="title"
+                            value={itemData.title || ''}
+                            onChange={handleChange}
+                            required
                         />
 
                         <TextField
@@ -335,19 +335,19 @@ const EditItemPage = () => {
                             }}
                         />
 
-                        <TextField 
-                            fullWidth 
-                            label="Address" 
-                            name="location.address" 
-                            value={itemData.location?.address || ''} 
-                            onChange={handleChange} 
-                            required 
+                        <TextField
+                            fullWidth
+                            label="Address"
+                            name="location.address"
+                            value={itemData.location?.address || ''}
+                            onChange={handleChange}
+                            required
                         />
 
-                        <Input 
-                            type="file" 
-                            inputProps={{ multiple: true, accept: 'image/*' }} 
-                            onChange={handleImageUpload} 
+                        <Input
+                            type="file"
+                            inputProps={{ multiple: true, accept: 'image/*' }}
+                            onChange={handleImageUpload}
                         />
 
                         {/* Image Thumbnails */}

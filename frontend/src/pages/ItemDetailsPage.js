@@ -13,7 +13,7 @@ import {
     CardContent,
     Chip,
 } from '@mui/material';
-import Navbar from '../components/HomePage/Navbar'; 
+import AppNavbar from '../components/Navbar';
 import { API_BASE_URL } from '../config/api-config';
 import ProtectedFeature from '../components/ProtectedFeature';
 

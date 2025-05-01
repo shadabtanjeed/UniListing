@@ -22,7 +22,7 @@ import {
   Button
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import Navbar from '../components/HomePage/Navbar'; 
+import AppNavbar from '../components/Navbar';
 import SendIcon from '@mui/icons-material/Send';
 import SearchIcon from '@mui/icons-material/Search';
 import MessageIcon from '@mui/icons-material/Message';
