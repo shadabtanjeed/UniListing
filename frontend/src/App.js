@@ -20,6 +20,7 @@ import SavedPostsPage from './pages/SavedPostsPage';
 import OTPVerification from './components/OTPVerification';
 import AuthRedirect from './components/AuthRedirect';
 import { AuthProvider } from './context/AuthContext';
+import AppNavbar from './components/Navbar';
 
 
 import MyPostsPage from './pages/MyPostsPage';
@@ -61,64 +62,68 @@ function App() {
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <Router>
-          <Routes>
-            {/* Public routes */}
-            <Route path="/" element={<HomePage />} />
-            <Route path="/view-apartments" element={<ApartmentPage />} />
-            <Route path="/view-marketplace" element={<ItemPage />} />
-            <Route path="/apartment/:apartmentId" element={<ApartmentDetailsPage />} />
-            <Route path="/item/get_item/:itemId" element={<ItemDetailsPage />} />
+          <AppNavbar />
+          {/* Add padding to account for fixed navbar */}
+          <Box sx={{ paddingTop: '64px' }}>
+            <Routes>
+              {/* Public routes */}
+              <Route path="/" element={<HomePage />} />
+              <Route path="/view-apartments" element={<ApartmentPage />} />
+              <Route path="/view-marketplace" element={<ItemPage />} />
+              <Route path="/apartment/:apartmentId" element={<ApartmentDetailsPage />} />
+              <Route path="/item/get_item/:itemId" element={<ItemDetailsPage />} />
 
-            {/* Auth routes - redirect if already logged in */}
-            <Route path="/login" element={<AuthRedirect><LoginPage /></AuthRedirect>} />
-            <Route path="/signup" element={<AuthRedirect><Signup /></AuthRedirect>} />
-            <Route path="/verify-otp" element={<OTPVerification />} />
+              {/* Auth routes - redirect if already logged in */}
+              <Route path="/login" element={<AuthRedirect><LoginPage /></AuthRedirect>} />
+              <Route path="/signup" element={<AuthRedirect><Signup /></AuthRedirect>} />
+              <Route path="/verify-otp" element={<OTPVerification />} />
 
-            {/* Protected routes - require login */}
-            <Route path="/welcome" element={
-              <ProtectedRoute>
-                <WelcomePage />
-              </ProtectedRoute>
-            } />
-            <Route path="/add-apartments" element={
-              <ProtectedRoute>
-                <AddApartmentPage />
-              </ProtectedRoute>
-            } />
-            <Route path="/add-item" element={
-              <ProtectedRoute>
-                <AddItemPage />
-              </ProtectedRoute>
-            } />
-            <Route path="/messages" element={
-              <ProtectedRoute>
-                <MessagesPage />
-              </ProtectedRoute>
-            } />
-            <Route path="/saved-posts" element={
-              <ProtectedRoute>
-                <SavedPostsPage />
-              </ProtectedRoute>
-            } />
-            <Route path="/my_posts" element={
-              <ProtectedRoute>
-                <MyPostsPage />
-              </ProtectedRoute>
-            } />
-            <Route path="/edit-apartment/:apartmentId" element={
-              <ProtectedRoute>
-                <EditApartmentPage />
-              </ProtectedRoute>
-            } />
-            <Route path="/edit-item/:itemId" element={
-              <ProtectedRoute>
-                <EditItemPage />
-              </ProtectedRoute>
-            } />
+              {/* Protected routes - require login */}
+              <Route path="/welcome" element={
+                <ProtectedRoute>
+                  <WelcomePage />
+                </ProtectedRoute>
+              } />
+              <Route path="/add-apartments" element={
+                <ProtectedRoute>
+                  <AddApartmentPage />
+                </ProtectedRoute>
+              } />
+              <Route path="/add-item" element={
+                <ProtectedRoute>
+                  <AddItemPage />
+                </ProtectedRoute>
+              } />
+              <Route path="/messages" element={
+                <ProtectedRoute>
+                  <MessagesPage />
+                </ProtectedRoute>
+              } />
+              <Route path="/saved-posts" element={
+                <ProtectedRoute>
+                  <SavedPostsPage />
+                </ProtectedRoute>
+              } />
+              <Route path="/my_posts" element={
+                <ProtectedRoute>
+                  <MyPostsPage />
+                </ProtectedRoute>
+              } />
+              <Route path="/edit-apartment/:apartmentId" element={
+                <ProtectedRoute>
+                  <EditApartmentPage />
+                </ProtectedRoute>
+              } />
+              <Route path="/edit-item/:itemId" element={
+                <ProtectedRoute>
+                  <EditItemPage />
+                </ProtectedRoute>
+              } />
 
-            {/* Fallback route */}
-            <Route path="*" element={<Navigate to="/" />} />
-          </Routes>
+              {/* Fallback route */}
+              <Route path="*" element={<Navigate to="/" />} />
+            </Routes>
+          </Box>
         </Router>
       </ThemeProvider>
     </AuthProvider>
