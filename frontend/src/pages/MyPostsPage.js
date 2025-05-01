@@ -134,17 +134,17 @@ const MyPostsPage = () => {
         if (!window.confirm('Are you sure you want to delete this post?')) {
             return;
         }
-    
+
         try {
             const response = await fetch(`${API_BASE_URL}/api/my_posts/delete/${postId}?type=${type}`, {
                 method: 'DELETE',
                 credentials: 'include'
             });
-    
+
             if (!response.ok) {
                 throw new Error('Failed to delete post');
             }
-    
+
             // Refresh the posts list
             fetchMyPosts();
             alert('Post deleted successfully');
@@ -153,7 +153,7 @@ const MyPostsPage = () => {
             alert('Failed to delete post');
         }
     };
-    
+
     const navigateToEdit = (post, type) => {
         if (type === 'apartment') {
             navigate(`/edit-apartment/${post._id}`, { state: { apartment: post } });
@@ -391,10 +391,10 @@ const MyPostsPage = () => {
             return (
                 <Box textAlign="center" py={4}>
                     <Typography variant="h6" color="text.secondary">
-                        No saved marketplace items found
+                        No marketplace items found
                     </Typography>
                     <Typography variant="body1" color="text.secondary" mt={1}>
-                        Items you save will appear here
+                        Items you post will appear here
                     </Typography>
                 </Box>
             );
