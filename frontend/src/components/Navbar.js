@@ -123,7 +123,11 @@ const AppNavbar = () => {
         credentials: 'include'
       });
       setIsAuthenticated(false);
-      navigate('/');
+      setProfileMenuOpen(false);
+      // Force a page refresh to ensure all components update
+      window.location.href = '/';
+      // Alternatively, if you want to avoid a full page refresh:
+      // navigate('/', { replace: true });
     } catch (err) {
       console.error('Logout failed:', err);
     }
