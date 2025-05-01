@@ -99,22 +99,20 @@ function App() {
               <ProtectedRoute>
                 <SavedPostsPage />
               </ProtectedRoute>
-          } />
-
-          <Route path="/my_posts" element={
-            <ProtectedRoute>
-              <MyPostsPage />
-            </ProtectedRoute>
-          } />
-
-          <Route path="/edit-apartment/:apartmentId" element={
+            } />
+            <Route path="/my_posts" element={
               <ProtectedRoute>
-                  <EditApartmentPage />
+                <MyPostsPage />
               </ProtectedRoute>
-          } />
-          <Route path="/edit-item/:itemId" element={
+            } />
+            <Route path="/edit-apartment/:apartmentId" element={
               <ProtectedRoute>
-                  <EditItemPage />
+                <EditApartmentPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/edit-item/:itemId" element={
+              <ProtectedRoute>
+                <EditItemPage />
               </ProtectedRoute>
             } />
 
