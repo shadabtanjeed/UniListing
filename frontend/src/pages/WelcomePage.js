@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import Navbar from '../components/HomePage/Navbar'; 
+import AppNavbar from '../components//Navbar';
 import { Box, Typography } from '@mui/material';
 import '../styles/WelcomePage.css';
 import { API_BASE_URL } from '../config/api-config';
