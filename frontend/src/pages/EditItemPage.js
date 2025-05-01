@@ -17,7 +17,7 @@ import {
     IconButton,
     Snackbar
 } from '@mui/material';
-import AppSidebar from '../components/Sidebar';
+import Navbar from '../components/HomePage/Navbar'; 
 import { API_BASE_URL } from '../config/api-config';
 import { MapContainer, TileLayer, Marker, useMapEvents, Popup, useMap } from 'react-leaflet';
 import MyLocationIcon from '@mui/icons-material/MyLocation';
@@ -233,7 +233,7 @@ const EditItemPage = () => {
 
     return (
         <>
-            <AppSidebar />
+            <AppNavbar />
             <div className="AddItemPage">
                 <div className="formContainer">
                     <Typography variant="h4" component="h1" gutterBottom>

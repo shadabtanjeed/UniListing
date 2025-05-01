@@ -22,7 +22,7 @@ import {
   Button
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import AppSidebar from '../components/Sidebar';
+import Navbar from '../components/HomePage/Navbar'; 
 import SendIcon from '@mui/icons-material/Send';
 import SearchIcon from '@mui/icons-material/Search';
 import MessageIcon from '@mui/icons-material/Message';
@@ -710,7 +710,7 @@ const MessagesPage = () => {
 
   return (
     <>
-      <AppSidebar />
+      <AppNavbar />
       <Box className="content messages-content">
         <Container maxWidth="xl" sx={{ height: '100%' }}>
           {error && (

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import AppSidebar from '../components/Sidebar';
+import Navbar from '../components/HomePage/Navbar'; 
 import { Box, Typography } from '@mui/material';
 import '../styles/WelcomePage.css';
 import { API_BASE_URL } from '../config/api-config';
@@ -28,7 +28,7 @@ const WelcomePage = () => {
 
     return (
         <>
-            <AppSidebar />
+            <AppNavbar />
             <Box className="content welcome-content">
                 <Typography variant="h4" component="h1">
                     Welcome {username}

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Box, Typography, CircularProgress, Alert, TextField, InputAdornment, IconButton } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import CloseIcon from '@mui/icons-material/Close';
-import AppSidebar from '../components/Sidebar';
+import Navbar from '../components/HomePage/Navbar'; 
 import ApartmentFilters from '../components/ApartmentFilters';
 import ApartmentsList from '../components/ApartmentList';
 import { API_BASE_URL } from '../config/api-config';
@@ -221,7 +221,7 @@ const ApartmentPage = () => {
 
     return (
         <>
-            <AppSidebar />
+            <AppNavbar />
             <Box className="content apartment-content" display="flex" justifyContent="center" alignItems="center" flexDirection="column" mb={6}>
                 <Typography variant="h4" component="h1" className="page-title" mb={6}>
                     Apartments for Rent

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { TextField, Button, MenuItem, FormControlLabel, Checkbox, Input, IconButton, Snackbar, Alert } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import AppSidebar from '../components/Sidebar';
+import Navbar from '../components/HomePage/Navbar'; 
 import '../styles/AddApartmentPage.css';
 import { v4 as uuidv4 } from 'uuid';
 import 'leaflet/dist/leaflet.css';
@@ -11,7 +11,6 @@ import MyLocationIcon from '@mui/icons-material/MyLocation';
 import axios from 'axios'; // Import axios for API calls
 import { API_BASE_URL } from '../config/api-config';
 import CloseIcon from '@mui/icons-material/Close'; // Add this import
-
 
 // Fix for default marker icon in Leaflet
 delete L.Icon.Default.prototype._getIconUrl;
@@ -41,8 +40,8 @@ function AddApartmentPage() {
         images: [],
         contact_info: { name: '', phone: '', email: '' },
         optional_details: { furnished: false, size: '', balcony: false, more_details: '' },
-        tenancy_preferences: { 
-            preferred_tenants: '', 
+        tenancy_preferences: {
+            preferred_tenants: '',
             preferred_dept: [], // Change to array
             preferred_semester: [] // Change to array
         },
@@ -145,7 +144,7 @@ function AddApartmentPage() {
     const updateFileInput = (remainingImagesCount) => {
         // Create a new DataTransfer object
         const dataTransfer = new DataTransfer();
-        
+
         // Create a new File object for each remaining image
         for (let i = 0; i < remainingImagesCount; i++) {
             const file = new File([""], `image${i}`, {
@@ -153,7 +152,7 @@ function AddApartmentPage() {
             });
             dataTransfer.items.add(file);
         }
-        
+
         // Update the file input's files
         if (fileInputRef.current) {
             fileInputRef.current.files = dataTransfer.files;
@@ -262,8 +261,8 @@ function AddApartmentPage() {
             },
             tenancy_preferences: {
                 ...apartmentData.tenancy_preferences,
-                preferred_dept: Array.isArray(apartmentData.tenancy_preferences.preferred_dept) 
-                    ? apartmentData.tenancy_preferences.preferred_dept 
+                preferred_dept: Array.isArray(apartmentData.tenancy_preferences.preferred_dept)
+                    ? apartmentData.tenancy_preferences.preferred_dept
                     : [],
                 preferred_semester: Array.isArray(apartmentData.tenancy_preferences.preferred_semester)
                     ? apartmentData.tenancy_preferences.preferred_semester
@@ -288,19 +287,19 @@ function AddApartmentPage() {
             })
             .then(data => {
                 console.log('Apartment added:', data);
-                setSnackbar({ 
-                    open: true, 
-                    message: 'Apartment added successfully!', 
-                    severity: 'success' 
+                setSnackbar({
+                    open: true,
+                    message: 'Apartment added successfully!',
+                    severity: 'success'
                 });
                 setTimeout(() => navigate('/view-apartments'), 2000); // Delay navigation
             })
             .catch(error => {
                 console.error('Error:', error);
-                setSnackbar({ 
-                    open: true, 
-                    message: 'Failed to add apartment', 
-                    severity: 'error' 
+                setSnackbar({
+                    open: true,
+                    message: 'Failed to add apartment',
+                    severity: 'error'
                 });
             });
     };
@@ -388,7 +387,7 @@ function AddApartmentPage() {
 
     return (
         <>
-            <AppSidebar />
+            <Navbar />
             <div className="AddApartmentPage">
                 <div className="formContainer">
                     <form onSubmit={handleSubmit}>
@@ -628,11 +627,11 @@ function AddApartmentPage() {
                         <FormControlLabel control={<Checkbox name="amenities.security" onChange={handleCheckboxChange} />} label="Security" />
 
                         {/* Update the Input component in your JSX */}
-                        <Input 
-                            type="file" 
+                        <Input
+                            type="file"
                             inputRef={fileInputRef}
-                            inputProps={{ 
-                                multiple: true, 
+                            inputProps={{
+                                multiple: true,
                                 accept: 'image/*'
                             }}
                             onChange={handleImageUpload}
@@ -641,9 +640,9 @@ function AddApartmentPage() {
                         {/* Thumbnails Section */}
                         <div className="imageThumbnails">
                             {apartmentData.images.map((image, index) => (
-                                <div 
-                                    key={index} 
-                                    style={{ 
+                                <div
+                                    key={index}
+                                    style={{
                                         position: 'relative',
                                         display: 'inline-block',
                                         margin: '5px'
@@ -676,14 +675,14 @@ function AddApartmentPage() {
                                             }
                                         }}
                                     >
-                                        <CloseIcon 
-                                            sx={{ 
+                                        <CloseIcon
+                                            sx={{
                                                 fontSize: '14px',
                                                 color: 'white',
                                                 '&:hover': {
                                                     color: '#ff4444'
                                                 }
-                                            }} 
+                                            }}
                                         />
                                     </IconButton>
                                 </div>
@@ -722,9 +721,9 @@ function AddApartmentPage() {
                 onClose={handleSnackbarClose}
                 anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
             >
-                <Alert 
-                    onClose={handleSnackbarClose} 
-                    severity={snackbar.severity} 
+                <Alert
+                    onClose={handleSnackbarClose}
+                    severity={snackbar.severity}
                     sx={{ width: '100%' }}
                 >
                     {snackbar.message}

@@ -22,7 +22,7 @@ import BathroomIcon from '@mui/icons-material/Bathroom';
 import SquareFootIcon from '@mui/icons-material/SquareFoot';
 // import BookmarkIcon from '@mui/icons-material/Bookmark';
 
-import AppSidebar from '../components/Sidebar';
+import Navbar from '../components/HomePage/Navbar'; 
 import { API_BASE_URL } from '../config/api-config';
 import '../styles/MyPostsPage.css';
 
@@ -540,7 +540,7 @@ const MyPostsPage = () => {
 
     return (
         <>
-            <AppSidebar />
+            <AppNavbar />
             <Box className="content saved-posts-content">
                 <Typography
                     variant="h4"

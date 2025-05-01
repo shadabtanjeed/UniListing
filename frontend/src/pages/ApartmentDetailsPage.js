@@ -17,7 +17,7 @@ import {
     Tabs,
     Tab,
 } from '@mui/material';
-import AppSidebar from '../components/Sidebar';
+import Navbar from '../components/HomePage/Navbar'; 
 import ProtectedFeature from '../components/ProtectedFeature';
 import { API_BASE_URL } from '../config/api-config';
 
@@ -739,7 +739,7 @@ const ApartmentDetailsPage = () => {
     if (loading) {
         return (
             <>
-                <AppSidebar />
+                <AppNavbar />
                 <Box className="content apartment-details-content" display="flex" justifyContent="center" alignItems="center">
                     <CircularProgress style={{ color: '#2d4f8f' }} />
                 </Box>
@@ -750,7 +750,7 @@ const ApartmentDetailsPage = () => {
     if (error) {
         return (
             <>
-                <AppSidebar />
+                <AppNavbar />
                 <Box className="content apartment-details-content">
                     <Alert severity="error" sx={{ maxWidth: 600, mx: 'auto' }}>
                         {error}
@@ -763,7 +763,7 @@ const ApartmentDetailsPage = () => {
     if (!apartment) {
         return (
             <>
-                <AppSidebar />
+                <AppNavbar />
                 <Box className="content apartment-details-content">
                     <Alert severity="info" sx={{ maxWidth: 600, mx: 'auto' }}>
                         Apartment not found
@@ -775,7 +775,7 @@ const ApartmentDetailsPage = () => {
 
     return (
         <>
-            <AppSidebar />
+            <AppNavbar />
             <Box className="content apartment-details-content">
                 <Container maxWidth="lg">
                     {/* Image Carousel */}

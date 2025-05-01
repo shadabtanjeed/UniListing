@@ -13,7 +13,7 @@ import {
     CardContent,
     Chip,
 } from '@mui/material';
-import AppSidebar from '../components/Sidebar';
+import Navbar from '../components/HomePage/Navbar'; 
 import { API_BASE_URL } from '../config/api-config';
 import ProtectedFeature from '../components/ProtectedFeature';
 
@@ -420,7 +420,7 @@ const ItemDetailsPage = () => {
     if (loading) {
         return (
             <>
-                <AppSidebar />
+                <AppNavbar />
                 <Box className="content item-details-content" display="flex" justifyContent="center" alignItems="center">
                     <CircularProgress style={{ color: '#2d4f8f' }} />
                 </Box>
@@ -431,7 +431,7 @@ const ItemDetailsPage = () => {
     if (error) {
         return (
             <>
-                <AppSidebar />
+                <AppNavbar />
                 <Box className="content item-details-content">
                     <Alert severity="error" sx={{ maxWidth: 600, mx: 'auto' }}>
                         {error}
@@ -444,7 +444,7 @@ const ItemDetailsPage = () => {
     if (!item) {
         return (
             <>
-                <AppSidebar />
+                <AppNavbar />
                 <Box className="content item-details-content">
                     <Alert severity="info" sx={{ maxWidth: 600, mx: 'auto' }}>
                         Item not found
@@ -456,7 +456,7 @@ const ItemDetailsPage = () => {
 
     return (
         <>
-            <AppSidebar />
+            <AppNavbar />
             <Box className="content item-details-content">
                 <Container maxWidth="lg">
                     <Box mb={4}>

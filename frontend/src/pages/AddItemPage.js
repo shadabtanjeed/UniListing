@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { TextField, Button, MenuItem, Input, IconButton, Snackbar, Alert, FormControlLabel, Checkbox, Box } from '@mui/material'; // Import Snackbar and Alert
 import { useNavigate } from 'react-router-dom';
-import AppSidebar from '../components/Sidebar';
+import Navbar from '../components/HomePage/Navbar'; 
 import '../styles/AddItemPage.css';
 import { v4 as uuidv4 } from 'uuid';
 import 'leaflet/dist/leaflet.css';
@@ -290,7 +290,7 @@ function AddItemPage() {
 
     return (
         <>
-            <AppSidebar />
+            <AppNavbar />
             <div className="AddItemPage">
                 <div className="formContainer">
                     <form onSubmit={handleSubmit}>

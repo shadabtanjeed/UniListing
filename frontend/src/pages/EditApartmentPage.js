@@ -15,7 +15,7 @@ import {
     Alert,
     Input
 } from '@mui/material';
-import AppSidebar from '../components/Sidebar';
+import Navbar from '../components/HomePage/Navbar'; 
 import { API_BASE_URL } from '../config/api-config';
 import { MapContainer, TileLayer, Marker, useMapEvents, Popup, useMap } from 'react-leaflet';
 import MyLocationIcon from '@mui/icons-material/MyLocation';
@@ -279,7 +279,7 @@ const EditApartmentPage = () => {
 
     return (
         <>
-            <AppSidebar />
+            <AppNavbar />
             <div className="AddApartmentPage">
                 <div className="formContainer">
                     <Typography variant="h4" component="h1" gutterBottom>
