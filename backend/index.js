@@ -8,7 +8,9 @@ const app = express();
 const http = require('http');
 const server = http.createServer(app);
 const { Server } = require("socket.io");
-const port = 5000;
+
+const port = process.env.PORT || 5000;
+
 require('dotenv').config();
 
 const mongoose = require('mongoose');
